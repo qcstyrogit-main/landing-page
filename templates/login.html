@@ -1,0 +1,71 @@
+{% extends "web.html" %}
+
+{% block head %} 
+{{ super() }}
+<!-- Include external login CSS -->
+<link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
+{% endblock %}
+
+{% block page_content %}
+<div class="custom-login-page">
+    <div class="login-right">
+        <div class="brand">
+            <div class="brand-logos">
+                <img src="{{ url_for('static', filename='images/QC.png') }}" alt="QC Logo" class="brand-logo">
+                <img src="{{ url_for('static', filename='images/MC.png') }}" alt="MC Logo" class="brand-logo">
+            </div>
+            <h1>Login to QC & MC ERP</h1>
+        </div>
+
+        <form method="post" action="/login" id="login-form">
+            <div id="login-error" style="color: red; margin-bottom: 10px; display: none;"></div>
+
+            <input type="hidden" name="cmd" value="login">
+            <input type="hidden" name="redirect-to" value="/app/home">
+
+            <!-- Email/Username Field -->
+            <div class="form-row">
+                <label for="usr">Email or Username</label>
+                <span class="input-icon">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <use href="#es-line-email"></use>
+                    </svg>
+                </span>
+                <input id="usr" name="usr" type="text" placeholder="jane@example.com" autocomplete="username" required autofocus>
+            </div>
+
+            <!-- Password Field -->
+            <div class="form-row">
+                <label for="pwd">Password</label>
+                <span class="input-icon">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <use href="#es-line-lock"></use>
+                    </svg>
+                </span>
+                <input id="pwd" name="pwd" type="password" placeholder="••••••" autocomplete="current-password" required>
+                <span class="toggle-password">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                        <use href="#es-line-eye"></use>
+                    </svg>
+                    <span class="text-muted">Show</span>
+                </span>
+            </div>
+
+            <!-- Login Button & Forgot Password -->
+            <div class="form-actions">
+                <button type="submit" class="btn">Login</button>
+                <a href="/forgot_password" class="link">Forgot Password?</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block footer %}
+<div class="custom-footer">
+    Copyright © 2025 QC Styropackaging & Multiplast Corporation | Powered by QCMC MIS
+</div>
+
+<!-- Include external login JS -->
+<script src="{{ url_for('static', filename='js/login.js') }}"></script>
+{% endblock %}

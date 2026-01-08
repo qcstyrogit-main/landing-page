@@ -1,0 +1,34 @@
+<link rel="stylesheet" href="{{ url_for('static', filename='css/footer.css') }}">
+
+<!-- Footer -->
+<footer class="custom-footer">
+    <div class="footer-content">
+        <span>© Copyright 2025</span>
+        <span class="footer-links">
+            <a href="javascript:void(0)" id="privacyLink">Privacy Policy</a> |
+            <a href="javascript:void(0)" id="termofuseLink">Terms of Use</a>
+        </span>
+    </div>
+</footer>
+
+<!-- Privacy Policy Modal -->
+<div id="privacyModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <div class="modal-body">
+            {% include "sections/privacy_policy.html" %}
+        </div>
+    </div>
+</div>
+
+<!-- Terms of Use Modal -->
+<div id="termofuseModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <div class="modal-body">
+            {% include "sections/term_of_use.html" %}
+        </div>
+    </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/footer.js') }}"></script>

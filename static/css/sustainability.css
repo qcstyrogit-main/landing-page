@@ -1,0 +1,147 @@
+/*
+sustainability.css
+Modernized UI - Alternating Layouts with Glassmorphism
+*/
+
+:root {
+    --brand-blue: #133880;
+    --text-muted: #4a5568;
+    --glass-white: rgba(255, 255, 255, 0.7);
+    --glass-border: rgba(255, 255, 255, 0.3);
+}
+
+/* --- Section Container --- */
+
+#sustainability {
+    width: 100%;
+    max-width: 1440px;
+    margin: auto;
+    box-sizing: border-box;
+    overflow: hidden;
+
+    /* 🔧 Responsive vertical spacing */
+    padding: clamp(60px, 8vw, 100px) 2rem;
+}
+
+/* --- Layer Layout --- */
+
+.sustainability-layer {
+    display: flex;
+    align-items: center;
+    gap: clamp(30px, 5vw, 60px);
+
+    /* 🔧 Controlled spacing between blocks */
+    margin-bottom: clamp(60px, 10vw, 120px);
+
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 1s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* Alternating layout */
+.sustainability-layer.reverse {
+    flex-direction: row-reverse;
+}
+
+/* --- Content Card --- */
+
+.sustainability-text {
+    flex: 1;
+    padding: 3rem;
+    background: var(--glass-white);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid var(--glass-border);
+    border-radius: 30px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.05);
+}
+
+/* Typography */
+
+.sustainability-text h2 {
+    font-size: clamp(1.5rem, 3vw, 2.2rem);
+    color: var(--brand-blue);
+    margin-bottom: 1.5rem;
+    font-weight: 800;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+}
+
+.sustainability-text p {
+    font-size: clamp(1rem, 1.5vw, 1.15rem);
+    line-height: 1.8;
+    color: var(--text-muted);
+}
+
+/* --- Image Presentation --- */
+
+.sustainability-image {
+    flex: 1;
+
+    /* 🔧 Prevents overflow on narrow screens */
+    display: flex;
+    justify-content: center;
+}
+
+.sustainability-image img {
+    width: 100%;
+    max-width: 600px;
+    height: auto;
+    display: block;
+    border-radius: 30px;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.1);
+    transition: transform 0.5s ease;
+}
+
+.sustainability-layer:hover .sustainability-image img {
+    transform: scale(1.03);
+}
+
+/* --- Fade-in Effect --- */
+
+.sustainability-layer.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* --- Tablet & Mobile --- */
+
+@media (max-width: 992px) {
+    .sustainability-layer,
+    .sustainability-layer.reverse {
+        flex-direction: column !important;
+        gap: 30px;
+        margin-bottom: 70px;
+    }
+
+    .sustainability-text {
+        padding: 2.25rem 1.5rem;
+        text-align: center;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .sustainability-image {
+        width: 100%;
+    }
+}
+
+@media (max-width: 600px) {
+    #sustainability {
+        padding: 50px 1.25rem;
+    }
+
+    .sustainability-text {
+        border-radius: 20px;
+        padding: 1.5rem;
+    }
+
+    .sustainability-text h2 {
+        font-size: 1.6rem;
+    }
+
+    .sustainability-image img {
+        border-radius: 20px;
+        max-width: 100%;
+    }
+}

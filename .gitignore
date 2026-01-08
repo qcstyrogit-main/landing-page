@@ -1,0 +1,71 @@
+# ===============================
+# Python / Flask
+# ===============================
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+*.pdb
+*.egg
+*.egg-info/
+dist/
+build/
+*.manifest
+*.spec
+
+# ===============================
+# Virtual environment
+# ===============================
+venv/
+.venv/
+ENV/
+env/
+env.bak/
+
+# ===============================
+# Environment files
+# ===============================
+# Keep .env in Git (production-safe)
+# Ignore local overrides
+.env.local
+instance/
+
+# ===============================
+# OS files
+# ===============================
+.DS_Store
+Thumbs.db
+
+# ===============================
+# IDE / editor
+# ===============================
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# ===============================
+# Logs
+# ===============================
+*.log
+
+# ===============================
+# Testing / coverage
+# ===============================
+.pytest_cache/
+htmlcov/
+.coverage
+
+# ===============================
+# Database
+# ===============================
+*.sqlite3
+*.db
+
+# ===============================
+# Node.js / frontend builds (optional)
+# ===============================
+node_modules/
+npm-debug.log
+yarn-error.log

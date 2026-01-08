@@ -1,0 +1,82 @@
+{% extends "web.html" %}
+
+{% block head %}
+{{ super() }}
+
+<!-- CSS -->
+<link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/footer.css') }}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+{% endblock %}
+
+{% block page_content %}
+
+<div class="custom-home-page">
+
+    <!-- Header -->
+    <header class="home-header">
+        <div class="brand">
+            <img src="{{ url_for('static', filename='images/QC.png') }}" class="brand-logo">
+            <img src="{{ url_for('static', filename='images/MC.png') }}" class="brand-logo">
+        </div>
+
+        <!-- Navigation -->
+        <nav class="home-nav">
+            <ul>
+                <li><a href="/">Home</a></li>
+                <li class="has-dropdown">
+                    <a href="#">Products</a>
+                    <ul class="dropdown-menu">
+                        <li><a href="/products_plastic" target="_blank">Plastic</a></li>
+                        <li><a href="/products_styro" target="_blank">Styrofoam</a></li>
+                    </ul>
+                </li>
+                <li><a href="#about-us">About</a></li>
+                <li><a href="#jobs">Careers</a></li>
+                <li><a href="#contact-us">Contact</a></li>
+            </ul>
+        </nav>
+
+        <!-- Right-side tools: mobile toggle + login -->
+        <div class="header-tools">
+            <button class="menu-toggle" id="menuToggle">&#9776;</button>
+            <!-- <a href="https://erp.qcstyro.com/login" class="btn-login">Login</a> -->
+            <a href="{{ API_BASE_URL }}" class="btn-login">Login</a>
+        </div>
+    </header>
+
+    <!-- Mobile navigation (for small screens) -->
+    <nav id="mobileNav" class="mobile-nav" aria-hidden="true">
+        <a href="/">Home</a>
+        <a href="#" id="mobileDropdownToggle" aria-expanded="false">Products <i class="fa fa-chevron-down"></i></a>
+        <div id="mobileDropdown" class="mobile-dropdown" aria-hidden="true">
+            <a href="/products_plastic">Plastic</a>
+            <a href="/products_styro">Styrofoam</a>
+        </div>
+        <a href="#about-us">About</a>
+        <a href="#jobs">Careers</a>
+        <a href="#contact-us">Contact</a>
+        <!-- <a href="https://erp.qcstyro.com/login" class="mobile-login">Login</a> -->
+         <a href="{{ API_BASE_URL }}" class="mobile-login">Login</a>
+    </nav>
+
+    <!-- Page Sections -->
+    {% include "sections/intro.html" %}
+    {% include "sections/standard.html" %}
+    {% include "sections/jobs.html" %}
+    {% include "sections/sustainability.html" %}
+    {% include "sections/about.html" %}
+    {% include "sections/iso_certified.html" %}
+    {% include "sections/contact_us.html" %}
+
+    <!-- Back to top button -->
+    <button id="back-to-top">↑</button>
+
+</div>
+
+{% endblock %}
+
+{% block footer %}
+{% include "sections/footer.html" %}
+<script src="{{ url_for('static', filename='js/home.js') }}"></script>
+{% endblock %}

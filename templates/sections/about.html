@@ -1,0 +1,103 @@
+<link rel="stylesheet" href="{{ url_for('static', filename='css/about_us.css') }}">
+
+<section class="about-us-section" id="about-us">
+    <div class="about-us-content">
+
+        <!-- History Video -->
+        <video id="history-video" width="100%" height="auto" autoplay muted loop>
+            <source src="{{ url_for('static', filename='images/media/history.mp4') }}" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+
+        <!-- About Us Cards -->
+        <div class="about-us-cards">
+            <div class="card">
+                <h3>Our Vision</h3>
+                <p>To be the leading provider of food and industrial packaging products.</p>
+            </div>
+            <div class="card">
+                <h3>Our Mission</h3>
+                <p>
+                    We are committed to achieve our vision through<br>
+                    • CUSTOMERS - delivery of high quality and competitive products and services.<br>
+                    • FUNCTIONAL EXCELLENCE - continuous development and improvement of processes and resources.<br>
+                    • EMPLOYEES - maintaining high performance and high efficiency organization aligned with core values.
+                </p>
+            </div>
+            <div class="card">
+                <h3>Our Values</h3>
+                <p>
+                    • MALASAKIT<br>
+                    • CUSTOMER CENTRIC<br>
+                    • TEAMWORK<br>
+                    • EXCELLENCE<br>
+                    • COMMITMENT<br>
+                    • HONESTY & INTEGRITY<br>
+                    • DISCIPLINE<br>
+                    and principles guided by God.
+                </p>
+            </div>
+        </div>
+
+        <!-- Our Events Section -->
+        <div class="our-events-description">
+            <h2>Our Events</h2>
+            <p>
+                Explore the highlights of our corporate events, where teamwork and achievements come to life.
+                From exciting celebrations to inspiring gatherings, each moment reflects our passion and dedication.
+            </p>
+
+            <div class="events-wrapper">  
+                <div class="events-cards">
+                    <!-- Event Cards -->
+                    <a href="/events/event1" class="event-card">
+                        <img src="{{ url_for('static', filename='images/events/event1.png') }}" alt="Event 1">
+                        <div class="event-text"><p>INVENTORY MANAGEMENT TRAINING SEPT 13, 2025</p></div>
+                    </a>
+                    <a href="/events/event2" class="event-card">
+                        <img src="{{ url_for('static', filename='images/events/event2.png') }}" alt="Event 2">
+                        <div class="event-text"><p>CART COURIER TRANSPORT SYSTEM TRAINING</p></div>
+                    </a>
+                    <a href="/events/event3" class="event-card">
+                        <img src="{{ url_for('static', filename='images/events/event3.png') }}" alt="Event 3">
+                        <div class="event-text"><p>AM OPERATIONAL PROCEDURE TRAINING</p></div>
+                    </a>
+                    <a href="/events/event4" class="event-card">
+                        <img src="{{ url_for('static', filename='images/events/event4.png') }}" alt="Event 4">
+                        <div class="event-text"><p>1ST FRIDAY MASS</p></div>
+                    </a>
+                    <a href="/events/event5" class="event-card">
+                        <img src="{{ url_for('static', filename='images/events/event5.png') }}" alt="Event 5">
+                        <div class="event-text"><p>Manufacturing Convention</p></div>
+                    </a>
+                    <a href="/events/event6" class="event-card">
+                        <img src="{{ url_for('static', filename='images/events/event6.png') }}" alt="Event 6">
+                        <div class="event-text"><p>Valentines Day</p></div>
+                    </a>
+                    <a href="/events/event7" class="event-card">
+                        <img src="{{ url_for('static', filename='images/events/event7.png') }}" alt="Event 7">
+                        <div class="event-text"><p>Management Review</p></div>
+                    </a>
+                    <a href="/events/event8" class="event-card">
+                        <img src="{{ url_for('static', filename='images/events/event8.png') }}" alt="Event 8">
+                        <div class="event-text"><p>2025 Manufacturing Convention</p></div>
+                    </a>
+                    <a href="/events/event9" class="event-card">
+                        <img src="{{ url_for('static', filename='images/events/event9.png') }}" alt="Event 9">
+                        <div class="event-text"><p>2025 Annual Physical Exam</p></div>
+                    </a>
+                </div>
+
+                <!-- Optional Show More Button -->
+                <!--
+                <div class="show-more-wrapper">
+                    <button class="show-more-btn">Show More</button>
+                </div>
+                -->
+            </div>
+        </div>  
+
+    </div>
+</section>
+
+<script src="{{ url_for('static', filename='js/about_us.js') }}"></script>

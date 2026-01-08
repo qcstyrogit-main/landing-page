@@ -1,0 +1,216 @@
+/* ==================================================
+    LOGIN PAGE - PREMIUM REFINEMENT
+================================================== */
+
+/* Hide global components */
+header, .navbar, .top-bar, footer, #chat-bubble { 
+    display: none !important; 
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+    font-family: 'Inter', -apple-system, sans-serif;
+    overflow: hidden; /* Prevent scrolling on the main login screen */
+}
+
+/* Full screen background with a subtle gradient depth */
+body {
+    background: radial-gradient(circle at top right, #1e4ba1, #133880);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.custom-login-page {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center; /* center login card */
+    padding: 0 1.5rem; /* small horizontal padding so card doesn't touch edges */
+}
+
+/* --- Login Card --- */
+.login-right {
+    width: 100%;
+    max-width: 420px;
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    padding: 36px;
+    border-radius: 16px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    display: flex;
+    flex-direction: column;
+    animation: loginFadeIn 0.6s ease-out;
+}
+
+@keyframes loginFadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* --- Branding --- */
+.brand { text-align: center; margin-bottom: 2rem; }
+.brand-logos { 
+    display: flex; 
+    justify-content: center; 
+    gap: 1rem; 
+    margin-bottom: 0.5rem; 
+}
+.brand-logos .brand-logo { height: 45px; width: auto; object-fit: contain; }
+.brand h1 { 
+    font-size: 1.5rem; 
+    font-weight: 700; 
+    color: #133880; 
+    margin: 10px 0 0 0; 
+    letter-spacing: -0.02em;
+}
+
+/* --- Form Rows --- */
+.form-row {
+    position: relative;
+    margin-bottom: 1.25rem;
+}
+
+/* Style form labels */
+.form-row label {
+    font-family: 'Roboto', sans-serif; /* Change font */
+    font-weight: 500;                  /* Optional: medium weight */
+    color: #94a3b8;                    /* Change text color */
+    font-size: 0.95rem;                /* Adjust size if needed */
+    display: block;
+    margin-bottom: 0.3rem;
+}
+
+
+.form-row input {
+    width: 100%;
+    padding: 0.8rem 1rem 0.8rem 2.8rem;
+    font-size: 1rem;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 10px;
+    background: #f8fafc;
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+}
+
+.form-row input:focus {
+    border-color: #133880;
+    background: #fff;
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(19, 56, 128, 0.1);
+}
+
+/* Icons Centering Fix */
+.form-row .input-icon {
+    position: absolute;
+    left: 12px;
+    top: 70%;
+    transform: translateY(-70%); /* Perfectly centered */
+    color: #94a3b8;
+    display: flex;
+    align-items: center;
+    pointer-events: none;
+}
+
+.form-row .toggle-password {
+    position: absolute;
+    right: 12px;
+    top: 70%;
+    transform: translateY(-70%);
+    cursor: pointer;
+    color: #94a3b8;
+    transition: color 0.2s;
+}
+
+.form-row .toggle-password:hover { color: #133880; }
+
+/* --- Buttons & Actions --- */
+.form-actions { 
+    margin-top: 1.5rem; 
+    display: flex; 
+    flex-direction: column; 
+    gap: 1rem; 
+}
+
+.form-actions .btn { 
+    padding: 0.85rem; 
+    font-size: 1rem; 
+    font-weight: 600; 
+    border-radius: 10px; 
+    border: none;
+    background: #133880; 
+    color: #fff; 
+    cursor: pointer;
+    transition: all 0.3s; 
+    box-shadow: 0 4px 6px -1px rgba(19, 56, 128, 0.2);
+}
+
+.form-actions .btn:hover { 
+    background: #007bff; 
+    transform: translateY(-2px); 
+    box-shadow: 0 10px 15px -3px rgba(19, 56, 128, 0.3);
+}
+
+.form-actions .link { 
+    font-size: 0.9rem; 
+    text-align: center; 
+    color: #64748b;
+    text-decoration: none;
+}
+
+.form-actions .link:hover { color: #133880; text-decoration: underline; }
+
+
+
+/* --- Footer --- */
+.custom-footer {
+    position: fixed;
+    bottom: 20px;
+    width: 100%;
+    text-align: center;
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+/* =========================================
+    RESPONSIVE (Fixes Overlap)
+========================================= */
+@media (max-width: 1024px) {
+    .custom-login-page {
+        justify-content: center;
+        padding-right: 0;
+    }
+}
+
+@media (max-width: 480px) {
+    body { overflow-y: auto; } /* Allow scroll if phone is very small */
+    
+    .login-right {
+        width: 90%;
+        padding: 30px 20px;
+        margin: 20px 0;
+    }
+    
+    .brand h1 { font-size: 1.25rem; }
+}
+
+/* Ensure centered layout on small and very small screens */
+@media (max-width: 768px) {
+    body { overflow-y: auto; }
+    .custom-login-page {
+        justify-content: center !important;
+        align-items: center !important;
+        padding: 0 1rem !important;
+        min-height: 100vh;
+    }
+    .login-right {
+        margin: 20px auto !important;
+        width: 92% !important;
+        max-width: 420px;
+    }
+}

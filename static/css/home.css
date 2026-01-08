@@ -1,0 +1,546 @@
+/* ------------------------------------------------ */
+/* 1. MODERN VARIABLES & RESET                      */
+/* ------------------------------------------------ */
+:root {
+    --primary-color: #133880;
+    --primary-hover: #0045DA;
+    --text-dark: #1a202c;
+    --text-light: #718096;
+    
+    /* Modern Glass Effect Variables */
+    --glass-bg: rgba(255, 255, 255, 0.85);
+    --glass-border: 1px solid rgba(255, 255, 255, 0.5);
+    --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+    --backdrop-blur: blur(12px);
+    
+    /* Spacing & Radius */
+    --radius-md: 12px;
+    --radius-lg: 20px;
+    --nav-height: 70px;
+}
+
+html, body {
+    font-family: 'Roboto', -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    font-weight: 400;
+    color: var(--text-dark);
+    margin: 0;
+    padding: 0;
+    scroll-behavior: smooth;
+    background-color: #f8f9fa; /* Slight off-white is easier on eyes than pure white */
+}
+
+/* Hide Default Framework Headers */
+.navbar, .navbar.navbar-expand, .navbar-light, header.navbar, .top-bar {
+    display: none !important;
+}
+
+/* ------------------------------------------------ */
+/* 2. GLASSMORPHISM HEADER                          */
+/* ------------------------------------------------ */
+.home-header {
+    width: 100%;
+    padding: 0 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 2100; /* higher so header/tools remain visible above mobile-nav */
+    height: var(--nav-height);
+    
+    /* Modern Glass Style */
+    background-color: #ffffffcc; /* Semi-transparent white */
+    backdrop-filter: var(--backdrop-blur);
+    -webkit-backdrop-filter: var(--backdrop-blur);
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.03); /* Very subtle shadow */
+    transition: all 0.3s ease;
+}
+
+.home-header .brand {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+}
+
+.home-header .brand {
+    flex: 0 0 auto;
+}
+
+.home-header .btn-login {
+    margin-left: 1rem;
+    background: var(--primary-color);
+    color: #fff;
+    padding: 0.45rem 0.9rem;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.home-header .btn-login:hover {
+    background: var(--primary-hover);
+}
+
+.home-header .brand-logo {
+    height: 45px; /* Slightly smaller for elegance */
+    width: auto;
+    transition: transform 0.3s ease;
+}
+
+.home-header .brand:hover .brand-logo {
+    transform: scale(1.05);
+}
+
+/* Prevent clipping of header children and ensure padding included in width */
+.home-header {
+    box-sizing: border-box;
+    overflow: visible;
+}
+
+.btn-login {
+    white-space: nowrap; /* prevent wrapping */
+    box-shadow: 0 4px 14px rgba(19,56,128,0.12);
+}
+
+@media (max-width: 1200px) {
+    .home-nav ul {
+        gap: 1rem;
+    }
+    .brand-logo {
+        height: 42px;
+    }
+}
+
+/* ------------------------------------------------ */
+/* 3. DESKTOP NAVIGATION                            */
+/* ------------------------------------------------ */
+.home-nav ul {
+    list-style: none;
+    display: flex;
+    gap: 2rem; /* More breathing room */
+    padding: 0;
+    margin: 0;
+    align-items: center;
+}
+
+.home-nav {
+    flex: 1 1 auto;
+    display: flex;
+    justify-content: center;
+}
+
+.home-nav {
+    flex: 1 1 auto;
+    display: flex;
+    justify-content: center;
+    min-width: 0; /* allow flex children to shrink instead of pushing siblings out */
+}
+
+.home-nav ul {
+    flex-wrap: wrap; /* allow items to wrap instead of overflowing */
+    justify-content: center;
+    gap: 1.5rem; /* slightly tighter gap to save space */
+}
+
+/* Right-side header tools (menu toggle, login) */
+.header-tools {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex: 0 0 auto;
+    margin-left: 1rem;
+    margin-right: 0.5rem; /* small gap from viewport edge so rounded button isn't clipped */
+    white-space: nowrap; /* keep tools on one line */
+}
+
+.menu-toggle {
+    display: none;
+    font-size: 1.6rem;
+    background: rgba(19, 56, 128, 0.05);
+    border: none;
+    color: var(--primary-color);
+    cursor: pointer;
+    padding: 0.6rem;
+    border-radius: 10px;
+    transition: background 0.2s;
+}
+
+.menu-toggle.active {
+    background: rgba(19, 56, 128, 0.12);
+}
+
+.home-nav ul li {
+    position: relative;
+}
+
+.home-nav ul li a {
+    color: var(--primary-color);
+    font-size: 0.95rem;
+    font-weight: 500;
+    text-decoration: none;
+    padding: 0.5rem 0;
+    position: relative;
+    transition: color 0.3s ease;
+}
+
+/* Animated Underline Effect */
+.home-nav ul li a::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 2px;
+    bottom: 0;
+    left: 0;
+    background-color: var(--primary-hover);
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.home-nav ul li a:hover {
+    color: var(--primary-hover);
+}
+
+.home-nav ul li a:hover::after {
+    width: 100%;
+}
+
+/* Modern Dropdown */
+.home-nav ul li .dropdown-menu {
+    position: absolute;
+    top: 140%; /* Offset slightly more */
+    left: -15px;
+    
+    /* Floating Card Style */
+    background: #ffffff;
+    min-width: 220px;
+    border-radius: var(--radius-md);
+    border: 1px solid rgba(0,0,0,0.04);
+    box-shadow: 0 10px 40px rgba(0,0,0,0.12);
+    
+    display: block;
+    max-height: 0;
+    opacity: 0;
+    visibility: hidden;
+    overflow: hidden;
+    padding: 0;
+    
+    /* Snappy transition */
+    transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+    transform: translateY(10px);
+}
+
+.home-nav ul li.has-dropdown:hover > .dropdown-menu {
+    max-height: 500px;
+    opacity: 1;
+    visibility: visible;
+    padding: 0.5rem; /* Inner padding for floating items */
+    transform: translateY(0);
+    top: 100%;
+}
+
+.home-nav ul li .dropdown-menu li a {
+    padding: 0.8rem 1rem;
+    display: block;
+    color: var(--text-dark);
+    font-weight: 400;
+    border-radius: 8px; /* Rounded items */
+}
+
+.home-nav ul li .dropdown-menu li a::after {
+    display: none; /* Remove underline for dropdown items */
+}
+
+.home-nav ul li .dropdown-menu li a:hover {
+    background: rgba(19, 56, 128, 0.04); /* Subtle tint instead of grey */
+    color: var(--primary-hover);
+    transform: translateX(5px); /* Micro-interaction */
+}
+
+/* ------------------------------------------------ */
+/* 4. SECTIONS & SPACING                            */
+/* ------------------------------------------------ */
+.home-hero {
+    /* Accounts for header height + spacing */
+    padding-top: calc(var(--nav-height) + 60px) !important; 
+}
+
+.home-hero h1 {
+    font-weight: 800;
+    letter-spacing: -0.02em; /* Tighten large headings */
+    color: var(--primary-color);
+}
+
+.home-hero p {
+    font-weight: 400;
+    color: var(--text-light);
+    line-height: 1.6;
+}
+
+/* Full Width Utility Classes */
+.intro-section, .standard-section, .contact_us-section, .innovation-banner {
+    /* Use 100% instead of 100vw to avoid including scrollbar width
+       which can cause horizontal overflow on some devices/browsers. */
+    width: 100%;
+    margin-left: 0;
+    transform: none;
+    left: 0;
+    position: relative;
+    overflow: hidden; /* Prevent horizontal scroll bars */
+    box-sizing: border-box;
+}
+
+.intro-content, .standard-content, .contact_us-content, .innovation-banner-content {
+    max-width: 1440px;
+    margin: auto;
+    padding: 0 2rem; /* Ensure content doesn't touch edges on small screens */
+}
+
+/* ------------------------------------------------ */
+/* 5. FULL DISPLAY MODERN MOBILE MENU               */
+/* ------------------------------------------------ */
+
+.menu-toggle {
+    display: none;
+    font-size: 1.6rem;
+    background: rgba(19, 56, 128, 0.05);
+    border: none;
+    color: var(--primary-color);
+    cursor: pointer;
+    padding: 0.6rem;
+    border-radius: 10px;
+    transition: background 0.2s;
+    z-index: 1100;
+}
+
+.menu-toggle:hover {
+    background: rgba(19, 56, 128, 0.12);
+}
+
+/* FULL SCREEN MOBILE NAV */
+.mobile-nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+
+    display: flex;
+    flex-direction: column;
+
+    background: rgba(255, 255, 255, 0.97);
+    backdrop-filter: blur(18px);
+
+    padding: 5rem 1.5rem 2rem; /* space for header */
+    box-shadow: 0 30px 60px rgba(0,0,0,0.15);
+
+    transform: translateY(-100%);
+    opacity: 0;
+
+    overflow-y: auto;
+    transition: transform 0.45s cubic-bezier(0.165, 0.84, 0.44, 1),
+                opacity 0.35s ease;
+    z-index: 2000;
+}
+
+/* SHOW STATE */
+.mobile-nav.show {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+/* MAIN LINKS */
+.mobile-nav a {
+    padding: 1rem 1.2rem;
+    color: var(--primary-color);
+    text-decoration: none;
+    font-size: 1.15rem;
+    font-weight: 600;
+    border-radius: 14px;
+    margin-bottom: 0.4rem;
+    transition: background 0.2s ease;
+}
+
+.mobile-nav a:hover {
+    background: rgba(19, 56, 128, 0.06);
+}
+
+/* MOBILE DROPDOWN */
+.mobile-dropdown {
+    display: flex;
+    flex-direction: column;
+    padding-left: 1rem;
+    margin-left: 0.8rem;
+
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+
+    border-left: 2px solid rgba(19, 56, 128, 0.15);
+    transition: max-height 0.35s ease, opacity 0.3s ease;
+}
+
+.mobile-dropdown.show {
+    max-height: 500px;
+    opacity: 1;
+    margin-top: 0.3rem;
+    margin-bottom: 0.5rem;
+}
+
+/* DROPDOWN LINKS */
+.mobile-dropdown a {
+    font-size: 1rem;
+    padding: 0.8rem 1rem;
+    color: var(--text-dark);
+}
+
+
+/* ------------------------------------------------ */
+/* 6. RESPONSIVE ADJUSTMENTS                        */
+/* ------------------------------------------------ */
+@media (max-width: 992px) { /* Changed from 768 to 992 for better tablet handling */
+    .home-nav {
+        display: none !important;
+    }
+    .menu-toggle {
+        display: block;
+    }
+    .home-header {
+        padding: 0 1.5rem;
+    }
+    .home-hero {
+        padding-top: 100px !important;
+    }
+
+    /* Show login inside header area as a compact button */
+    .home-header .btn-login {
+        display: none; /* hide desktop login on small screens (mobile login available in mobile menu) */
+    }
+}
+
+/* ------------------------------------------------ */
+/* 7. MODERN BACK TO TOP                            */
+/* ------------------------------------------------ */
+#back-to-top {
+    position: fixed;
+    bottom: 40px;
+    left: 20px;        /* ← move to left */
+    right: auto;      /* ← disable right */
+
+    z-index: 10000;
+    
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    
+    background-color: #ffffff;
+    color: var(--primary-color);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    
+    font-size: 1.2rem;
+    border: 1px solid rgba(0,0,0,0.05);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    cursor: pointer;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(20px) scale(0.9);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+
+#back-to-top.show {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0) scale(1);
+}
+
+#back-to-top:hover {
+    transform: translateY(-5px); /* Lift up */
+    background-color: var(--primary-color);
+    color: #ffffff;
+    box-shadow: 0 15px 30px rgba(19, 56, 128, 0.3); /* Colored shadow glow */
+}
+
+/* Keep back-to-top fixed in the same place even when mobile menu is open */
+body.mobile-nav-open #back-to-top {
+    bottom: 40px; /* same as default */
+}
+
+
+
+/* Hide chat widget */
+/* #chat-bubble {
+    display: none !important;
+} */
+
+
+/* ------------------------------------------------ */
+/* CHAT BUBBLE - LOWER RIGHT, ABOVE Back-to-Top   */
+/* ------------------------------------------------ */
+#chat-bubble {
+    position: fixed !important;
+
+    bottom: 40px !important;  
+    right: 10px !important;
+
+    width: 55px !important;    
+    height: 55px !important;
+    
+
+    border-radius: 50% !important;
+
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 5px !important;
+
+    background: var(--primary-color) !important;
+    color: #fff !important;
+
+    box-shadow: 0 6px 16px rgba(19, 56, 128, 0.35) !important;
+    z-index: 9999 !important;
+
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+/* Hover effect */
+#chat-bubble:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(19, 56, 128, 0.45);
+}
+
+/* Optional: smaller on mobile */
+@media (max-width: 768px) {
+    #chat-bubble {
+        width: 50px !important;
+        height: 50px !important;
+        font-size: 1px !important;
+        bottom: 40px !important;  
+        right: 10px !important;
+    }
+}
+
+/* Close button inside mobile menu */
+.mobile-close {
+    margin-top: 1rem;
+    margin-bottom: 0;
+    align-self: center;
+    padding: 0.85rem 1.1rem;
+    border-radius: 12px;
+    background: var(--primary-color);
+    color: #fff;
+    border: none;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 10px 30px rgba(19,56,128,0.18);
+}
+
+.mobile-close:hover {
+    background: var(--primary-hover);
+}

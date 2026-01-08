@@ -1,0 +1,119 @@
+/* =========================================
+   ISO CERTIFIED - INTRO-MATCHED UI (FIXED)
+========================================= */
+
+#iso-certified {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+
+    /* ✅ Flexible height instead of forcing 100vh */
+    min-height: clamp(65vh, 80vh, 100vh);
+
+    background-color: #f4f7fa;
+
+    /* ✅ Responsive padding */
+    padding: clamp(3rem, 6vw, 6rem) 1.5rem;
+
+    box-sizing: border-box;
+    position: relative;
+    overflow: hidden;
+}
+
+/* --- Container --- */
+.iso-content {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    z-index: 2;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    /* ✅ Responsive spacing */
+    gap: clamp(1.5rem, 4vw, 3rem);
+}
+
+/* --- Typography --- */
+#iso-certified h1 {
+    font-size: clamp(2rem, 4.5vw, 3.3rem);
+    color: #133880;
+    font-weight: 800;
+    line-height: 1.15;
+    margin: 0;
+    letter-spacing: -0.02em;
+}
+
+#iso-certified p {
+    font-size: clamp(1rem, 1.8vw, 1.25rem);
+    line-height: 1.7;
+    color: #4a5568;
+    max-width: 760px;
+    margin: 0 auto;
+}
+
+/* --- Logo Layout --- */
+.iso-images {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+
+    /* ✅ Responsive gap */
+    gap: clamp(1.5rem, 4vw, 4rem);
+    width: 100%;
+
+    animation: fadeInUp 0.8s ease-out forwards;
+}
+
+.iso-logo {
+    /* ✅ Responsive logo sizing */
+    height: clamp(70px, 12vw, 140px);
+    width: auto;
+    object-fit: contain;
+
+    filter: drop-shadow(0 10px 20px rgba(0,0,0,0.05));
+    transition: transform 0.35s ease, filter 0.35s ease;
+}
+
+.iso-logo:hover {
+    transform: scale(1.06);
+    filter: drop-shadow(0 15px 30px rgba(19, 56, 128, 0.15));
+}
+
+/* --- Animation --- */
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* =========================================
+   MOBILE OPTIMIZATION (NO EXTRA SPACE)
+========================================= */
+@media (max-width: 768px) {
+    #iso-certified {
+        min-height: unset; /* ✅ Let content decide height */
+        padding: clamp(3rem, 8vw, 5rem) 1.25rem;
+    }
+
+    .iso-content {
+        gap: 2rem;
+    }
+}
+
+@media (max-width: 480px) {
+    #iso-certified {
+        padding: 3rem 1rem;
+    }
+
+    #iso-certified h1 {
+        font-size: 1.85rem;
+    }
+
+    .iso-logo {
+        height: 64px;
+    }
+}

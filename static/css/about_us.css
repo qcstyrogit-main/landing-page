@@ -1,0 +1,311 @@
+/* =========================================
+   ABOUT US SECTION - IMPROVED UI
+========================================= */
+/* Make About section full-bleed like intro: no outer margins, content centered inside */
+#about-us {
+    width: 100%;
+    padding-top: calc(var(--nav-height) + 8px); /* leave space for fixed header */
+    padding-bottom: 3rem;
+    box-sizing: border-box;
+    background: #f9fbff;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #133880;
+    margin: 0;
+}
+
+.about-us-section {
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    padding: 0; /* content padding is on .about-us-content now */
+    background: transparent;
+    border-radius: 0;
+    box-shadow: none;
+}
+
+.about-us-content {
+    max-width: 1280px; /* center the inner content like intro */
+    margin: 0 auto;
+    padding: 2rem; /* inner spacing similar to intro-content */
+}
+
+/* =========================================
+   VIDEO
+========================================= */
+#history-video {
+    width: 100%;
+    border-radius: 16px;
+    margin-bottom: 45px;
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.16);
+    transition: transform 0.3s ease;
+}
+
+#history-video:hover {
+    transform: scale(1.02);
+}
+
+/* =========================================
+   CARD WRAPPERS
+========================================= */
+.about-us-cards {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 30px;
+    justify-content: center;
+    padding-bottom: 15px;
+}
+
+.events-wrapper {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+}
+
+/* Update this specific block in your CSS */
+.events-cards {
+    display: flex;
+    gap: 20px;
+    overflow-x: hidden; /* Changed from auto to hide scrollbar */
+    scroll-behavior: auto; /* IMPORTANT: must be auto for JS animation */
+    padding-bottom: 12px;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+.events-cards::-webkit-scrollbar {
+    display: none;
+}
+
+
+
+.events-cards.dragging {
+    cursor: grabbing;
+    user-select: none;
+}
+
+/* =========================================
+   CARD BASE STYLE - CONSISTENT SIZE
+========================================= */
+.about-us-cards .card,
+.event-card {
+    background: #fff;
+    flex: 0 0 320px; /* Fixed width for desktop */
+    min-width: 320px;
+    max-width: 320px;
+    padding: 32px 28px;
+    text-align: center;
+    border: 1.5px solid #d7dce7;
+    border-radius: 18px;
+    box-shadow: 0 14px 32px rgba(19, 56, 128, 0.1);
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+
+    /* 🔧 Auto-scaling background */
+    background-image: url("data:image/svg+xml,%3Csvg%20width%3D'100%25'%20height%3D'100%25'%20viewBox%3D'0%200%20450%20120'%20xmlns%3D'http://www.w3.org/2000/svg'%3E%3Cpath%20d%3D'M0%2040%20Q75%2080%20150%2040%20T300%2040%20T450%2040%20V120%20H0%20Z'%20fill%3D'%23ED1C24'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-size: contain;       /* Cover scales with card */
+    background-position: bottom center;
+    cursor: pointer;
+}
+
+.about-us-cards .card:hover,
+.event-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(19, 56, 128, 0.18);
+    border-color: #ed1c24;
+}
+
+
+/* =========================================
+   CARD TEXT
+========================================= */
+.about-us-cards .card h3,
+.event-card h4 {
+    margin-bottom: 18px;
+    font-size: 30px;
+    font-weight: 800;
+    color: #0a4e96;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    transition: color 0.3s ease;
+}
+
+.about-us-cards .card:hover h3,
+.event-card:hover h4 {
+    color: #ed1c24;
+}
+
+.about-us-cards .card p,
+.event-card p {
+    font-size: 16px;
+    font-weight: 700;
+    color: #133880;
+    line-height: 1.75;
+    white-space: pre-line;
+    transition: color 0.3s ease;
+}
+
+.about-us-cards .card:hover p,
+.event-card:hover p {
+    color: #444a6b;
+}
+
+/* =========================================
+   EVENTS DESCRIPTION
+========================================= */
+.our-events-description {
+    text-align: center;
+    max-width: 900px;
+    margin: 60px auto 0;
+}
+
+.our-events-description h2 {
+    font-size: 2.8rem;
+    font-weight: 900;
+    color: #0a4e96;
+    margin-bottom: 18px;
+    letter-spacing: 0.07em;
+}
+
+.our-events-description p {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #133880;
+    line-height: 1.65;
+    text-transform: uppercase;
+}
+
+/* =========================================
+   EVENT CARD IMAGE
+========================================= */
+.event-card {
+    display: block;
+    color: inherit;
+}
+
+.event-card img {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+    border-top-left-radius: 18px;
+    border-top-right-radius: 18px;
+    margin-bottom: 18px;
+    transition: transform 0.3s ease;
+}
+
+.event-card:hover img {
+    transform: scale(1.05);
+}
+
+/* =========================================
+   CAROUSEL NAVIGATION BUTTONS
+========================================= */
+.carousel-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(10, 78, 150, 0.75);
+    color: #fff;
+    border: none;
+    padding: 10px 14px;
+    cursor: pointer;
+    z-index: 10;
+    border-radius: 6px;
+    font-size: 1.3rem;
+    transition: background 0.3s ease;
+    box-shadow: 0 2px 8px rgba(10, 78, 150, 0.5);
+}
+
+.carousel-btn:hover {
+    background: rgba(237, 28, 36, 0.85);
+    box-shadow: 0 6px 20px rgba(237, 28, 36, 0.75);
+}
+
+.prev-btn {
+    left: 14px;
+}
+
+.next-btn {
+    right: 14px;
+}
+
+/* =========================================
+   SHOW MORE / LESS BUTTON
+========================================= */
+.show-more-btn {
+    display: inline-block;
+    padding: 14px 36px;
+    font-size: 1.2rem;
+    font-weight: 800;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    background: linear-gradient(135deg, #ed1c24, #ff5733);
+    color: #fff;
+    box-shadow: 0 8px 20px rgba(237, 28, 36, 0.3);
+    transition: all 0.35s ease;
+    user-select: none;
+}
+
+.show-more-btn:hover {
+    transform: translateY(-4px) scale(1.06);
+    box-shadow: 0 12px 30px rgba(237, 28, 36, 0.45);
+    background: linear-gradient(135deg, #ff5733, #ed1c24);
+}
+
+/* =========================================
+   RESPONSIVE
+========================================= */
+@media (max-width: 1024px) {
+    .about-us-cards .card,
+    .event-card {
+        flex: 0 0 300px;
+        min-width: 300px;
+        max-width: 300px;
+    }
+}
+
+@media (max-width: 768px) {
+    #about-us {
+        padding: 2.5rem 1rem;
+    }
+
+    #history-video {
+        margin-bottom: 30px;
+        border-radius: 14px;
+    }
+
+    .about-us-cards {
+        gap: 22px;
+        padding-bottom: 12px;
+    }
+
+    .about-us-cards .card,
+    .event-card {
+        flex: 0 0 95%; /* Cards almost full-width on mobile */
+        min-width: unset;
+        max-width: unset;
+        padding: 28px 24px;
+    }
+
+    .about-us-cards .card h3,
+    .event-card h4 {
+        font-size: 24px;
+    }
+
+    .our-events-description h2 {
+        font-size: 2rem;
+    }
+
+    .event-card img {
+        height: 180px;
+        border-radius: 14px 14px 0 0;
+    }
+
+    .carousel-btn {
+        font-size: 1.1rem;
+        padding: 8px 12px;
+    }
+}
+
+

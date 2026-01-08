@@ -1,0 +1,147 @@
+/* ==================================================
+    TERMS OF USE - CLEAN TYPOGRAPHIC UI
+================================================== */
+
+:root {
+    --tou-content-width: 800px; /* Optimal reading width */
+    --brand-blue: #133880;
+    --tou-text: #334155;
+    --tou-heading: #0f172a;
+    --tou-accent: #ed1c24;
+    --bg-light: #ffffff;
+}
+
+/* --- Layout Setup --- */
+.terms-of-use-section {
+    background-color: var(--bg-light);
+    color: var(--tou-text);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    padding: 0;
+    margin: 0;
+}
+
+/* Wrapper ensures consistent side-padding on mobile */
+.terms-of-use-wrapper {
+    padding: 80px 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* --- Typographic Container (No Box/Borders) --- */
+.terms-of-use-content {
+    width: 100%;
+    max-width: var(--tou-content-width);
+    line-height: 1.8;
+}
+
+/* --- Headings --- */
+.terms-of-use-content h1 {
+    font-size: clamp(2.5rem, 6vw, 4rem);
+    color: var(--tou-heading);
+    font-weight: 850;
+    letter-spacing: -0.04em;
+    margin-bottom: 1.5rem;
+    line-height: 1.1;
+    text-align: left; /* Aligning left like modern documents */
+}
+
+.terms-of-use-content h2 {
+    font-size: 1.75rem;
+    color: var(--tou-heading);
+    margin-top: 4rem;
+    margin-bottom: 1.5rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    padding-top: 2rem;
+    border-top: 1px solid #f1f5f9; /* Subtle divider for sections */
+}
+
+/* --- Body Text --- */
+.terms-of-use-content p {
+    font-size: 1.125rem;
+    margin-bottom: 1.5rem;
+    color: var(--tou-text);
+}
+
+/* --- Modern List Styling (Arrow Bullets) --- */
+.terms-of-use-content ul {
+    margin: 2rem 0;
+    padding: 0;
+}
+
+.terms-of-use-content li {
+    list-style: none;
+    padding: 12px 0 12px 30px;
+    position: relative;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.terms-of-use-content li::before {
+    content: "→";
+    position: absolute;
+    left: 0;
+    color: var(--tou-accent);
+    font-weight: bold;
+}
+
+/* --- Links & Interactive --- */
+.terms-of-use-content a {
+    color: var(--brand-blue);
+    text-decoration: none;
+    font-weight: 600;
+    box-shadow: inset 0 -2px 0 rgba(19, 56, 128, 0.1);
+    transition: all 0.2s;
+}
+
+.terms-of-use-content a:hover {
+    box-shadow: inset 0 -10px 0 rgba(19, 56, 128, 0.05);
+    color: var(--tou-accent);
+}
+
+/* --- Contact / Address Box --- */
+.terms-of-use-content address {
+    margin: 3rem 0;
+    padding: 2rem;
+    background: #f8fafc;
+    border-radius: 12px;
+    font-style: normal;
+    border: 1px solid #e2e8f0;
+}
+
+/* --- Final Acknowledgment --- */
+.terms-of-use-content p:last-of-type {
+    margin-top: 5rem;
+    font-size: 0.95rem;
+    color: var(--brand-blue);
+    opacity: 0.6;
+    text-align: center;
+}
+
+/* =========================================
+    MOBILE OPTIMIZATIONS (Fixes Overlapping)
+========================================= */
+@media (max-width: 640px) {
+    .terms-of-use-wrapper {
+        padding: 60px 20px;
+    }
+
+    .terms-of-use-content h1 {
+        font-size: 2.2rem;
+    }
+
+    .terms-of-use-content h2 {
+        font-size: 1.4rem;
+        margin-top: 3rem;
+    }
+
+    .terms-of-use-content p {
+        font-size: 1.05rem;
+    }
+
+    /* Safety for small screens */
+    address, p, li, a {
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+    }
+}

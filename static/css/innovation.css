@@ -1,0 +1,73 @@
+/* Innovation banner full-width */
+.innovation-banner {
+    width: 100vw;
+    margin-left: 50%;
+    transform: translateX(-50%);
+    position: relative;
+    height: 60vh; /* adjust banner height */
+    background: url('/assets/custom_theme/images/products/innovation.png') center/cover no-repeat;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Inner container constrained like intro/standard sections */
+.innovation-banner .innovation-content {
+    max-width: 1440px;
+    margin: auto;
+    text-align: center;
+}
+
+/* Overlay text */
+.innovation-banner .overlay-text {
+    color: #ffffff; /* White text */
+    padding: 30px 50px;
+    border-radius: 10px;
+}
+
+/* Heading inside overlay */
+.innovation-banner .overlay-text h1 {
+    text-align: center;
+    color: #fff;
+    font-weight: bold;
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
+    display: flex;
+    flex-direction: column; /* stack the spans */
+    gap: 0.5rem; /* very small space between lines */
+    line-height: 1.1; /* tighter line height */
+}
+
+/* Small first line */
+.innovation-banner .overlay-text h1 .small-text {
+    font-size: 3rem; 
+}
+
+/* Large second line */
+.innovation-banner .overlay-text h1 .large-text {
+    font-size: 5rem; 
+}
+
+/* Responsive for mobile */
+@media (max-width: 768px) {
+    .innovation-banner {
+        height: 30vh; 
+    }
+
+    .innovation-banner .overlay-text {
+        padding: 10px 15px;
+    }
+
+    /* Make each line one line only */
+    .innovation-banner .overlay-text h1 {
+        gap: 0.1rem;
+    }
+
+    .innovation-banner .overlay-text h1 .small-text,
+    .innovation-banner .overlay-text h1 .large-text {
+        font-size: 1.5rem; /* smaller font to fit one line */
+        white-space: nowrap; /* prevents wrapping */
+        overflow: hidden;
+        text-overflow: ellipsis; /* optional if too long */
+    }
+}
+
