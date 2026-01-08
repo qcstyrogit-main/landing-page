@@ -215,6 +215,12 @@
     box-shadow: 0 8px 30px rgba(0, 59, 181, 0.7);
 }
 
+/* Hide popup and overlay initially */
+#contactPopup,
+#contactOverlay {
+    display: none; /* Hidden by default */
+}
+
 /* Overlay and Popup */
 .contact-overlay {
     position: fixed;
@@ -399,6 +405,12 @@
         color: #0f2b66;
     }
 
+     /* Hide popup and overlay initially */
+    #contactPopup,
+    #contactOverlay {
+        display: none; /* Hidden by default */
+    }
+
     .contact-popup {
         /* FIX: Move from bottom: 0 to a centered or bottom-anchored position */
         bottom: 20px; /* Small gap from the bottom */
@@ -452,10 +464,11 @@
         right: 14px;
         font-size: 24px;
     }
+
+    /* Ensure the slideUp animation actually brings it to the screen */
+    @keyframes slideUp {
+        from { transform: translate(-50%, 100%); opacity: 0; }
+        to { transform: translate(-50%, 0); opacity: 1; }
+    }
 }
 
-/* Ensure the slideUp animation actually brings it to the screen */
-@keyframes slideUp {
-    from { transform: translate(-50%, 100%); opacity: 0; }
-    to { transform: translate(-50%, 0); opacity: 1; }
-}

@@ -138,19 +138,26 @@ document.addEventListener("DOMContentLoaded", () => {
     const popup = document.getElementById("contactPopup");
     const overlay = document.getElementById("contactOverlay");
 
+    // Function to open popup
     function openPopup() {
         popup.style.display = "block";
         overlay.style.display = "block";
+
+        // Optional: add slide-up animation
+        popup.style.animation = "slideUp 0.4s ease forwards";
     }
 
+    // Function to close popup
     function closePopup() {
         popup.style.display = "none";
         overlay.style.display = "none";
     }
 
-    openBtn.addEventListener("click", openPopup);
-    closeBtn.addEventListener("click", closePopup);
-    overlay.addEventListener("click", closePopup);
+    // Click handlers
+    if (openBtn) openBtn.addEventListener("click", openPopup);
+    if (closeBtn) closeBtn.addEventListener("click", closePopup);
+    if (overlay) overlay.addEventListener("click", closePopup);
 });
+
 
 
