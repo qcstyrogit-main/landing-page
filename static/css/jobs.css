@@ -114,6 +114,7 @@ Modernized UI - Glassmorphism & Consistency Sync
     padding: 1.1rem 2.5rem;
     font-size: 1rem;
     font-weight: 700;
+    cursor: pointer;
     color: #fff;
     background: linear-gradient(135deg, #0050ff, #002f9c);
     border: none;

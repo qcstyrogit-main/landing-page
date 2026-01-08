@@ -331,39 +331,55 @@
 /* --- Mobile / Responsive Styles --- */
 @media (max-width: 768px) {
 
+    /* Section */
     .contact_us-section {
         background-image: url('../images/Intro.png'); /* relative to CSS file */
         background-size: cover;
         background-position: center;
         background-repeat: no-repeat;
         color: #f0f4ff;
-        padding: 3rem 1.5rem;
+        padding: 3rem 1.5rem 4rem 1.5rem; /* top, right, bottom, left */
+        box-sizing: border-box; /* ensure padding included in width */
     }
 
+    /* Container */
     .contact_us-content {
         gap: 2.5rem;
+        max-width: 100%;
+        margin: 0 auto;
+        padding: 0 0.5rem; /* inner spacing */
     }
 
+    /* Row: text + map */
     .contact_row {
         flex-direction: column;
         gap: 2rem;
+        margin: 0 auto;
+        width: 100%;
     }
 
+    /* Text + Map Columns */
     .contact_text,
     .contact_map {
         min-width: 100%;
         align-items: center;
-        padding: 0 1rem;
+        padding: 0 0.5rem; /* prevent content from touching edges */
+        box-sizing: border-box;
     }
 
+    /* Text headers and paragraphs */
     .contact_text h2 {
         font-size: 1.8rem;
         text-align: center;
+        margin-left: 0;
+        margin-right: 0;
     }
 
     .contact_text p {
         font-size: 1.05rem;
         text-align: center;
+        margin-left: 0;
+        margin-right: 0;
     }
 
     .contact_text i {
@@ -371,14 +387,21 @@
         font-size: 1.2rem;
     }
 
+    /* Section Header */
     .contact-header {
         font-size: 2.4rem;
+        text-align: center;
+        margin: 0 0 2rem 0;
     }
 
+    /* Area Filter */
     .area-filter {
         flex-direction: column;
         gap: 0.75rem;
         align-items: center;
+        width: 100%;
+        padding: 0 0.5rem;
+        box-sizing: border-box;
     }
 
     .area-filter select {
@@ -389,6 +412,7 @@
         border-radius: 10px;
     }
 
+    /* Socials */
     .social-icons {
         gap: 1.5rem;
     }
@@ -398,49 +422,41 @@
     }
 
     .contact-socials {
-        margin-top: -40px;
+        margin-top: 1.5rem; /* reset negative margin from desktop */
+        padding: 0 0.5rem;
     }
 
     .contact-socials h2 {
         color: #0f2b66;
+        text-align: center;
     }
 
-     /* Hide popup and overlay initially */
+    /* Hide popup and overlay initially */
     #contactPopup,
     #contactOverlay {
         display: none; /* Hidden by default */
     }
 
+    /* Contact Popup */
     .contact-popup {
-        /* FIX: Move from bottom: 0 to a centered or bottom-anchored position */
-        bottom: 20px; /* Small gap from the bottom */
-        top: auto;    /* Override the 50% from desktop if necessary */
-        left: 50%;
-        
-        /* FIX: Changed 100% (hidden) to 0 (visible) */
-        transform: translate(-50%, 0); 
-        
+        top: 50%; /* vertical center */
+        left: 50%; /* horizontal center */
+        transform: translate(-50%, -50%); 
         width: 95%;
         max-width: 420px;
-        border-radius: 18px; /* Changed from 18px 18px 0 0 for a cleaner look */
-        
-        /* FIX: Tighter padding to fit all fields */
-        padding: 20px 18px 16px; 
-        
-        /* Ensure no scrollbar appears but content fits */
-        overflow: hidden; 
+        border-radius: 18px;
+        padding: 20px 18px 16px;
+        overflow: hidden;
         box-shadow: 0 18px 48px rgba(0,0,0,0.35);
-        
-        /* Re-enable display block in case it was hidden */
-        display: block; 
+        display: block;
     }
 
     .contact-popup h3 {
         font-size: 19px;
         margin-bottom: 12px;
+        text-align: center;
     }
 
-    /* Shrink inputs slightly on mobile to ensure all content is visible */
     .contact-popup input,
     .contact-popup select,
     .contact-popup textarea {
@@ -450,7 +466,7 @@
     }
 
     .contact-popup textarea {
-        height: 80px; /* Shorter textarea for mobile visibility */
+        height: 80px;
     }
 
     .contact-popup .submit-btn {
@@ -465,10 +481,10 @@
         font-size: 24px;
     }
 
-    /* Ensure the slideUp animation actually brings it to the screen */
+    /* SlideUp animation */
     @keyframes slideUp {
         from { transform: translate(-50%, 100%); opacity: 0; }
-        to { transform: translate(-50%, 0); opacity: 1; }
+        to { transform: translate(-50%, -50%); opacity: 1; }
     }
 }
 
