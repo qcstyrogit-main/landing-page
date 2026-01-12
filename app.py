@@ -1,18 +1,19 @@
 from dotenv import load_dotenv
 import os
-from flask import Flask, render_template, request , jsonify
+from flask import Flask, render_template, request, jsonify
 import requests
 
+# Initialize Flask app
 app = Flask(__name__)
 
-# Load default .env (from Git)
+# Load environment variables
 load_dotenv(".env")
-
-# Override with local if exists
 if os.path.exists(".env.local"):
     load_dotenv(".env.local", override=True)
 
-API_BASE_URL = os.getenv("API_BASE_URL")
+API_BASE_URL = os.getenv("API_BASE_URL")  # ERPNext API base URL
+
+# ---------- ROUTES ----------
 
 @app.route("/")
 def home():
@@ -30,57 +31,71 @@ def products_styro():
 def view_jobs():
     return render_template("view_jobs.html")
 
+@app.route("/apply_now.html")
+def apply_now():
+    return render_template("apply_now.html")
+
+# ---------- API ROUTES ----------
+
 @app.route("/api/send-inquiry-mc", methods=["POST"])
 def send_inquiry_mc():
-    res = requests.post(
-        f"{API_BASE_URL}/api/method/qcmc_logic.api.send_inquiry.send_inquiry_mc",
-        data=request.form
-    )
-    return res.json()
+    try:
+        res = requests.post(
+            f"{API_BASE_URL}/api/method/qcmc_logic.api.send_inquiry.send_inquiry_mc",
+            data=request.form
+        )
+        return res.json()
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 @app.route("/api/send-inquiry-qc", methods=["POST"])
 def send_inquiry_qc():
-    res = requests.post(
-        f"{API_BASE_URL}/api/method/qcmc_logic.api.send_inquiry.send_inquiry_qc",
-        data=request.form
-    )
-    return res.json()
+    try:
+        res = requests.post(
+            f"{API_BASE_URL}/api/method/qcmc_logic.api.send_inquiry.send_inquiry_qc",
+            data=request.form
+        )
+        return res.json()
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 @app.route("/api/contact-us", methods=["POST"])
 def contact_us():
-    res = requests.post(
-        f"{API_BASE_URL}/api/method/qcmc_logic.api.contact_us.send_contact_inquiry",
-        data=request.form
-    )
-    return res.json()
+    try:
+        res = requests.post(
+            f"{API_BASE_URL}/api/method/qcmc_logic.api.contact_us.send_contact_inquiry",
+            data=request.form
+        )
+        return res.json()
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 @app.route("/api/jobs", methods=["GET"])
 def get_jobs():
-    # Call your ERPNext whitelisted method
     try:
         res = requests.get(
             f"{API_BASE_URL}/api/method/qcmc_logic.api.job_openings.get_job_openings"
         )
         res.raise_for_status()
-        return jsonify(res.json())  # Send the JSON to your frontend
+        return jsonify(res.json())
     except requests.RequestException as e:
         return jsonify({"error": str(e)}), 500
-    
+
 @app.route("/api/job-applicant-counts", methods=["GET"])
 def get_job_applicant_counts():
-        try:
-            res = requests.get(
-                f"{API_BASE_URL}/api/method/qcmc_logic.api.job_openings.get_job_applicant_counts"
-            )
-            res.raise_for_status()
-            return jsonify(res.json())
-        except requests.RequestException as e:
-            return jsonify({"error": str(e)}), 500
-        
+    try:
+        res = requests.get(
+            f"{API_BASE_URL}/api/method/qcmc_logic.api.job_openings.get_job_applicant_counts"
+        )
+        res.raise_for_status()
+        return jsonify(res.json())
+    except requests.RequestException as e:
+        return jsonify({"error": str(e)}), 500
+
 @app.route("/api/submit-job-applicant", methods=["POST"])
 def submit_job_applicant():
     try:
-        form_data = request.json
+        form_data = request.json or {}
 
         erp_payload = {
             "doctype": "Job Applicant",
@@ -97,20 +112,16 @@ def submit_job_applicant():
             "lower_range": float(form_data.get("lower_range") or 0),
             "upper_range": float(form_data.get("upper_range") or 0),
             "custom_i_agree_to_the_data_privacy_statement": int(
-                form_data.get("custom_i_agree_to_the_data_privacy_statement") 
-                or form_data.get("privacy_check") 
+                form_data.get("custom_i_agree_to_the_data_privacy_statement")
+                or form_data.get("privacy_check")
                 or 1
-            )
+            ),
         }
 
-        # Send to ERPNext custom API
         res = requests.post(
             f"{API_BASE_URL}/api/method/qcmc_logic.api.job_openings.submit_job_applicant_custom",
             json=erp_payload,
-            headers={
-                "Content-Type": "application/json",
-                "Accept": "application/json"
-            }
+            headers={"Content-Type": "application/json", "Accept": "application/json"}
         )
 
         return res.json()
@@ -118,16 +129,9 @@ def submit_job_applicant():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-
-
-
-        
-        
-@app.route('/apply_now.html')
-def apply_now():
-    return render_template('apply_now.html')
-
-
+# ---------- RUN APP ----------
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    # Use Render's assigned port
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port, debug=True)
