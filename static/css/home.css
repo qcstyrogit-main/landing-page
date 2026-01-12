@@ -446,6 +446,11 @@ html, body {
     pointer-events: none;
     transform: translateY(20px) scale(0.9);
     transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+    /* --- MOBILE SQUARE FIXES --- */
+    -webkit-tap-highlight-color: transparent; /* Removes the blue/grey square on tap */
+    outline: none;                            /* Removes the focus square */
+    user-select: none;                        /* Prevents text selection on long press */
 }
 
 #back-to-top.show {
@@ -464,11 +469,12 @@ html, body {
 
 /* --- THE CLICK FEEDBACK --- */
 #back-to-top:active {
-    transform: translateY(-2px) scale(0.92); /* Slight "push down" effect */
-    background-color: var(--primary-hover); /* Changes to the hover primary color */
-    box-shadow: 0 5px 15px rgba(19, 56, 128, 0.4);
-    transition: all 0.1s ease; /* Snappy feedback for the click */
-    border-radius: 50%; /* Ensures it stays a circle during click */
+    transform: translateY(-2px) scale(0.92) !important; 
+    background-color: var(--primary-hover) !important; 
+    box-shadow: 0 5px 15px rgba(19, 56, 128, 0.4) !important;
+    transition: all 0.1s ease; 
+    border-radius: 50% !important; /* Force circle shape during the tap */
+    outline: none !important;
 }
 
 
