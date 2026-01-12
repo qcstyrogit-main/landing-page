@@ -5,13 +5,15 @@ import requests
 # Path to shared templates
 TEMPLATE_DIR = os.path.join(os.path.dirname(__file__), "../templates")
 
-API_BASE_URL = os.getenv("API_BASE_URL")
+API_BASE_URL = os.getenv("API_BASE_URL") or "https://example.com"  # fallback
 
 def handler(request):
     method = request.method
     path = request.path
 
-    # Serve HTML pages
+    # --------------------
+    # GET requests (pages & APIs)
+    # --------------------
     if method == "GET":
         if path == "/" or path.endswith(".html"):
             page = "home.html" if path == "/" else path.strip("/")
@@ -19,39 +21,62 @@ def handler(request):
             try:
                 with open(file_path, "r") as f:
                     html_content = f.read()
-                return {"statusCode": 200, "headers": {"Content-Type": "text/html"}, "body": html_content}
+                return {
+                    "statusCode": 200,
+                    "headers": {"Content-Type": "text/html"},
+                    "body": html_content
+                }
             except FileNotFoundError:
                 return {"statusCode": 404, "body": "Page not found"}
+
         # API GET endpoints
         elif path.startswith("/api/"):
-            if path == "/api/jobs":
-                try:
+            try:
+                if path == "/api/jobs":
                     res = requests.get(f"{API_BASE_URL}/api/method/qcmc_logic.api.job_openings.get_job_openings")
                     return {"statusCode": 200, "body": json.dumps(res.json())}
-                except Exception as e:
-                    return {"statusCode": 500, "body": json.dumps({"error": str(e)})}
-            elif path == "/api/job-applicant-counts":
-                try:
+
+                elif path == "/api/job-applicant-counts":
                     res = requests.get(f"{API_BASE_URL}/api/method/qcmc_logic.api.job_openings.get_job_applicant_counts")
                     return {"statusCode": 200, "body": json.dumps(res.json())}
-                except Exception as e:
-                    return {"statusCode": 500, "body": json.dumps({"error": str(e)})}
+            except Exception as e:
+                return {"statusCode": 500, "body": json.dumps({"error": str(e)})}
+
         return {"statusCode": 404, "body": "Not Found"}
 
-    # POST API endpoints
+    # --------------------
+    # POST requests (API endpoints)
+    # --------------------
     elif method == "POST":
-        if path == "/api/send-inquiry-mc":
-            res = requests.post(f"{API_BASE_URL}/api/method/qcmc_logic.api.send_inquiry.send_inquiry_mc", data=request.form)
-            return {"statusCode": 200, "body": json.dumps(res.json())}
-        elif path == "/api/send-inquiry-qc":
-            res = requests.post(f"{API_BASE_URL}/api/method/qcmc_logic.api.send_inquiry.send_inquiry_qc", data=request.form)
-            return {"statusCode": 200, "body": json.dumps(res.json())}
-        elif path == "/api/contact-us":
-            res = requests.post(f"{API_BASE_URL}/api/method/qcmc_logic.api.contact_us.send_contact_inquiry", data=request.form)
-            return {"statusCode": 200, "body": json.dumps(res.json())}
-        elif path == "/api/submit-job-applicant":
-            try:
-                form_data = json.loads(request.body)
+        # Parse JSON body
+        try:
+            form_data = json.loads(request.body) if request.body else {}
+        except Exception:
+            form_data = {}
+
+        try:
+            if path == "/api/send-inquiry-mc":
+                res = requests.post(
+                    f"{API_BASE_URL}/api/method/qcmc_logic.api.send_inquiry.send_inquiry_mc",
+                    data=form_data
+                )
+                return {"statusCode": 200, "body": json.dumps(res.json())}
+
+            elif path == "/api/send-inquiry-qc":
+                res = requests.post(
+                    f"{API_BASE_URL}/api/method/qcmc_logic.api.send_inquiry.send_inquiry_qc",
+                    data=form_data
+                )
+                return {"statusCode": 200, "body": json.dumps(res.json())}
+
+            elif path == "/api/contact-us":
+                res = requests.post(
+                    f"{API_BASE_URL}/api/method/qcmc_logic.api.contact_us.send_contact_inquiry",
+                    data=form_data
+                )
+                return {"statusCode": 200, "body": json.dumps(res.json())}
+
+            elif path == "/api/submit-job-applicant":
                 erp_payload = {
                     "doctype": "Job Applicant",
                     "web_form_name": "job-application-form",
@@ -78,7 +103,8 @@ def handler(request):
                     headers={"Content-Type": "application/json", "Accept": "application/json"}
                 )
                 return {"statusCode": 200, "body": json.dumps(res.json())}
-            except Exception as e:
-                return {"statusCode": 500, "body": json.dumps({"error": str(e)})}
+
+        except Exception as e:
+            return {"statusCode": 500, "body": json.dumps({"error": str(e)})}
 
     return {"statusCode": 405, "body": "Method Not Allowed"}
