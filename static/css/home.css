@@ -361,6 +361,8 @@ html, body {
     border-radius: 14px;
     margin-bottom: 0.4rem;
     transition: background 0.2s ease;
+    -webkit-tap-highlight-color: transparent;  /* Removes the blue box on tap */
+    outline: none; /* Removes the focus outline if it's appearing on desktop/click */
 }
 
 .mobile-nav a:hover {
