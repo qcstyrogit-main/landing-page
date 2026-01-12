@@ -3,18 +3,28 @@ import os
 from flask import Flask, render_template, request, jsonify
 import requests
 
-# Initialize Flask app
+# --------------------------------------------------
+# APP INIT
+# --------------------------------------------------
 app = Flask(__name__)
 
-# Load environment variables
-load_dotenv(".env")
-if os.path.exists(".env.local"):
-    load_dotenv(".env.local", override=True)
+# --------------------------------------------------
+# ENV LOADING (SAFE FOR RENDER)
+# --------------------------------------------------
+# Render sets RENDER=true automatically
+if os.getenv("RENDER") is None:
+    load_dotenv(".env")
+    if os.path.exists(".env.local"):
+        load_dotenv(".env.local", override=True)
 
-API_BASE_URL = os.getenv("API_BASE_URL")  # ERPNext API base URL
+API_BASE_URL = os.getenv("API_BASE_URL")
 
-# ---------- ROUTES ----------
+if not API_BASE_URL:
+    raise RuntimeError("API_BASE_URL is not set in environment variables")
 
+# --------------------------------------------------
+# ROUTES (PAGES)
+# --------------------------------------------------
 @app.route("/")
 def home():
     return render_template("home.html", API_BASE_URL=API_BASE_URL)
@@ -35,14 +45,16 @@ def view_jobs():
 def apply_now():
     return render_template("apply_now.html")
 
-# ---------- API ROUTES ----------
-
+# --------------------------------------------------
+# API ROUTES (PROXY TO ERPNEXT)
+# --------------------------------------------------
 @app.route("/api/send-inquiry-mc", methods=["POST"])
 def send_inquiry_mc():
     try:
         res = requests.post(
             f"{API_BASE_URL}/api/method/qcmc_logic.api.send_inquiry.send_inquiry_mc",
-            data=request.form
+            data=request.form,
+            timeout=15
         )
         return res.json()
     except Exception as e:
@@ -53,7 +65,8 @@ def send_inquiry_qc():
     try:
         res = requests.post(
             f"{API_BASE_URL}/api/method/qcmc_logic.api.send_inquiry.send_inquiry_qc",
-            data=request.form
+            data=request.form,
+            timeout=15
         )
         return res.json()
     except Exception as e:
@@ -64,7 +77,8 @@ def contact_us():
     try:
         res = requests.post(
             f"{API_BASE_URL}/api/method/qcmc_logic.api.contact_us.send_contact_inquiry",
-            data=request.form
+            data=request.form,
+            timeout=15
         )
         return res.json()
     except Exception as e:
@@ -74,22 +88,24 @@ def contact_us():
 def get_jobs():
     try:
         res = requests.get(
-            f"{API_BASE_URL}/api/method/qcmc_logic.api.job_openings.get_job_openings"
+            f"{API_BASE_URL}/api/method/qcmc_logic.api.job_openings.get_job_openings",
+            timeout=15
         )
         res.raise_for_status()
         return jsonify(res.json())
-    except requests.RequestException as e:
+    except Exception as e:
         return jsonify({"error": str(e)}), 500
 
 @app.route("/api/job-applicant-counts", methods=["GET"])
 def get_job_applicant_counts():
     try:
         res = requests.get(
-            f"{API_BASE_URL}/api/method/qcmc_logic.api.job_openings.get_job_applicant_counts"
+            f"{API_BASE_URL}/api/method/qcmc_logic.api.job_openings.get_job_applicant_counts",
+            timeout=15
         )
         res.raise_for_status()
         return jsonify(res.json())
-    except requests.RequestException as e:
+    except Exception as e:
         return jsonify({"error": str(e)}), 500
 
 @app.route("/api/submit-job-applicant", methods=["POST"])
@@ -121,7 +137,11 @@ def submit_job_applicant():
         res = requests.post(
             f"{API_BASE_URL}/api/method/qcmc_logic.api.job_openings.submit_job_applicant_custom",
             json=erp_payload,
-            headers={"Content-Type": "application/json", "Accept": "application/json"}
+            headers={
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            },
+            timeout=20
         )
 
         return res.json()
@@ -129,9 +149,9 @@ def submit_job_applicant():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-# ---------- RUN APP ----------
-
+# --------------------------------------------------
+# RUN (LOCAL ONLY – GUNICORN HANDLES PROD)
+# --------------------------------------------------
 if __name__ == "__main__":
-    # Use Render's assigned port
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port, debug=True)
