@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job Application</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/apply_now.css') }}" />
+</head>
+<body>
+
+<div class="form-container">
+    <div class="header-row">
+        <h1>Job Application Form</h1>
+        <span id="submissionStatus" class="status-badge">Not Saved</span>
+    </div>
+    <hr>
+
+    <form id="applicationForm">
+        <div class="form-group">
+            <label>Job Opening</label>
+            <input type="text" id="jobIdDisplay" value="" disabled>
+        </div>
+
+        <div class="form-group">
+            <label>Applicant Name <span class="required">*</span></label>
+            <input type="text" id="applicantName" required>
+        </div>
+
+        <div class="form-group">
+            <label>Address <span class="required">*</span></label>
+            <input type="text" id="address" required>
+        </div>
+
+        <div class="form-group">
+            <label>Email Address <span class="required">*</span></label>
+            <input type="email" id="emailAddress" required>
+        </div>
+
+        <div class="form-group">
+            <label>Phone Number</label>
+            <input type="tel" id="phoneNumber">
+        </div>
+
+        <div class="form-group">
+            <label>Referrer</label>
+            <input type="text" id="referrer">
+        </div>
+
+        <div class="form-group">
+            <label>Cover Letter</label>
+            <textarea id="coverLetter" rows="8"></textarea>
+        </div>
+
+        <div class="form-group">
+            <label>Resume Link</label>
+            <input type="url" id="resumeLink" placeholder="https://link-to-your-resume.com">
+        </div>
+
+        <div class="salary-section">
+            <h2>Expected Salary Range per month</h2>
+            <div class="salary-grid">
+                <div class="form-group">
+                    <label>Currency</label>
+                    <select id="salaryCurrency" class="form-select">
+                        <option value="PHP" selected>PHP</option>
+                        <option value="Loading...">Loading currencies...</option>
+                    </select>
+                </div>
+                <div>
+                    <label>Lower Range</label>
+                    <input type="number" id="salaryLower">
+                </div>
+                <div>
+                    <label>Upper Range</label>
+                    <input type="number" id="salaryUpper">
+                </div>
+            </div>
+        </div>
+
+        <div class="privacy-container">
+            <div class="checkbox-row">
+                <input type="checkbox" id="privacy-check" required>
+                <label for="privacy-check">I agree to the Data Privacy Statement</label>
+            </div>
+            <p class="privacy-text">
+                By submitting this application, I hereby give my consent to QC Styropackaging Corporation / Multiplast Corporation to collect and process my personal data for recruitment purposes...
+            </p>
+        </div>
+
+        <div class="button-group">
+            <button type="button" class="btn-discard">Discard</button>
+            <button type="submit" class="btn-save">Save</button>
+        </div>
+    </form>
+
+    <!-- Success message -->
+    <div id="successMessage" class="success-card" style="display:none;">
+        <div class="check-circle">✔</div>
+        <h2>Application Submitted!</h2>
+        <p>Thank you for applying. You will be redirected shortly.</p>
+        <p class="redirect-text">Redirecting in <span id="countdown">3</span> seconds...</p>
+    </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/apply_now.js') }}"></script>
+</body>
+</html>
