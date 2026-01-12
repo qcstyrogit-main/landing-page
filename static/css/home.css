@@ -420,20 +420,16 @@ html, body {
     }
 }
 
-/* ------------------------------------------------ */
-/* 7. MODERN BACK TO TOP                            */
-/* ------------------------------------------------ */
+/* 7. MODERN BACK TO TOP (REFINED) */
 #back-to-top {
     position: fixed;
     bottom: 40px;
-    left: 20px;        /* ← move to left */
-    right: auto;      /* ← disable right */
-
+    left: 20px;
     z-index: 10000;
     
     width: 50px;
     height: 50px;
-    border-radius: 50%;
+    border-radius: 50%; /* Keeps it a circle */
     
     background-color: #ffffff;
     color: var(--primary-color);
@@ -452,23 +448,27 @@ html, body {
     transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-
 #back-to-top.show {
     opacity: 1;
     pointer-events: auto;
     transform: translateY(0) scale(1);
 }
 
+/* Hover State */
 #back-to-top:hover {
-    transform: translateY(-5px); /* Lift up */
+    transform: translateY(-5px);
     background-color: var(--primary-color);
     color: #ffffff;
-    box-shadow: 0 15px 30px rgba(19, 56, 128, 0.3); /* Colored shadow glow */
+    box-shadow: 0 15px 30px rgba(19, 56, 128, 0.3);
 }
 
-/* Keep back-to-top fixed in the same place even when mobile menu is open */
-body.mobile-nav-open #back-to-top {
-    bottom: 40px; /* same as default */
+/* --- THE CLICK FEEDBACK --- */
+#back-to-top:active {
+    transform: translateY(-2px) scale(0.92); /* Slight "push down" effect */
+    background-color: var(--primary-hover); /* Changes to the hover primary color */
+    box-shadow: 0 5px 15px rgba(19, 56, 128, 0.4);
+    transition: all 0.1s ease; /* Snappy feedback for the click */
+    border-radius: 50%; /* Ensures it stays a circle during click */
 }
 
 
