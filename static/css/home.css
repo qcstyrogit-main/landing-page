@@ -167,10 +167,19 @@ html, body {
     padding: 0.6rem;
     border-radius: 10px;
     transition: background 0.2s;
+    -webkit-tap-highlight-color: transparent; /* 1. Removes the blue flash */
+    outline: none !important;                 /* 2. Removes the focus square */
+    box-shadow: none !important;               /* 3. Ensures no shadow looks like a box */
 }
 
-.menu-toggle.active {
-    background: rgba(19, 56, 128, 0.12);
+.menu-toggle:focus, 
+.menu-toggle:active {
+    outline: none !important;
+    background: rgba(19, 56, 128, 0.05); /* Keeps your subtle grey circle instead of a blue square */
+}
+
+.menu-toggle * {
+    pointer-events: none;
 }
 
 .home-nav ul li {
@@ -361,8 +370,6 @@ html, body {
     border-radius: 14px;
     margin-bottom: 0.4rem;
     transition: background 0.2s ease;
-    -webkit-tap-highlight-color: transparent;  /* Removes the blue box on tap */
-    outline: none; /* Removes the focus outline if it's appearing on desktop/click */
 }
 
 .mobile-nav a:hover {
