@@ -2,6 +2,7 @@ from dotenv import load_dotenv
 import os
 from flask import Flask, render_template, request, jsonify
 import requests
+from flask_caching import Cache
 
 # --------------------------------------------------
 # APP INIT
@@ -9,39 +10,61 @@ import requests
 app = Flask(__name__)
 
 # --------------------------------------------------
-# ENV LOADING (SAFE FOR RENDER)
+# CACHE CONFIG (SAFE FOR RENDER)
 # --------------------------------------------------
-# Render sets RENDER=true automatically
+cache = Cache(app, config={
+    "CACHE_TYPE": "simple",
+    "CACHE_DEFAULT_TIMEOUT": 300
+})
+
+# Cache static files for 1 year
+app.config["SEND_FILE_MAX_AGE_DEFAULT"] = 31536000
+
+# --------------------------------------------------
+# ENV LOADING
+# --------------------------------------------------
 if os.getenv("RENDER") is None:
     load_dotenv(".env")
     if os.path.exists(".env.local"):
         load_dotenv(".env.local", override=True)
 
 API_BASE_URL = os.getenv("API_BASE_URL")
-
 if not API_BASE_URL:
-    raise RuntimeError("API_BASE_URL is not set in environment variables")
+    raise RuntimeError("API_BASE_URL is not set")
+
+# --------------------------------------------------
+# HTTP SESSION (REUSE CONNECTIONS)
+# --------------------------------------------------
+session = requests.Session()
+session.headers.update({
+    "Accept": "application/json"
+})
 
 # --------------------------------------------------
 # ROUTES (PAGES)
 # --------------------------------------------------
 @app.route("/")
+@cache.cached(timeout=300)
 def home():
     return render_template("home.html", API_BASE_URL=API_BASE_URL)
 
 @app.route("/products_plastic")
+@cache.cached(timeout=600)
 def products_plastic():
     return render_template("products_plastic.html")
 
 @app.route("/products_styro")
+@cache.cached(timeout=600)
 def products_styro():
     return render_template("products_styro.html")
 
 @app.route("/view_jobs")
+@cache.cached(timeout=300)
 def view_jobs():
     return render_template("view_jobs.html")
 
 @app.route("/apply_now.html")
+@cache.cached(timeout=300)
 def apply_now():
     return render_template("apply_now.html")
 
@@ -51,63 +74,72 @@ def apply_now():
 @app.route("/api/send-inquiry-mc", methods=["POST"])
 def send_inquiry_mc():
     try:
-        res = requests.post(
+        res = session.post(
             f"{API_BASE_URL}/api/method/qcmc_logic.api.send_inquiry.send_inquiry_mc",
             data=request.form,
-            timeout=15
+            timeout=10
         )
         return res.json()
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
 
 @app.route("/api/send-inquiry-qc", methods=["POST"])
 def send_inquiry_qc():
     try:
-        res = requests.post(
+        res = session.post(
             f"{API_BASE_URL}/api/method/qcmc_logic.api.send_inquiry.send_inquiry_qc",
             data=request.form,
-            timeout=15
+            timeout=10
         )
         return res.json()
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
 
 @app.route("/api/contact-us", methods=["POST"])
 def contact_us():
     try:
-        res = requests.post(
+        res = session.post(
             f"{API_BASE_URL}/api/method/qcmc_logic.api.contact_us.send_contact_inquiry",
             data=request.form,
-            timeout=15
+            timeout=10
         )
         return res.json()
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+
+# ------------------ CACHED GET APIs ----------------
 @app.route("/api/jobs", methods=["GET"])
+@cache.cached(timeout=120)
 def get_jobs():
     try:
-        res = requests.get(
+        res = session.get(
             f"{API_BASE_URL}/api/method/qcmc_logic.api.job_openings.get_job_openings",
-            timeout=15
+            timeout=8
         )
         res.raise_for_status()
         return jsonify(res.json())
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
 
 @app.route("/api/job-applicant-counts", methods=["GET"])
+@cache.cached(timeout=120)
 def get_job_applicant_counts():
     try:
-        res = requests.get(
+        res = session.get(
             f"{API_BASE_URL}/api/method/qcmc_logic.api.job_openings.get_job_applicant_counts",
-            timeout=15
+            timeout=8
         )
         res.raise_for_status()
         return jsonify(res.json())
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+
+# ------------------ POST (NO CACHE) ----------------
 @app.route("/api/submit-job-applicant", methods=["POST"])
 def submit_job_applicant():
     try:
@@ -134,14 +166,11 @@ def submit_job_applicant():
             ),
         }
 
-        res = requests.post(
+        res = session.post(
             f"{API_BASE_URL}/api/method/qcmc_logic.api.job_openings.submit_job_applicant_custom",
             json=erp_payload,
-            headers={
-                "Content-Type": "application/json",
-                "Accept": "application/json"
-            },
-            timeout=20
+            headers={"Content-Type": "application/json"},
+            timeout=15
         )
 
         return res.json()
@@ -149,8 +178,20 @@ def submit_job_applicant():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+
 # --------------------------------------------------
-# RUN (LOCAL ONLY – GUNICORN HANDLES PROD)
+# SECURITY & CACHE HEADERS
+# --------------------------------------------------
+@app.after_request
+def add_headers(response):
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["Cache-Control"] = "public, max-age=300"
+    return response
+
+
+# --------------------------------------------------
+# LOCAL RUN ONLY (PROD USES GUNICORN)
 # --------------------------------------------------
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
