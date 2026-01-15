@@ -17,8 +17,8 @@ build/
 # ===============================
 # Virtual environment
 # ===============================
-venv/
-.venv/
+# venv/
+# .venv/
 ENV/
 env/
 env.bak/

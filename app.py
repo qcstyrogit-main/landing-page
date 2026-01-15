@@ -4,6 +4,32 @@ from flask import Flask, render_template, request, jsonify
 import requests
 from flask_caching import Cache
 
+def load_env():
+    """
+    Local: load .env + .env.local
+    Production (cPanel): use real environment variables only
+    """
+    env = os.getenv("ENVIRONMENT", "").lower()
+
+    # If running in production (cPanel), do NOT load dotenv
+    if env == "production":
+        return
+
+    try:
+        from dotenv import load_dotenv
+        load_dotenv(".env")
+        if os.path.exists(".env.local"):
+            load_dotenv(".env.local", override=True)
+    except Exception:
+        pass
+
+
+load_env()
+
+API_BASE_URL = os.environ.get("API_BASE_URL")
+if not API_BASE_URL:
+    raise RuntimeError("API_BASE_URL is not set")
+
 # --------------------------------------------------
 # APP INIT
 # --------------------------------------------------
@@ -39,6 +65,11 @@ session = requests.Session()
 session.headers.update({
     "Accept": "application/json"
 })
+
+@app.context_processor
+def inject_api_url():
+    return dict(API_BASE_URL=API_BASE_URL)
+
 
 # --------------------------------------------------
 # ROUTES (PAGES)
