@@ -34,4 +34,4 @@ jobs:
           port: 21
           protocol: ftp
           local-dir: .github/restart/
-          server-dir: landing-app/
+          server-dir: /landing-app/
