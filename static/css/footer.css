@@ -1,88 +1,115 @@
+/* =========================================
+   FIXED FOOTER (no layout weird scroll)
+========================================= */
+
+:root{
+  --footer-h: 34px; /* adjust if you change footer padding/font */
+}
+
+/* Make sure page can breathe under fixed footer */
+body{
+  padding-bottom: var(--footer-h);
+}
+
 /* Footer - compact horizontal layout */
 .custom-footer {
-    position: fixed;
-    bottom: 0;
-    width: 100%;
-    background-color: #133880;
-    color: #fff;
-    padding: 6px 10px;
-    z-index: 9999;
-    font-size: 0.75rem;
-    box-shadow: 0 -2px 5px rgba(0,0,0,0.2);
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background-color: #133880;
+  color: #fff;
+  padding: 6px 10px;
+  z-index: 9999;
+  font-size: 0.75rem;
+  box-shadow: 0 -2px 5px rgba(0,0,0,0.2);
 
-    /* make all elements align in one line */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 15px;    /* spacing between items */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
 }
 
 .custom-footer .footer-content {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 15px;    /* spacing inside content */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
 }
 
-/* Links */
 .custom-footer .footer-links a {
-    color: #fff;
-    text-decoration: none;
-    font-size: 0.75rem;
-    margin: 0 3px;
+  color: #fff;
+  text-decoration: none;
+  font-size: 0.75rem;
+  margin: 0 3px;
 }
 .custom-footer .footer-links a:hover {
-    color: #40aeee;
+  color: #40aeee;
 }
 
-/* Social icons */
-.custom-footer .footer-social {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-}
+/* =========================================
+   MODAL (single scroll only)
+========================================= */
 
-.custom-footer .footer-social .social-icon {
-    width: 32px;
-    height: 32px;
-    vertical-align: middle;
-}
-
-/* Modal */
+/* Overlay should NOT scroll */
 .modal {
-    display: none; 
-    position: fixed; 
-    z-index: 10000; 
-    left: 0;
-    top: 0;
-    width: 100%; 
-    height: 100%;
-    overflow: auto; /* enables scrolling inside modal body */
-    background-color: rgba(0,0,0,0.5);
+  display: none;
+  position: fixed;
+  z-index: 10000;
+  inset: 0;                 /* top:0 right:0 bottom:0 left:0 */
+  background-color: rgba(0,0,0,0.5);
+
+  /* ✅ no overflow here */
+  overflow: hidden;
+
+  /* ✅ center modal-content nicely */
+  padding: 48px 16px;
 }
 
+/* The ONLY scroll container is modal-content */
 .modal-content {
-    background-color: #fff;
-    margin: 5% auto;
-    padding: 40px 20px 20px 20px; /* extra top padding for close button */
-    border-radius: 8px;
-    width: 90%;
-    max-width: 800px;
-    max-height: 80%;
-    overflow-y: auto; /* scrolling content */
-    position: relative; /* needed for absolute close button */
+  background-color: #fff;
+  margin: 0 auto;
+  padding: 44px 20px 20px 20px;
+  border-radius: 10px;
+  width: min(800px, 100%);
+  max-height: calc(100vh - 96px); /* based on .modal padding */
+  overflow-y: auto;               /* ✅ single scrollbar */
+  position: relative;
 }
 
+/* Close button */
 .modal-content .close {
-    position: absolute;
-    top: 10px;
-    right: 15px;
-    font-size: 1.5rem;
-    font-weight: bold;
-    cursor: pointer;
-    z-index: 10; /* ensures it stays above scrolling content */
+  position: sticky;   /* stays visible while scrolling */
+  top: 0;
+  margin-left: auto;
+  display: inline-block;
+
+  float: right;       /* keeps it on the right */
+  font-size: 1.5rem;
+  font-weight: bold;
+  cursor: pointer;
+  z-index: 10;
+  line-height: 1;
+  padding: 6px 10px;
+  background: #fff;
+  border-radius: 8px;
 }
 
 .modal-content .close:hover {
-    color: #ffcc00;
+  color: #ffcc00;
+}
+
+/* Optional: tighten modal on small screens */
+@media (max-width: 640px){
+  :root{ --footer-h: 38px; }
+  .modal{ padding: 32px 12px; }
+  .modal-content{ padding: 44px 16px 16px; }
+}
+
+/* =========================================
+   BODY SCROLL LOCK (used by JS)
+========================================= */
+body.modal-open{
+  overflow: hidden;
 }

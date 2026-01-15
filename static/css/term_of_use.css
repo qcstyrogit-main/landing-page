@@ -1,78 +1,119 @@
 /* ==================================================
-    TERMS OF USE - CLEAN TYPOGRAPHIC UI
+    TERMS OF USE - COMPACT TYPOGRAPHIC UI (NO DUAL SCROLL)
 ================================================== */
 
+/* ✅ Global safety: prevents horizontal overflow + nested scrollbars */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+    height: auto;
+    overflow-x: hidden;     /* ✅ stops side-scroll */
+    overflow-y: auto;       /* ✅ only ONE vertical scrollbar (browser) */
+}
+
+/* If your site has a parent wrapper that forces scroll (common in layouts),
+   you may also need to ensure it doesn't create a second scroll.
+   Example: .page-wrapper { overflow: visible; } */
+
+/* -------------------------------------------------- */
+
 :root {
-    --tou-content-width: 800px; /* Optimal reading width */
+    /* ✅ smaller + more readable width */
+    --tou-content-width: 72ch;
+
     --brand-blue: #133880;
     --tou-text: #334155;
     --tou-heading: #0f172a;
     --tou-accent: #ed1c24;
+
     --bg-light: #ffffff;
+
+    /* ✅ compact spacing scale */
+    --tou-pad-y: 48px;
+    --tou-pad-x: 20px;
 }
 
 /* --- Layout Setup --- */
 .terms-of-use-section {
     background-color: var(--bg-light);
     color: var(--tou-text);
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    padding: 0;
-    margin: 0;
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+
+    /* ✅ don’t allow section to create its own scroll container */
+    overflow: visible;
+    width: 100%;
 }
 
 /* Wrapper ensures consistent side-padding on mobile */
 .terms-of-use-wrapper {
-    padding: 80px 24px;
+    padding: var(--tou-pad-y) var(--tou-pad-x);
     display: flex;
     flex-direction: column;
     align-items: center;
+
+    /* ✅ IMPORTANT: do NOT use height/100vh/overflow here */
+    height: auto;
+    min-height: 0;
+    overflow: visible;
 }
 
 /* --- Typographic Container (No Box/Borders) --- */
 .terms-of-use-content {
     width: 100%;
     max-width: var(--tou-content-width);
-    line-height: 1.8;
+    line-height: 1.7;
+
+    /* ✅ prevent long links/text from pushing layout */
+    overflow-wrap: anywhere;
+    word-break: normal;
 }
 
-/* --- Headings --- */
+/* --- Headings (smaller) --- */
 .terms-of-use-content h1 {
-    font-size: clamp(2.5rem, 6vw, 4rem);
+    font-size: clamp(1.8rem, 3.6vw, 2.6rem);
     color: var(--tou-heading);
     font-weight: 850;
-    letter-spacing: -0.04em;
-    margin-bottom: 1.5rem;
-    line-height: 1.1;
-    text-align: left; /* Aligning left like modern documents */
+    letter-spacing: -0.03em;
+    margin: 0 0 1rem 0;
+    line-height: 1.12;
+    text-align: left;
 }
 
 .terms-of-use-content h2 {
-    font-size: 1.75rem;
+    font-size: 1.25rem;
     color: var(--tou-heading);
-    margin-top: 4rem;
-    margin-bottom: 1.5rem;
-    font-weight: 700;
-    letter-spacing: -0.02em;
-    padding-top: 2rem;
-    border-top: 1px solid #f1f5f9; /* Subtle divider for sections */
+    margin-top: 2.25rem;
+    margin-bottom: 1rem;
+    font-weight: 750;
+    letter-spacing: -0.01em;
+
+    padding-top: 1.25rem;
+    border-top: 1px solid #f1f5f9;
 }
 
-/* --- Body Text --- */
+/* --- Body Text (smaller) --- */
 .terms-of-use-content p {
-    font-size: 1.125rem;
-    margin-bottom: 1.5rem;
+    font-size: 1rem;
+    margin: 0 0 1rem 0;
     color: var(--tou-text);
 }
 
-/* --- Modern List Styling (Arrow Bullets) --- */
+/* --- Modern List Styling (compact) --- */
 .terms-of-use-content ul {
-    margin: 2rem 0;
+    margin: 1.25rem 0;
     padding: 0;
 }
 
 .terms-of-use-content li {
     list-style: none;
-    padding: 12px 0 12px 30px;
+    padding: 10px 0 10px 26px;
     position: relative;
     border-bottom: 1px solid #f1f5f9;
 }
@@ -82,66 +123,75 @@
     position: absolute;
     left: 0;
     color: var(--tou-accent);
-    font-weight: bold;
+    font-weight: 800;
 }
 
 /* --- Links & Interactive --- */
 .terms-of-use-content a {
     color: var(--brand-blue);
     text-decoration: none;
-    font-weight: 600;
-    box-shadow: inset 0 -2px 0 rgba(19, 56, 128, 0.1);
-    transition: all 0.2s;
+    font-weight: 650;
+    box-shadow: inset 0 -2px 0 rgba(19, 56, 128, 0.12);
+    transition: all 0.2s ease;
 }
 
 .terms-of-use-content a:hover {
-    box-shadow: inset 0 -10px 0 rgba(19, 56, 128, 0.05);
+    box-shadow: inset 0 -10px 0 rgba(19, 56, 128, 0.06);
     color: var(--tou-accent);
 }
 
-/* --- Contact / Address Box --- */
+/* --- Contact / Address Box (compact) --- */
 .terms-of-use-content address {
-    margin: 3rem 0;
-    padding: 2rem;
+    margin: 1.5rem 0;
+    padding: 1.25rem;
     background: #f8fafc;
     border-radius: 12px;
     font-style: normal;
     border: 1px solid #e2e8f0;
+
+    overflow-wrap: anywhere;
 }
 
 /* --- Final Acknowledgment --- */
 .terms-of-use-content p:last-of-type {
-    margin-top: 5rem;
-    font-size: 0.95rem;
+    margin-top: 2.5rem;
+    font-size: 0.9rem;
     color: var(--brand-blue);
     opacity: 0.6;
     text-align: center;
 }
 
 /* =========================================
-    MOBILE OPTIMIZATIONS (Fixes Overlapping)
+    MOBILE OPTIMIZATIONS (smaller + safer)
 ========================================= */
 @media (max-width: 640px) {
-    .terms-of-use-wrapper {
-        padding: 60px 20px;
+    :root {
+        --tou-pad-y: 34px;
+        --tou-pad-x: 16px;
     }
 
     .terms-of-use-content h1 {
-        font-size: 2.2rem;
+        font-size: 1.65rem;
     }
 
     .terms-of-use-content h2 {
-        font-size: 1.4rem;
-        margin-top: 3rem;
+        font-size: 1.15rem;
+        margin-top: 2rem;
     }
 
     .terms-of-use-content p {
-        font-size: 1.05rem;
-    }
-
-    /* Safety for small screens */
-    address, p, li, a {
-        word-wrap: break-word;
-        overflow-wrap: break-word;
+        font-size: 0.98rem;
     }
 }
+
+/* =========================================
+    OPTIONAL “NUCLEAR” FIX (only if you STILL get dual scroll)
+    Add this ONLY if you have a parent container with overflow:auto
+========================================= */
+/*
+.terms-of-use-section,
+.terms-of-use-wrapper,
+.terms-of-use-content {
+    overflow: visible !important;
+}
+*/
