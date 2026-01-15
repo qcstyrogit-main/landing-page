@@ -20,7 +20,7 @@ jobs:
           password: ${{ secrets.CPANEL_FTP_PASSWORD }}
           port: 21
           protocol: ftp
-          server-dir: /flaskapps/landing-page/
+          server-dir: /landing-app/
           exclude: |
             **/.git*
             **/.github/**
