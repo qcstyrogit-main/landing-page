@@ -9,8 +9,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: FTP Deploy (App Files)
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
@@ -20,7 +19,7 @@ jobs:
           password: ${{ secrets.CPANEL_FTP_PASSWORD }}
           port: 21
           protocol: ftp
-          server-dir: /landing-app/
+          server-dir: /
           exclude: |
             **/.git*
             **/.github/**
@@ -34,4 +33,4 @@ jobs:
           port: 21
           protocol: ftp
           local-dir: .github/restart/
-          server-dir: /landing-app/
+          server-dir: /tmp/
