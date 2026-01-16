@@ -17,8 +17,16 @@
     <header class="styrofoam-header">
       <div class="logos-title">
         <div class="logos">
-          <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/QC.png') }}" alt="QC Logo" class="logo">
-          <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/MC.png') }}" alt="MC Logo" class="logo">
+          <picture>
+  <source type="image/avif" srcset="{{ url_for('static', filename='images/QC.avif') }}">
+  <source type="image/webp" srcset="{{ url_for('static', filename='images/QC.webp') }}">
+  <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/QC.png') }}" alt="QC Logo" class="logo">
+</picture>
+          <picture>
+  <source type="image/avif" srcset="{{ url_for('static', filename='images/MC.avif') }}">
+  <source type="image/webp" srcset="{{ url_for('static', filename='images/MC.webp') }}">
+  <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/MC.png') }}" alt="MC Logo" class="logo">
+</picture>
         </div>
         <h1 class="page-title">Styrofoam Products</h1>
       </div>
@@ -51,421 +59,701 @@
         <!-- Example Product Card -->
         <div class="product-card" data-category="chicken-box" data-name="Chicken Box - 1" data-code="C-1">
           <div class="card-image">
-            <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/chicken_box/cb1.png') }}" alt="Chicken Box">
+            <picture>
+  <source type="image/avif" srcset="{{ url_for('static', filename='images/products/chicken_box/cb1.avif') }}">
+  <source type="image/webp" srcset="{{ url_for('static', filename='images/products/chicken_box/cb1.webp') }}">
+  <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/chicken_box/cb1.png') }}" alt="Chicken Box">
+</picture>
           </div>
         </div>
 
         <div class="product-card" data-category="chicken-box" data-name="Chicken Box - 2" data-code="C-2">
           <div class="card-image">
-            <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/chicken_box/cb2.png') }}" alt="Chicken Box">
+            <picture>
+  <source type="image/avif" srcset="{{ url_for('static', filename='images/products/chicken_box/cb2.avif') }}">
+  <source type="image/webp" srcset="{{ url_for('static', filename='images/products/chicken_box/cb2.webp') }}">
+  <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/chicken_box/cb2.png') }}" alt="Chicken Box">
+</picture>
           </div>
         </div>
 
         <div class="product-card" data-category="chicken-box" data-name="Chicken Box - 3" data-code="C-3">
           <div class="card-image">
-            <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/chicken_box/cb3.png') }}" alt="Chicken Box">
+            <picture>
+  <source type="image/avif" srcset="{{ url_for('static', filename='images/products/chicken_box/cb3.avif') }}">
+  <source type="image/webp" srcset="{{ url_for('static', filename='images/products/chicken_box/cb3.webp') }}">
+  <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/chicken_box/cb3.png') }}" alt="Chicken Box">
+</picture>
           </div>
         </div>
 
         <div class="product-card" data-category="chicken-box" data-name="Chicken Box - 4" data-code="C-4">
           <div class="card-image">
-            <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/chicken_box/cb4.png') }}" alt="Chicken Box">
+            <picture>
+  <source type="image/avif" srcset="{{ url_for('static', filename='images/products/chicken_box/cb4.avif') }}">
+  <source type="image/webp" srcset="{{ url_for('static', filename='images/products/chicken_box/cb4.webp') }}">
+  <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/chicken_box/cb4.png') }}" alt="Chicken Box">
+</picture>
           </div>
         </div>
 
         <div class="product-card" data-category="chicken-box" data-name="Chicken Box - 5" data-code="C-5">
           <div class="card-image">
-            <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/chicken_box/cb5.png') }}" alt="Chicken Box">
+            <picture>
+  <source type="image/avif" srcset="{{ url_for('static', filename='images/products/chicken_box/cb5.avif') }}">
+  <source type="image/webp" srcset="{{ url_for('static', filename='images/products/chicken_box/cb5.webp') }}">
+  <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/chicken_box/cb5.png') }}" alt="Chicken Box">
+</picture>
           </div>
         </div>
 
         <div class="product-card" data-category="chicken-box" data-name="Chicken Box - 6" data-code="C-6">
           <div class="card-image">
-            <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/chicken_box/cb6.png') }}" alt="Chicken Box">
+            <picture>
+  <source type="image/avif" srcset="{{ url_for('static', filename='images/products/chicken_box/cb6.avif') }}">
+  <source type="image/webp" srcset="{{ url_for('static', filename='images/products/chicken_box/cb6.webp') }}">
+  <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/chicken_box/cb6.png') }}" alt="Chicken Box">
+</picture>
           </div>
         </div>
 
         <div class="product-card" data-category="cooler" data-name="Small Cooler">
           <div class="card-image">
-            <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/cooler/sc.png') }}" alt="Cooler">
+            <picture>
+  <source type="image/avif" srcset="{{ url_for('static', filename='images/products/cooler/sc.avif') }}">
+  <source type="image/webp" srcset="{{ url_for('static', filename='images/products/cooler/sc.webp') }}">
+  <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/cooler/sc.png') }}" alt="Cooler">
+</picture>
           </div>
         </div>
 
         <div class="product-card" data-category="cooler" data-name="Medium Cooler">
           <div class="card-image">
-            <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/cooler/mc.png') }}" alt="Cooler">
+            <picture>
+  <source type="image/avif" srcset="{{ url_for('static', filename='images/products/cooler/mc.avif') }}">
+  <source type="image/webp" srcset="{{ url_for('static', filename='images/products/cooler/mc.webp') }}">
+  <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/cooler/mc.png') }}" alt="Cooler">
+</picture>
           </div>
         </div>
 
         <div class="product-card" data-category="cooler" data-name="Large Cooler">
           <div class="card-image">
-            <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/cooler/lc.png') }}" alt="Cooler">
+            <picture>
+  <source type="image/avif" srcset="{{ url_for('static', filename='images/products/cooler/lc.avif') }}">
+  <source type="image/webp" srcset="{{ url_for('static', filename='images/products/cooler/lc.webp') }}">
+  <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/cooler/lc.png') }}" alt="Cooler">
+</picture>
           </div>
         </div>
 
         <div class="product-card" data-category="cooler" data-name="Split Box Cooler">
           <div class="card-image">
-            <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/cooler/sbc.png') }}" alt="Cooler">
+            <picture>
+  <source type="image/avif" srcset="{{ url_for('static', filename='images/products/cooler/sbc.avif') }}">
+  <source type="image/webp" srcset="{{ url_for('static', filename='images/products/cooler/sbc.webp') }}">
+  <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/cooler/sbc.png') }}" alt="Cooler">
+</picture>
           </div>
         </div>
 
         <div class="product-card" data-category="cooler" data-name="Round Cooler">
           <div class="card-image">
-            <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/cooler/rc.png') }}" alt="Cooler">
+            <picture>
+  <source type="image/avif" srcset="{{ url_for('static', filename='images/products/cooler/rc.avif') }}">
+  <source type="image/webp" srcset="{{ url_for('static', filename='images/products/cooler/rc.webp') }}">
+  <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/cooler/rc.png') }}" alt="Cooler">
+</picture>
           </div>
         </div>
 
         <div class="product-card" data-category="cooler" data-name="Jumbo Box Cooler">
           <div class="card-image">
-            <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/cooler/jbc.png') }}" alt="Cooler">
+            <picture>
+  <source type="image/avif" srcset="{{ url_for('static', filename='images/products/cooler/jbc.avif') }}">
+  <source type="image/webp" srcset="{{ url_for('static', filename='images/products/cooler/jbc.webp') }}">
+  <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/cooler/jbc.png') }}" alt="Cooler">
+</picture>
           </div>
         </div>
 
         <div class="product-card" data-category="cooler" data-name="Single Box Cooler">
           <div class="card-image">
-            <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/cooler/sb.png') }}" alt="Cooler">
+            <picture>
+  <source type="image/avif" srcset="{{ url_for('static', filename='images/products/cooler/sb.avif') }}">
+  <source type="image/webp" srcset="{{ url_for('static', filename='images/products/cooler/sb.webp') }}">
+  <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/cooler/sb.png') }}" alt="Cooler">
+</picture>
           </div>
         </div>
 
         <div class="product-card" data-category="cooler" data-name="Cake Roll Cooler">
           <div class="card-image">
-            <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/cooler/cr.png') }}" alt="Cooler">
+            <picture>
+  <source type="image/avif" srcset="{{ url_for('static', filename='images/products/cooler/cr.avif') }}">
+  <source type="image/webp" srcset="{{ url_for('static', filename='images/products/cooler/cr.webp') }}">
+  <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/cooler/cr.png') }}" alt="Cooler">
+</picture>
           </div>
         </div>
 
         <div class="product-card" data-category="cooler" data-name="Fish Box Cooler">
           <div class="card-image">
-            <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/cooler/fb.png') }}" alt="Cooler">
+            <picture>
+  <source type="image/avif" srcset="{{ url_for('static', filename='images/products/cooler/fb.avif') }}">
+  <source type="image/webp" srcset="{{ url_for('static', filename='images/products/cooler/fb.webp') }}">
+  <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/cooler/fb.png') }}" alt="Cooler">
+</picture>
           </div>
         </div>
 
         <div class="product-card" data-category="cooler" data-name="Extra Large Cooler">
           <div class="card-image">
-            <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/cooler/elc.png') }}" alt="Cooler">
+            <picture>
+  <source type="image/avif" srcset="{{ url_for('static', filename='images/products/cooler/elc.avif') }}">
+  <source type="image/webp" srcset="{{ url_for('static', filename='images/products/cooler/elc.webp') }}">
+  <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/cooler/elc.png') }}" alt="Cooler">
+</picture>
           </div>
         </div>
 
         <div class="product-card" data-category="eps-psp-bowl" data-name="EPS & PSP Bowl BW-1" data-code="BW-1">
           <div class="card-image">
-            <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/eps_psp_bowl/epb1.png') }}" alt="EPS & PSP Bowl">
+            <picture>
+  <source type="image/avif" srcset="{{ url_for('static', filename='images/products/eps_psp_bowl/epb1.avif') }}">
+  <source type="image/webp" srcset="{{ url_for('static', filename='images/products/eps_psp_bowl/epb1.webp') }}">
+  <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/eps_psp_bowl/epb1.png') }}" alt="EPS & PSP Bowl">
+</picture>
           </div>
         </div>
 
         <div class="product-card" data-category="eps-psp-bowl" data-name="EPS & PSP Bowl BW-2" data-code="BW-2">
           <div class="card-image">
-            <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/eps_psp_bowl/epb2.png') }}" alt="EPS & PSP Bowl">
+            <picture>
+  <source type="image/avif" srcset="{{ url_for('static', filename='images/products/eps_psp_bowl/epb2.avif') }}">
+  <source type="image/webp" srcset="{{ url_for('static', filename='images/products/eps_psp_bowl/epb2.webp') }}">
+  <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/eps_psp_bowl/epb2.png') }}" alt="EPS & PSP Bowl">
+</picture>
           </div>
         </div>
 
         <div class="product-card" data-category="eps-psp-bowl" data-name="EPS & PSP Bowl BW-3" data-code="BW-3">
           <div class="card-image">
-            <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/eps_psp_bowl/epb3.png') }}" alt="EPS & PSP Bowl">
+            <picture>
+  <source type="image/avif" srcset="{{ url_for('static', filename='images/products/eps_psp_bowl/epb3.avif') }}">
+  <source type="image/webp" srcset="{{ url_for('static', filename='images/products/eps_psp_bowl/epb3.webp') }}">
+  <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/eps_psp_bowl/epb3.png') }}" alt="EPS & PSP Bowl">
+</picture>
           </div>
         </div>
 
         <div class="product-card" data-category="eps-psp-bowl" data-name="EPS & PSP Bowl 10 oz">
           <div class="card-image">
-            <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/eps_psp_bowl/epb10.png') }}" alt="EPS & PSP Bowl">
+            <picture>
+  <source type="image/avif" srcset="{{ url_for('static', filename='images/products/eps_psp_bowl/epb10.avif') }}">
+  <source type="image/webp" srcset="{{ url_for('static', filename='images/products/eps_psp_bowl/epb10.webp') }}">
+  <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/eps_psp_bowl/epb10.png') }}" alt="EPS & PSP Bowl">
+</picture>
           </div>
         </div>
 
         <div class="product-card" data-category="eps-psp-bowl" data-name="EPS & PSP Bowl 12 oz">
           <div class="card-image">
-            <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/eps_psp_bowl/epb12.png') }}" alt="EPS & PSP Bowl">
+            <picture>
+  <source type="image/avif" srcset="{{ url_for('static', filename='images/products/eps_psp_bowl/epb12.avif') }}">
+  <source type="image/webp" srcset="{{ url_for('static', filename='images/products/eps_psp_bowl/epb12.webp') }}">
+  <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/eps_psp_bowl/epb12.png') }}" alt="EPS & PSP Bowl">
+</picture>
           </div>
         </div>
 
         <div class="product-card" data-category="eps-psp-bowl" data-name="EPS & PSP Bowl 18 oz">
           <div class="card-image">
-            <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/eps_psp_bowl/epb18.png') }}" alt="EPS & PSP Bowl">
+            <picture>
+  <source type="image/avif" srcset="{{ url_for('static', filename='images/products/eps_psp_bowl/epb18.avif') }}">
+  <source type="image/webp" srcset="{{ url_for('static', filename='images/products/eps_psp_bowl/epb18.webp') }}">
+  <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/eps_psp_bowl/epb18.png') }}" alt="EPS & PSP Bowl">
+</picture>
           </div>
         </div>
 
         <div class="product-card" data-category="eps-psp-bowl" data-name="EPS & PSP Bowl 22 oz">
           <div class="card-image">
-            <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/eps_psp_bowl/epb22.png') }}" alt="EPS & PSP Bowl">
+            <picture>
+  <source type="image/avif" srcset="{{ url_for('static', filename='images/products/eps_psp_bowl/epb22.avif') }}">
+  <source type="image/webp" srcset="{{ url_for('static', filename='images/products/eps_psp_bowl/epb22.webp') }}">
+  <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/eps_psp_bowl/epb22.png') }}" alt="EPS & PSP Bowl">
+</picture>
           </div>
         </div>
 
         <div class="product-card" data-category="eps-psp-bowl" data-name="EPS & PSP Bowl 26 oz">
           <div class="card-image">
-            <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/eps_psp_bowl/epb26.png') }}" alt="EPS & PSP Bowl">
+            <picture>
+  <source type="image/avif" srcset="{{ url_for('static', filename='images/products/eps_psp_bowl/epb26.avif') }}">
+  <source type="image/webp" srcset="{{ url_for('static', filename='images/products/eps_psp_bowl/epb26.webp') }}">
+  <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/eps_psp_bowl/epb26.png') }}" alt="EPS & PSP Bowl">
+</picture>
           </div>
         </div>
 
         <div class="product-card" data-category="eps-psp-bowl" data-name="EPS & PSP Bowl 34 oz">
           <div class="card-image">
-            <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/eps_psp_bowl/epb34.png') }}" alt="EPS & PSP Bowl">
+            <picture>
+  <source type="image/avif" srcset="{{ url_for('static', filename='images/products/eps_psp_bowl/epb34.avif') }}">
+  <source type="image/webp" srcset="{{ url_for('static', filename='images/products/eps_psp_bowl/epb34.webp') }}">
+  <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/eps_psp_bowl/epb34.png') }}" alt="EPS & PSP Bowl">
+</picture>
           </div>
         </div>
 
         <div class="product-card" data-category="eps-psp-bowl" data-name="EPS & PSP Bowl 325 ml">
           <div class="card-image">
-            <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/eps_psp_bowl/epb325.png') }}" alt="EPS & PSP Bowl">
+            <picture>
+  <source type="image/avif" srcset="{{ url_for('static', filename='images/products/eps_psp_bowl/epb325.avif') }}">
+  <source type="image/webp" srcset="{{ url_for('static', filename='images/products/eps_psp_bowl/epb325.webp') }}">
+  <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/eps_psp_bowl/epb325.png') }}" alt="EPS & PSP Bowl">
+</picture>
           </div>
         </div>
 
         <div class="product-card" data-category="hamburger-box" data-name="Hamburger Box 1" data-code="HM-1">
           <div class="card-image">
-            <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/hamburger_box/hm1.png') }}" alt="Hamburger Box">
+            <picture>
+  <source type="image/avif" srcset="{{ url_for('static', filename='images/products/hamburger_box/hm1.avif') }}">
+  <source type="image/webp" srcset="{{ url_for('static', filename='images/products/hamburger_box/hm1.webp') }}">
+  <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/hamburger_box/hm1.png') }}" alt="Hamburger Box">
+</picture>
           </div>
         </div>
 
         <div class="product-card" data-category="hamburger-box" data-name="Hamburger Box 2" data-code="HM-2">
           <div class="card-image">
-            <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/hamburger_box/hm2.png') }}" alt="Hamburger Box">
+            <picture>
+  <source type="image/avif" srcset="{{ url_for('static', filename='images/products/hamburger_box/hm2.avif') }}">
+  <source type="image/webp" srcset="{{ url_for('static', filename='images/products/hamburger_box/hm2.webp') }}">
+  <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/hamburger_box/hm2.png') }}" alt="Hamburger Box">
+</picture>
           </div>
         </div>
 
         <div class="product-card" data-category="hotdog-box" data-name="Hotdog Box 1" data-code="HD-1">
           <div class="card-image">
-            <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/hotdog_box/hb1.png') }}" alt="Hotdog Box">
+            <picture>
+  <source type="image/avif" srcset="{{ url_for('static', filename='images/products/hotdog_box/hb1.avif') }}">
+  <source type="image/webp" srcset="{{ url_for('static', filename='images/products/hotdog_box/hb1.webp') }}">
+  <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/hotdog_box/hb1.png') }}" alt="Hotdog Box">
+</picture>
           </div>
         </div>
 
         <div class="product-card" data-category="hotdog-box" data-name="Hotdog Box 2" data-code="HD-2">
           <div class="card-image">
-            <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/hotdog_box/hb2.png') }}" alt="Hotdog Box">
+            <picture>
+  <source type="image/avif" srcset="{{ url_for('static', filename='images/products/hotdog_box/hb2.avif') }}">
+  <source type="image/webp" srcset="{{ url_for('static', filename='images/products/hotdog_box/hb2.webp') }}">
+  <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/hotdog_box/hb2.png') }}" alt="Hotdog Box">
+</picture>
           </div>
         </div>
 
         <div class="product-card" data-category="industrial" data-name="Electronic Trays">
           <div class="card-image">
-            <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/industrial/et.png') }}" alt="Industrial">
+            <picture>
+  <source type="image/avif" srcset="{{ url_for('static', filename='images/products/industrial/et.avif') }}">
+  <source type="image/webp" srcset="{{ url_for('static', filename='images/products/industrial/et.webp') }}">
+  <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/industrial/et.png') }}" alt="Industrial">
+</picture>
           </div>
         </div>
 
         <div class="product-card" data-category="industrial" data-name="Insulation Board">
           <div class="card-image">
-            <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/industrial/ib.png') }}" alt="Industrial">
+            <picture>
+  <source type="image/avif" srcset="{{ url_for('static', filename='images/products/industrial/ib.avif') }}">
+  <source type="image/webp" srcset="{{ url_for('static', filename='images/products/industrial/ib.webp') }}">
+  <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/industrial/ib.png') }}" alt="Industrial">
+</picture>
           </div>
         </div>
 
         <div class="product-card" data-category="industrial" data-name="Molded Cushion Packaging">
           <div class="card-image">
-            <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/industrial/mcp.png') }}" alt="Industrial">
+            <picture>
+  <source type="image/avif" srcset="{{ url_for('static', filename='images/products/industrial/mcp.avif') }}">
+  <source type="image/webp" srcset="{{ url_for('static', filename='images/products/industrial/mcp.webp') }}">
+  <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/industrial/mcp.png') }}" alt="Industrial">
+</picture>
           </div>
         </div>
 
         <div class="product-card" data-category="lunch-packs" data-name="Lunch Pack 2" data-code="L-2">
           <div class="card-image">
-            <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/lunch_packs/l2.png') }}" alt="Lunch Packs">
+            <picture>
+  <source type="image/avif" srcset="{{ url_for('static', filename='images/products/lunch_packs/l2.avif') }}">
+  <source type="image/webp" srcset="{{ url_for('static', filename='images/products/lunch_packs/l2.webp') }}">
+  <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/lunch_packs/l2.png') }}" alt="Lunch Packs">
+</picture>
           </div>
         </div>
 
         <div class="product-card" data-category="lunch-packs" data-name="Lunch Pack 3" data-code="L-3">
           <div class="card-image">
-            <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/lunch_packs/l3.png') }}" alt="Lunch Packs">
+            <picture>
+  <source type="image/avif" srcset="{{ url_for('static', filename='images/products/lunch_packs/l3.avif') }}">
+  <source type="image/webp" srcset="{{ url_for('static', filename='images/products/lunch_packs/l3.webp') }}">
+  <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/lunch_packs/l3.png') }}" alt="Lunch Packs">
+</picture>
           </div>
         </div>
 
         <div class="product-card" data-category="lunch-packs" data-name="Lunch Pack 5" data-code="L-5">
           <div class="card-image">
-            <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/lunch_packs/l5.png') }}" alt="Lunch Packs">
+            <picture>
+  <source type="image/avif" srcset="{{ url_for('static', filename='images/products/lunch_packs/l5.avif') }}">
+  <source type="image/webp" srcset="{{ url_for('static', filename='images/products/lunch_packs/l5.webp') }}">
+  <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/lunch_packs/l5.png') }}" alt="Lunch Packs">
+</picture>
           </div>
         </div>
 
         <div class="product-card" data-category="noodle-cup" data-name="Noodle Cup 8 oz">
           <div class="card-image">
-            <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/noodle_cup/nc8.png') }}" alt="Noodle Cups">
+            <picture>
+  <source type="image/avif" srcset="{{ url_for('static', filename='images/products/noodle_cup/nc8.avif') }}">
+  <source type="image/webp" srcset="{{ url_for('static', filename='images/products/noodle_cup/nc8.webp') }}">
+  <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/noodle_cup/nc8.png') }}" alt="Noodle Cups">
+</picture>
           </div>
         </div>
 
         <div class="product-card" data-category="noodle-cup" data-name="Noodle Cup 10 oz">
           <div class="card-image">
-            <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/noodle_cup/nc10.png') }}" alt="Noodle Cups">
+            <picture>
+  <source type="image/avif" srcset="{{ url_for('static', filename='images/products/noodle_cup/nc10.avif') }}">
+  <source type="image/webp" srcset="{{ url_for('static', filename='images/products/noodle_cup/nc10.webp') }}">
+  <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/noodle_cup/nc10.png') }}" alt="Noodle Cups">
+</picture>
           </div>
         </div>
 
         <div class="product-card" data-category="noodle-cup" data-name="Noodle Cup 12 oz">
           <div class="card-image">
-            <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/noodle_cup/nc12.png') }}" alt="Noodle Cups">
+            <picture>
+  <source type="image/avif" srcset="{{ url_for('static', filename='images/products/noodle_cup/nc12.avif') }}">
+  <source type="image/webp" srcset="{{ url_for('static', filename='images/products/noodle_cup/nc12.webp') }}">
+  <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/noodle_cup/nc12.png') }}" alt="Noodle Cups">
+</picture>
           </div>
         </div>
 
         <div class="product-card" data-category="noodle-cup" data-name="Noodle Cup 16 oz">
           <div class="card-image">
-            <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/noodle_cup/nc16.png') }}" alt="Noodle Cups">
+            <picture>
+  <source type="image/avif" srcset="{{ url_for('static', filename='images/products/noodle_cup/nc16.avif') }}">
+  <source type="image/webp" srcset="{{ url_for('static', filename='images/products/noodle_cup/nc16.webp') }}">
+  <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/noodle_cup/nc16.png') }}" alt="Noodle Cups">
+</picture>
           </div>
         </div>
 
         <div class="product-card" data-category="plates" data-name="Plate 1" data-code="P-1">
           <div class="card-image">
-            <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/plates/p1.png') }}" alt="Plates">
+            <picture>
+  <source type="image/avif" srcset="{{ url_for('static', filename='images/products/plates/p1.avif') }}">
+  <source type="image/webp" srcset="{{ url_for('static', filename='images/products/plates/p1.webp') }}">
+  <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/plates/p1.png') }}" alt="Plates">
+</picture>
           </div>
         </div>
 
         <div class="product-card" data-category="plates" data-name="Plate 2" data-code="P-2">
           <div class="card-image">
-            <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/plates/p2.png') }}" alt="Plates">
+            <picture>
+  <source type="image/avif" srcset="{{ url_for('static', filename='images/products/plates/p2.avif') }}">
+  <source type="image/webp" srcset="{{ url_for('static', filename='images/products/plates/p2.webp') }}">
+  <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/plates/p2.png') }}" alt="Plates">
+</picture>
           </div>
         </div>
 
         <div class="product-card" data-category="plates" data-name="Plate 3" data-code="P-3">
           <div class="card-image">
-            <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/plates/p3.png') }}" alt="Plates">
+            <picture>
+  <source type="image/avif" srcset="{{ url_for('static', filename='images/products/plates/p3.avif') }}">
+  <source type="image/webp" srcset="{{ url_for('static', filename='images/products/plates/p3.webp') }}">
+  <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/plates/p3.png') }}" alt="Plates">
+</picture>
           </div>
         </div>
 
         <div class="product-card" data-category="plates" data-name="Plate 4" data-code="P-4">
           <div class="card-image">
-            <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/plates/p4.png') }}" alt="Plates">
+            <picture>
+  <source type="image/avif" srcset="{{ url_for('static', filename='images/products/plates/p4.avif') }}">
+  <source type="image/webp" srcset="{{ url_for('static', filename='images/products/plates/p4.webp') }}">
+  <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/plates/p4.png') }}" alt="Plates">
+</picture>
           </div>
         </div>
 
         <div class="product-card" data-category="spaghetti-box" data-name="Spaghetti Box 1" data-code="S-1">
           <div class="card-image">
-            <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/spaghetti_box/sp1.png') }}" alt="Spaghetti Boxes">
+            <picture>
+  <source type="image/avif" srcset="{{ url_for('static', filename='images/products/spaghetti_box/sp1.avif') }}">
+  <source type="image/webp" srcset="{{ url_for('static', filename='images/products/spaghetti_box/sp1.webp') }}">
+  <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/spaghetti_box/sp1.png') }}" alt="Spaghetti Boxes">
+</picture>
           </div>
         </div>
 
         <div class="product-card" data-category="spaghetti-box" data-name="Spaghetti Box 3" data-code="S-3">
           <div class="card-image">
-            <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/spaghetti_box/sp3.png') }}" alt="Spaghetti Boxes">
+            <picture>
+  <source type="image/avif" srcset="{{ url_for('static', filename='images/products/spaghetti_box/sp3.avif') }}">
+  <source type="image/webp" srcset="{{ url_for('static', filename='images/products/spaghetti_box/sp3.webp') }}">
+  <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/spaghetti_box/sp3.png') }}" alt="Spaghetti Boxes">
+</picture>
           </div>
         </div>
 
         <div class="product-card" data-category="spaghetti-box" data-name="Spaghetti Box 4" data-code="S-4">
           <div class="card-image">
-            <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/spaghetti_box/sp4.png') }}" alt="Spaghetti Boxes">
+            <picture>
+  <source type="image/avif" srcset="{{ url_for('static', filename='images/products/spaghetti_box/sp4.avif') }}">
+  <source type="image/webp" srcset="{{ url_for('static', filename='images/products/spaghetti_box/sp4.webp') }}">
+  <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/spaghetti_box/sp4.png') }}" alt="Spaghetti Boxes">
+</picture>
           </div>
         </div>
 
         <div class="product-card" data-category="styrocup" data-name="Styrocup 3.5 oz">
           <div class="card-image">
-            <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/styro_cup/sc3.5.png') }}" alt="Styrocups">
+            <picture>
+  <source type="image/avif" srcset="{{ url_for('static', filename='images/products/styro_cup/sc3.5.avif') }}">
+  <source type="image/webp" srcset="{{ url_for('static', filename='images/products/styro_cup/sc3.5.webp') }}">
+  <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/styro_cup/sc3.5.png') }}" alt="Styrocups">
+</picture>
           </div>
         </div>
 
         <div class="product-card" data-category="styrocup" data-name="Styrocup 6 oz">
           <div class="card-image">
-            <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/styro_cup/sc6.png') }}" alt="Styrocups">
+            <picture>
+  <source type="image/avif" srcset="{{ url_for('static', filename='images/products/styro_cup/sc6.avif') }}">
+  <source type="image/webp" srcset="{{ url_for('static', filename='images/products/styro_cup/sc6.webp') }}">
+  <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/styro_cup/sc6.png') }}" alt="Styrocups">
+</picture>
           </div>
         </div>
 
         <div class="product-card" data-category="styrocup" data-name="Styrocup 8 oz">
           <div class="card-image">
-            <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/styro_cup/sc8.png') }}" alt="Styrocups">
+            <picture>
+  <source type="image/avif" srcset="{{ url_for('static', filename='images/products/styro_cup/sc8.avif') }}">
+  <source type="image/webp" srcset="{{ url_for('static', filename='images/products/styro_cup/sc8.webp') }}">
+  <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/styro_cup/sc8.png') }}" alt="Styrocups">
+</picture>
           </div>
         </div>
 
         <div class="product-card" data-category="styrocup" data-name="Styrocup 12 oz">
           <div class="card-image">
-            <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/styro_cup/sc12.png') }}" alt="Styrocups">
+            <picture>
+  <source type="image/avif" srcset="{{ url_for('static', filename='images/products/styro_cup/sc12.avif') }}">
+  <source type="image/webp" srcset="{{ url_for('static', filename='images/products/styro_cup/sc12.webp') }}">
+  <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/styro_cup/sc12.png') }}" alt="Styrocups">
+</picture>
           </div>
         </div>
 
         <div class="product-card" data-category="styrocup" data-name="Styrocup 16 oz">
           <div class="card-image">
-            <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/styro_cup/sc16.png') }}" alt="Styrocups">
+            <picture>
+  <source type="image/avif" srcset="{{ url_for('static', filename='images/products/styro_cup/sc16.avif') }}">
+  <source type="image/webp" srcset="{{ url_for('static', filename='images/products/styro_cup/sc16.webp') }}">
+  <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/styro_cup/sc16.png') }}" alt="Styrocups">
+</picture>
           </div>
         </div>
 
         <div class="product-card" data-category="styrocup" data-name="Styrocup 22 oz">
           <div class="card-image">
-            <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/styro_cup/sc22.png') }}" alt="Styrocups">
+            <picture>
+  <source type="image/avif" srcset="{{ url_for('static', filename='images/products/styro_cup/sc22.avif') }}">
+  <source type="image/webp" srcset="{{ url_for('static', filename='images/products/styro_cup/sc22.webp') }}">
+  <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/styro_cup/sc22.png') }}" alt="Styrocups">
+</picture>
           </div>
         </div>
 
         <div class="product-card" data-category="styrocup" data-name="Styrocup 24 oz">
           <div class="card-image">
-            <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/styro_cup/sc24.png') }}" alt="Styrocups">
+            <picture>
+  <source type="image/avif" srcset="{{ url_for('static', filename='images/products/styro_cup/sc24.avif') }}">
+  <source type="image/webp" srcset="{{ url_for('static', filename='images/products/styro_cup/sc24.webp') }}">
+  <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/styro_cup/sc24.png') }}" alt="Styrocups">
+</picture>
           </div>
         </div>
 
         <div class="product-card" data-category="styrocup" data-name="Styrocup 32 oz">
           <div class="card-image">
-            <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/styro_cup/sc32.png') }}" alt="Styrocups">
+            <picture>
+  <source type="image/avif" srcset="{{ url_for('static', filename='images/products/styro_cup/sc32.avif') }}">
+  <source type="image/webp" srcset="{{ url_for('static', filename='images/products/styro_cup/sc32.webp') }}">
+  <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/styro_cup/sc32.png') }}" alt="Styrocups">
+</picture>
           </div>
         </div>
 
         <div class="product-card" data-category="tray" data-name="Tray 1" data-code="T-1">
           <div class="card-image">
-            <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/tray/t1.png') }}" alt="Trays">
+            <picture>
+  <source type="image/avif" srcset="{{ url_for('static', filename='images/products/tray/t1.avif') }}">
+  <source type="image/webp" srcset="{{ url_for('static', filename='images/products/tray/t1.webp') }}">
+  <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/tray/t1.png') }}" alt="Trays">
+</picture>
           </div>
         </div>
 
         <div class="product-card" data-category="tray" data-name="Tray 2" data-code="T-2">
           <div class="card-image">
-            <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/tray/t2.png') }}" alt="Trays">
+            <picture>
+  <source type="image/avif" srcset="{{ url_for('static', filename='images/products/tray/t2.avif') }}">
+  <source type="image/webp" srcset="{{ url_for('static', filename='images/products/tray/t2.webp') }}">
+  <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/tray/t2.png') }}" alt="Trays">
+</picture>
           </div>
         </div>
 
         <div class="product-card" data-category="tray" data-name="Tray 3" data-code="T-3">
           <div class="card-image">
-            <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/tray/t3.png') }}" alt="Trays">
+            <picture>
+  <source type="image/avif" srcset="{{ url_for('static', filename='images/products/tray/t3.avif') }}">
+  <source type="image/webp" srcset="{{ url_for('static', filename='images/products/tray/t3.webp') }}">
+  <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/tray/t3.png') }}" alt="Trays">
+</picture>
           </div>
         </div>
 
         <div class="product-card" data-category="tray" data-name="Tray 4" data-code="T-4">
           <div class="card-image">
-            <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/tray/t4.png') }}" alt="Trays">
+            <picture>
+  <source type="image/avif" srcset="{{ url_for('static', filename='images/products/tray/t4.avif') }}">
+  <source type="image/webp" srcset="{{ url_for('static', filename='images/products/tray/t4.webp') }}">
+  <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/tray/t4.png') }}" alt="Trays">
+</picture>
           </div>
         </div>
 
         <div class="product-card" data-category="tray" data-name="Tray 5" data-code="T-5">
           <div class="card-image">
-            <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/tray/t5.png') }}" alt="Trays">
+            <picture>
+  <source type="image/avif" srcset="{{ url_for('static', filename='images/products/tray/t5.avif') }}">
+  <source type="image/webp" srcset="{{ url_for('static', filename='images/products/tray/t5.webp') }}">
+  <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/tray/t5.png') }}" alt="Trays">
+</picture>
           </div>
         </div>
 
         <div class="product-card" data-category="tray" data-name="Tray 7" data-code="T-7">
           <div class="card-image">
-            <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/tray/t7.png') }}" alt="Trays">
+            <picture>
+  <source type="image/avif" srcset="{{ url_for('static', filename='images/products/tray/t7.avif') }}">
+  <source type="image/webp" srcset="{{ url_for('static', filename='images/products/tray/t7.webp') }}">
+  <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/tray/t7.png') }}" alt="Trays">
+</picture>
           </div>
         </div>
 
         <div class="product-card" data-category="tray" data-name="Tray 8" data-code="T-8">
           <div class="card-image">
-            <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/tray/t8.png') }}" alt="Trays">
+            <picture>
+  <source type="image/avif" srcset="{{ url_for('static', filename='images/products/tray/t8.avif') }}">
+  <source type="image/webp" srcset="{{ url_for('static', filename='images/products/tray/t8.webp') }}">
+  <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/tray/t8.png') }}" alt="Trays">
+</picture>
           </div>
         </div>
 
         <div class="product-card" data-category="tray" data-name="Tray 9" data-code="T-9">
           <div class="card-image">
-            <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/tray/t9.png') }}" alt="Trays">
+            <picture>
+  <source type="image/avif" srcset="{{ url_for('static', filename='images/products/tray/t9.avif') }}">
+  <source type="image/webp" srcset="{{ url_for('static', filename='images/products/tray/t9.webp') }}">
+  <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/tray/t9.png') }}" alt="Trays">
+</picture>
           </div>
         </div>
 
         <div class="product-card" data-category="tray" data-name="Tray 10" data-code="T-10">
           <div class="card-image">
-            <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/tray/t10.png') }}" alt="Trays">
+            <picture>
+  <source type="image/avif" srcset="{{ url_for('static', filename='images/products/tray/t10.avif') }}">
+  <source type="image/webp" srcset="{{ url_for('static', filename='images/products/tray/t10.webp') }}">
+  <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/tray/t10.png') }}" alt="Trays">
+</picture>
           </div>
         </div>
 
         <div class="product-card" data-category="tray" data-name="Tray 11" data-code="T-11">
           <div class="card-image">
-            <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/tray/t11.png') }}" alt="Trays">
+            <picture>
+  <source type="image/avif" srcset="{{ url_for('static', filename='images/products/tray/t11.avif') }}">
+  <source type="image/webp" srcset="{{ url_for('static', filename='images/products/tray/t11.webp') }}">
+  <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/tray/t11.png') }}" alt="Trays">
+</picture>
           </div>
         </div>
 
         <div class="product-card" data-category="tray" data-name="Tray 14" data-code="T-14">
           <div class="card-image">
-            <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/tray/t14.png') }}" alt="Trays">
+            <picture>
+  <source type="image/avif" srcset="{{ url_for('static', filename='images/products/tray/t14.avif') }}">
+  <source type="image/webp" srcset="{{ url_for('static', filename='images/products/tray/t14.webp') }}">
+  <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/tray/t14.png') }}" alt="Trays">
+</picture>
           </div>
         </div>
 
         <div class="product-card" data-category="tray" data-name="Tray 15" data-code="T-15">
           <div class="card-image">
-            <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/tray/t15.png') }}" alt="Trays">
+            <picture>
+  <source type="image/avif" srcset="{{ url_for('static', filename='images/products/tray/t15.avif') }}">
+  <source type="image/webp" srcset="{{ url_for('static', filename='images/products/tray/t15.webp') }}">
+  <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/tray/t15.png') }}" alt="Trays">
+</picture>
           </div>
         </div>
 
         <div class="product-card" data-category="tray" data-name="Tray 17" data-code="T-17">
           <div class="card-image">
-            <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/tray/t17.png') }}" alt="Trays">
+            <picture>
+  <source type="image/avif" srcset="{{ url_for('static', filename='images/products/tray/t17.avif') }}">
+  <source type="image/webp" srcset="{{ url_for('static', filename='images/products/tray/t17.webp') }}">
+  <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/tray/t17.png') }}" alt="Trays">
+</picture>
           </div>
         </div>
 
         <div class="product-card" data-category="tray" data-name="Tray 18" data-code="T-18">
           <div class="card-image">
-            <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/tray/t18.png') }}" alt="Trays">
+            <picture>
+  <source type="image/avif" srcset="{{ url_for('static', filename='images/products/tray/t18.avif') }}">
+  <source type="image/webp" srcset="{{ url_for('static', filename='images/products/tray/t18.webp') }}">
+  <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/tray/t18.png') }}" alt="Trays">
+</picture>
           </div>
         </div>
 
         <div class="product-card" data-category="tray" data-name="Tray 19" data-code="T-19">
           <div class="card-image">
-            <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/tray/t19.png') }}" alt="Trays">
+            <picture>
+  <source type="image/avif" srcset="{{ url_for('static', filename='images/products/tray/t19.avif') }}">
+  <source type="image/webp" srcset="{{ url_for('static', filename='images/products/tray/t19.webp') }}">
+  <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/products/tray/t19.png') }}" alt="Trays">
+</picture>
           </div>
         </div>
       </div>
@@ -523,4 +811,5 @@
   <script src="{{ url_for('static', filename='js/home.js') }}"></script>
   <script src="{{ url_for('static', filename='js/products_styro.js') }}"></script>
 {% endblock %}
+
 

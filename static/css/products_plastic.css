@@ -110,6 +110,11 @@
     background: #f7f7f7;
 }
 
+.product-card picture {
+    display: block;
+    width: 100%;
+}
+
 .product-card img {
     width: 100%;
     height: auto;
