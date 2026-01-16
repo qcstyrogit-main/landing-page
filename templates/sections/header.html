@@ -1,7 +1,7 @@
 <header class="home-header">
     <div class="brand">
-        <img src="{{ url_for('static', filename='images/QC.png') }}" class="brand-logo">
-        <img src="{{ url_for('static', filename='images/MC.png') }}" class="brand-logo">
+        <img src="{{ url_for('static', filename='images/QC.png') }}" class="brand-logo" alt="QC Logo" width="45" height="45" decoding="async">
+        <img src="{{ url_for('static', filename='images/MC.png') }}" class="brand-logo" alt="MC Logo" width="45" height="45" decoding="async">
     </div>
 
     <nav class="home-nav">
@@ -29,7 +29,10 @@
 <!-- Mobile navigation (for small screens) -->
 <nav id="mobileNav" class="mobile-nav" aria-hidden="true">
     <a href="/">Home</a>
-    <a href="#" id="mobileDropdownToggle" aria-expanded="false">Products <i class="fa fa-chevron-down"></i></a>
+    <a href="#" id="mobileDropdownToggle" aria-expanded="false">
+        Products
+        <svg class="icon" aria-hidden="true"><use href="#icon-chevron-down"></use></svg>
+    </a>
     <div id="mobileDropdown" class="mobile-dropdown" aria-hidden="true">
         <a href="/products_plastic">Plastic</a>
         <a href="/products_styro">Styrofoam</a>

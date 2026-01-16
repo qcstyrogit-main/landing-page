@@ -16,7 +16,7 @@ Modernized Full-Width UI - Optimized for Mobile
 .standard-section {
     position: relative;
 
-    /* 🔧 CHANGED: flexible height instead of hard 100vh */
+    /* Changed: flexible height instead of hard 100vh */
     min-height: clamp(70vh, 85vh, 100vh);
 
     width: 100%;
@@ -25,12 +25,18 @@ Modernized Full-Width UI - Optimized for Mobile
     justify-content: center;
     overflow-x: hidden;
 
-    /* 🔧 KEEP header offset, but avoid excess */
+    /* Keep header offset, but avoid excess */
     padding-top: var(--header-height);
     padding-bottom: 2rem;
 
-      background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), 
-                url('../images/standard.png'); /* relative path from CSS file */
+      background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+                        url('../images/standard.png'); /* fallback */
+      background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+                        image-set(
+                            url('../images/standard.avif') type('image/avif'),
+                            url('../images/standard.webp') type('image/webp'),
+                            url('../images/standard.png') type('image/png')
+                        );
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -92,7 +98,7 @@ Modernized Full-Width UI - Optimized for Mobile
 
 @media (max-width: 768px) {
     .standard-section {
-        /* 🔧 Let content define height */
+        /* Let content define height */
         min-height: unset;
         padding-top: calc(var(--header-height) + 2rem);
         padding-bottom: 3rem;
@@ -111,7 +117,7 @@ Modernized Full-Width UI - Optimized for Mobile
 
 @media (max-width: 480px) {
     .standard-section {
-        /* 🔧 REMOVED display:block (keeps centering intact) */
+        /* Removed display:block (keeps centering intact) */
         padding-top: calc(var(--header-height) + 1.5rem);
         padding-bottom: 2.5rem;
         height: auto;
@@ -143,3 +149,4 @@ Modernized Full-Width UI - Optimized for Mobile
     from { opacity: 0; transform: translateY(30px); }
     to { opacity: 1; transform: translateY(0); }
 }
+

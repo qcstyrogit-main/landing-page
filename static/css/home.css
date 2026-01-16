@@ -208,6 +208,14 @@ html, body {
     transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+.home-nav .icon,
+.mobile-nav .icon {
+    width: 0.9em;
+    height: 0.9em;
+    margin-left: 0.35rem;
+    vertical-align: -0.15em;
+}
+
 .home-nav ul li a:hover {
     color: var(--primary-hover);
 }

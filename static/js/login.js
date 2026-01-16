@@ -14,23 +14,17 @@ document.addEventListener('DOMContentLoaded', () => {
         const pwd = row.querySelector('input');
         if (!pwd) return;
 
-        const icon = toggle.querySelector('i');
+        const icon = toggle.querySelector('use');
         const text = toggle.querySelector('.text-muted');
 
         if (pwd.type === 'password') {
             pwd.type = 'text';
-            if (icon) {
-                icon.classList.remove('fa-eye');
-                icon.classList.add('fa-eye-slash');
-            }
+            if (icon) icon.setAttribute('href', '#icon-eye-off');
             if (text) text.innerText = 'Hide';
             toggle.setAttribute('aria-pressed', 'true');
         } else {
             pwd.type = 'password';
-            if (icon) {
-                icon.classList.remove('fa-eye-slash');
-                icon.classList.add('fa-eye');
-            }
+            if (icon) icon.setAttribute('href', '#icon-eye');
             if (text) text.innerText = 'Show';
             toggle.setAttribute('aria-pressed', 'false');
         }

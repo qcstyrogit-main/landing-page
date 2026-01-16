@@ -8,7 +8,6 @@
 
   <!-- Header styles (same as home) -->
   <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
   <!-- Page styles -->
   <link rel="stylesheet" href="{{ url_for('static', filename='css/view_jobs.css') }}">
@@ -16,7 +15,7 @@
 
 {% block page_content %}
 
-  <!-- ✅ SAME HEADER AS HOME -->
+  <!-- Same header as home -->
   {% include "sections/header.html" %}
 
   <div class="container">
@@ -30,7 +29,9 @@
         <div class="header-right">
           <div class="search">
             <input id="searchInput" type="search" placeholder="Search jobs, departments or company" />
-            <button id="clearSearch" aria-label="Clear search">✕</button>
+            <button id="clearSearch" aria-label="Clear search">
+              <svg class="icon" aria-hidden="true"><use href="#icon-x"></use></svg>
+            </button>
           </div>
           <button id="openFilters" class="filter-btn">Filters</button>
         </div>
@@ -99,13 +100,13 @@
         <div class="header-info">
           <h1 id="detailTitle" style="font-size: 2.5rem; margin: 0 0 10px 0;"></h1>
           <p style="color: #666; font-size: 1.1rem;">
-            <span id="detailCompany"></span> · <span id="detailPosted"></span>
+            <span id="detailCompany"></span> &middot; <span id="detailPosted"></span>
           </p>
         </div>
         <button class="apply-btn-large">Apply Now</button>
       </div>
 
-      <!-- ✅ DETAIL GRID (NOT REMOVED) -->
+      <!-- Detail grid -->
       <div class="detail-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; background: transparent; padding: 20px 0; margin-bottom: 40px;">
 
         <div class="info-box" style="display: flex; align-items: center; gap: 15px;">
@@ -218,8 +219,10 @@
       </div>
     </aside>
 
-    <!-- ✅ BACK TO TOP BUTTON -->
-    <button id="back-to-top" aria-label="Back to top">↑</button>
+    <!-- Back to top button -->
+    <button id="back-to-top" aria-label="Back to top">
+      <svg class="icon icon-lg" aria-hidden="true"><use href="#icon-arrow-up"></use></svg>
+    </button>
 
   </div>
 {% endblock %}

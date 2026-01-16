@@ -6,6 +6,11 @@
     font-family: 'Roboto', sans-serif;
     min-height: 100vh;
     background: url('../images/standard.png') no-repeat center center;
+    background-image: image-set(
+        url('../images/standard.avif') type('image/avif'),
+        url('../images/standard.webp') type('image/webp'),
+        url('../images/standard.png') type('image/png')
+    );
     background-size: cover;
 }
 
@@ -88,6 +93,8 @@
     box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     cursor: pointer;
+    content-visibility: auto;
+    contain-intrinsic-size: 220px 220px;
 }
 
 .product-card:hover {
@@ -99,11 +106,14 @@
     width: 100%;
     height: auto;
     overflow: visible;
+    aspect-ratio: 1 / 1;
+    background: #f7f7f7;
 }
 
 .product-card img {
     width: 100%;
     height: auto;
+    display: block;
     object-fit: contain;
     transition: transform 0.3s ease;
 }

@@ -72,7 +72,7 @@
     color: #ffd700; /* gold highlight on hover */
 }
 
-.contact_text i {
+.contact_text .icon {
     margin-right: 10px;
     color: #f0f4ff;
     font-size: 1.3rem;
@@ -80,7 +80,7 @@
     transition: color 0.3s ease;
 }
 
-.contact_text i:hover {
+.contact_text .icon:hover {
     color: #ffcc00; /* brighter gold on icon hover */
 }
 
@@ -175,6 +175,11 @@
     transition: transform 0.3s ease, filter 0.3s ease;
     cursor: pointer;
     filter: drop-shadow(0 0 1px rgba(0,0,0,0.6));
+}
+
+.social-link .icon {
+    width: 1em;
+    height: 1em;
 }
 
 .social-link.facebook { color: #1877f2; }
@@ -333,7 +338,12 @@
 
     /* Section */
     .contact_us-section {
-        background-image: url('../images/Intro.png'); /* relative to CSS file */
+        background-image: url('../images/Intro.png'); /* fallback */
+        background-image: image-set(
+            url('../images/Intro.avif') type('image/avif'),
+            url('../images/Intro.webp') type('image/webp'),
+            url('../images/Intro.png') type('image/png')
+        );
         background-size: cover;
         background-position: center;
         background-repeat: no-repeat;
@@ -382,7 +392,7 @@
         margin-right: 0;
     }
 
-    .contact_text i {
+    .contact_text .icon {
         margin-right: 6px;
         font-size: 1.2rem;
     }

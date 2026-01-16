@@ -1,6 +1,6 @@
 from dotenv import load_dotenv
 import os
-from flask import Flask, render_template, request, jsonify, Response, url_for
+from flask import Flask, render_template, request, jsonify, Response, url_for as flask_url_for
 import requests
 from flask_caching import Cache
 
@@ -34,6 +34,14 @@ if not API_BASE_URL:
 # APP INIT
 # --------------------------------------------------
 app = Flask(__name__)
+ASSET_VERSION = os.getenv("ASSET_VERSION", "1")
+
+def cache_busted_url_for(endpoint, **values):
+    if endpoint == "static":
+        values.setdefault("v", ASSET_VERSION)
+    return flask_url_for(endpoint, **values)
+
+app.jinja_env.globals["url_for"] = cache_busted_url_for
 
 # --------------------------------------------------
 # CACHE CONFIG (SAFE FOR RENDER)
@@ -114,7 +122,7 @@ def sitemap():
     ]
     for endpoint, changefreq, priority in pages:
         lines.append("  <url>")
-        lines.append(f"    <loc>{url_for(endpoint, _external=True)}</loc>")
+        lines.append(f"    <loc>{flask_url_for(endpoint, _external=True)}</loc>")
         lines.append(f"    <changefreq>{changefreq}</changefreq>")
         lines.append(f"    <priority>{priority}</priority>")
         lines.append("  </url>")
@@ -127,7 +135,7 @@ def robots():
     content = [
         "User-agent: *",
         "Allow: /",
-        f"Sitemap: {url_for('sitemap', _external=True)}",
+        f"Sitemap: {flask_url_for('sitemap', _external=True)}",
     ]
     return Response("\n".join(content), mimetype="text/plain")
 
@@ -249,7 +257,10 @@ def submit_job_applicant():
 def add_headers(response):
     response.headers["X-Content-Type-Options"] = "nosniff"
     response.headers["X-Frame-Options"] = "DENY"
-    response.headers["Cache-Control"] = "public, max-age=300"
+    if request.path.startswith("/static/"):
+        response.headers["Cache-Control"] = "public, max-age=31536000, immutable"
+    else:
+        response.headers["Cache-Control"] = "public, max-age=300"
     return response
 
 

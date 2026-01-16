@@ -9,7 +9,6 @@
 
   <!-- Header styles (same as home) -->
   <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
   <!-- Page styles -->
   <link rel="stylesheet" href="{{ url_for('static', filename='css/apply_now.css') }}" />
@@ -17,7 +16,7 @@
 
 {% block page_content %}
 
-  <!-- ✅ SAME HEADER AS HOME -->
+  <!-- Same header as home -->
   {% include "sections/header.html" %}
 
   <div class="form-container">
@@ -107,7 +106,9 @@
 
       <!-- Success message -->
       <div id="successMessage" class="success-card" style="display:none;">
-          <div class="check-circle">✔</div>
+          <div class="check-circle">
+    <svg class="icon icon-lg" aria-hidden="true"><use href="#icon-check"></use></svg>
+</div>
           <h2>Application Submitted!</h2>
           <p>Thank you for applying. You will be redirected shortly.</p>
           <p class="redirect-text">Redirecting in <span id="countdown">3</span> seconds...</p>
@@ -115,7 +116,9 @@
   </div>
 
   <!-- Optional: Back to top like home -->
-  <button id="back-to-top" aria-label="Back to top">↑</button>
+  <button id="back-to-top" aria-label="Back to top">
+    <svg class="icon icon-lg" aria-hidden="true"><use href="#icon-arrow-up"></use></svg>
+</button>
 
 {% endblock %}
 
@@ -124,3 +127,4 @@
   <script src="{{ url_for('static', filename='js/home.js') }}"></script>
   <script src="{{ url_for('static', filename='js/apply_now.js') }}"></script>
 {% endblock %}
+

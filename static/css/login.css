@@ -117,6 +117,11 @@ body {
     pointer-events: none;
 }
 
+.form-row .input-icon svg {
+    width: 1rem;
+    height: 1rem;
+}
+
 .form-row .toggle-password {
     position: absolute;
     right: 12px;
@@ -125,6 +130,11 @@ body {
     cursor: pointer;
     color: #94a3b8;
     transition: color 0.2s;
+}
+
+.form-row .toggle-password svg {
+    width: 1rem;
+    height: 1rem;
 }
 
 .form-row .toggle-password:hover { color: #133880; }
