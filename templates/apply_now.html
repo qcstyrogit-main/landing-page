@@ -37,9 +37,11 @@
               <input type="text" id="applicantName" required>
           </div>
 
-          <div class="form-group">
-              <label>Address <span class="required">*</span></label>
-              <input type="text" id="address" required>
+          <div class="form-group address-autocomplete">
+              <label for="address">Address <span class="required">*</span></label>
+              <input type="text" id="address" autocomplete="off" required aria-autocomplete="list" aria-expanded="false" aria-controls="addressSuggestions">
+              <div id="addressSuggestions" class="address-suggestions" role="listbox" aria-label="Address suggestions"></div>
+              <small class="address-hint">Suggestions powered by PSGC (regions, provinces, cities, barangays).</small>
           </div>
 
           <div class="form-group">
@@ -116,9 +118,9 @@
   </div>
 
   <!-- Optional: Back to top like home -->
-  <button id="back-to-top" aria-label="Back to top">
+  <button id="back-to-top" class="show" data-show="always" aria-label="Back to top">
     <svg class="icon icon-lg" aria-hidden="true"><use href="#icon-arrow-up"></use></svg>
-</button>
+  </button>
 
 {% endblock %}
 

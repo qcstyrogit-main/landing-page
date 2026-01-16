@@ -1,6 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('applicationForm');
     const jobIdDisplay = document.getElementById('jobIdDisplay');
+    const addressInput = document.getElementById('address');
+    const addressSuggestions = document.getElementById('addressSuggestions');
     const urlParams = new URLSearchParams(window.location.search);
     const jobId = urlParams.get('id');
     const jobTitle = urlParams.get('job');
@@ -14,6 +16,198 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Load Currencies Dropdown
     loadCurrencies();
+
+    // Address autocomplete (PSGC)
+    if (addressInput && addressSuggestions) {
+        let debounceTimer = null;
+        let activeRequest = null;
+        let psgcCache = null;
+        let barangayCache = null;
+
+        const closeSuggestions = () => {
+            addressSuggestions.innerHTML = '';
+            addressSuggestions.style.display = 'none';
+            addressInput.setAttribute('aria-expanded', 'false');
+        };
+
+        const showStatus = (message) => {
+            addressSuggestions.innerHTML = '';
+            const status = document.createElement('div');
+            status.className = 'address-status';
+            status.textContent = message;
+            addressSuggestions.appendChild(status);
+            addressSuggestions.style.display = 'block';
+            addressInput.setAttribute('aria-expanded', 'true');
+        };
+
+        const loadPsgcData = async () => {
+            if (psgcCache) return psgcCache;
+            const [regionsRes, provincesRes, citiesRes] = await Promise.all([
+                fetch("https://psgc.gitlab.io/api/regions/"),
+                fetch("https://psgc.gitlab.io/api/provinces/"),
+                fetch("https://psgc.gitlab.io/api/cities-municipalities/")
+            ]);
+
+            const regions = await regionsRes.json();
+            const provinces = await provincesRes.json();
+            const cities = await citiesRes.json();
+
+            const regionMap = new Map(regions.map((r) => [r.code, r.name || r.regionName]));
+            const provinceMap = new Map(provinces.map((p) => [p.code, p.name]));
+            const cityMap = new Map(cities.map((c) => [
+                c.code,
+                {
+                    name: c.name,
+                    provinceCode: c.provinceCode,
+                    regionCode: c.regionCode
+                }
+            ]));
+
+            psgcCache = {
+                regions,
+                provinces,
+                cities,
+                regionMap,
+                provinceMap,
+                cityMap
+            };
+
+            return psgcCache;
+        };
+
+        const loadBarangays = async () => {
+            if (barangayCache) return barangayCache;
+            const response = await fetch("https://psgc.gitlab.io/api/barangays/");
+            const data = await response.json();
+            barangayCache = Array.isArray(data) ? data : [];
+            return barangayCache;
+        };
+
+        const renderSuggestions = (items) => {
+            addressSuggestions.innerHTML = '';
+            if (!items.length) {
+                showStatus('No matches found.');
+                return;
+            }
+
+            items.slice(0, 8).forEach((item) => {
+                const label = item.label;
+                if (!label) return;
+                const button = document.createElement('button');
+                button.type = 'button';
+                button.textContent = label;
+                button.addEventListener('click', () => {
+                    addressInput.value = label;
+                    closeSuggestions();
+                });
+                addressSuggestions.appendChild(button);
+            });
+
+            if (addressSuggestions.children.length) {
+                addressSuggestions.style.display = 'block';
+                addressInput.setAttribute('aria-expanded', 'true');
+            } else {
+                showStatus('No matches found.');
+            }
+        };
+
+        const fetchSuggestions = async (query) => {
+            if (activeRequest && typeof activeRequest.abort === 'function') {
+                activeRequest.abort();
+            }
+            const controller = new AbortController();
+            activeRequest = controller;
+
+            try {
+                showStatus('Loading suggestions...');
+                const data = await loadPsgcData();
+                const q = query.toLowerCase();
+
+                const cityMatches = data.cities
+                    .filter((c) => (c.name || "").toLowerCase().includes(q))
+                    .map((c) => {
+                        const province = data.provinceMap.get(c.provinceCode);
+                        const region = data.regionMap.get(c.regionCode);
+                        const suffix = [province, region].filter(Boolean).join(", ");
+                        return {
+                            label: suffix ? `${c.name} (${suffix})` : c.name
+                        };
+                    });
+
+                const provinceMatches = data.provinces
+                    .filter((p) => (p.name || "").toLowerCase().includes(q))
+                    .map((p) => {
+                        const region = data.regionMap.get(p.regionCode);
+                        const suffix = region ? `(${region})` : "";
+                        return {
+                            label: suffix ? `${p.name} ${suffix}` : p.name
+                        };
+                    });
+
+                const regionMatches = data.regions
+                    .filter((r) => ((r.name || r.regionName || "")).toLowerCase().includes(q))
+                    .map((r) => ({
+                        label: r.name || r.regionName
+                    }));
+
+                const baseItems = [...cityMatches, ...provinceMatches, ...regionMatches];
+                renderSuggestions(baseItems);
+
+                if (query.length >= 4) {
+                    const currentQuery = query;
+                    loadBarangays().then((barangays) => {
+                        if (addressInput.value.trim() !== currentQuery) return;
+                        const barangayMatches = barangays
+                            .filter((b) => (b.name || "").toLowerCase().includes(q))
+                            .map((b) => {
+                                const cityCode = b.cityCode || b.municipalityCode || b.cityMunicipalityCode;
+                                const city = cityCode ? data.cityMap.get(cityCode) : null;
+                                const cityName = city ? city.name : null;
+                                const province = city && city.provinceCode
+                                    ? data.provinceMap.get(city.provinceCode)
+                                    : data.provinceMap.get(b.provinceCode);
+                                const region = city && city.regionCode
+                                    ? data.regionMap.get(city.regionCode)
+                                    : data.regionMap.get(b.regionCode);
+                                const suffix = [cityName, province, region].filter(Boolean).join(", ");
+                                return {
+                                    label: suffix ? `${b.name} (${suffix})` : b.name
+                                };
+                            });
+
+                        const items = [...barangayMatches, ...baseItems];
+                        renderSuggestions(items);
+                    }).catch(() => {
+                        if (addressInput.value.trim() !== currentQuery) return;
+                        renderSuggestions(baseItems);
+                    });
+                }
+            } catch (error) {
+                if (error.name !== 'AbortError') {
+                    closeSuggestions();
+                }
+            }
+        };
+
+        addressInput.addEventListener('input', () => {
+            const query = addressInput.value.trim();
+            if (query.length < 3) {
+                closeSuggestions();
+                return;
+            }
+
+            if (debounceTimer) window.clearTimeout(debounceTimer);
+            debounceTimer = window.setTimeout(() => {
+                fetchSuggestions(query);
+            }, 300);
+        });
+
+        addressInput.addEventListener('blur', () => {
+            window.setTimeout(() => {
+                closeSuggestions();
+            }, 150);
+        });
+    }
 
     // Form Submission
     form.addEventListener('submit', async (e) => {
