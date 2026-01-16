@@ -9,7 +9,7 @@ def load_env():
     Local: load .env + .env.local
     Production (cPanel): use real environment variables only
     """
-    env = os.getenv("ENVIRONMENT", "").lower()
+    env = os.getenv("FLASK_ENV", "").lower()
 
     # If running in production (cPanel), do NOT load dotenv
     if env == "production":
