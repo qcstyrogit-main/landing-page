@@ -1,14 +1,26 @@
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Job Openings</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/view_jobs.css') }}" />
-</head>
-<body>
+{% extends "web.html" %}
+
+{% block title %}Job Openings | QC & MC{% endblock %}
+{% block meta_description %}Explore current job openings at QC and MC. Filter by department, location, and type to find the right role.{% endblock %}
+
+{% block head %}
+  {{ super() }}
+
+  <!-- Header styles (same as home) -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- Page styles -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/view_jobs.css') }}">
+{% endblock %}
+
+{% block page_content %}
+
+  <!-- ✅ SAME HEADER AS HOME -->
+  {% include "sections/header.html" %}
+
   <div class="container">
-    
+
     <div id="listViewContainer" style="display: none;">
       <header class="header">
         <div class="header-left">
@@ -93,62 +105,80 @@
         <button class="apply-btn-large">Apply Now</button>
       </div>
 
+      <!-- ✅ DETAIL GRID (NOT REMOVED) -->
       <div class="detail-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; background: transparent; padding: 20px 0; margin-bottom: 40px;">
-  
-          <div class="info-box" style="display: flex; align-items: center; gap: 15px;">
-            <div class="icon-circle location-bg">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6347d1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-            </div>
-            <div>
-              <small class="detail-label">LOCATION</small>
-              <p id="detailLocation" class="detail-value"></p>
-            </div>
-          </div>
 
-          <div class="info-box" style="display: flex; align-items: center; gap: 15px;">
-            <div class="icon-circle dept-bg">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><polyline points="17 11 19 13 23 9"></polyline></svg>
-            </div>
-            <div>
-              <small class="detail-label">DEPARTMENT</small>
-              <p id="detailDept" class="detail-value"></p>
-            </div>
+        <div class="info-box" style="display: flex; align-items: center; gap: 15px;">
+          <div class="icon-circle location-bg">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6347d1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+              <circle cx="12" cy="10" r="3"></circle>
+            </svg>
           </div>
-
-          <div class="info-box" style="display: flex; align-items: center; gap: 15px;">
-            <div class="icon-circle salary-bg">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
-            </div>
-            <div>
-              <small class="detail-label">SALARY RANGE</small>
-              <p id="detailSalary" class="detail-value"></p>
-            </div>
+          <div>
+            <small class="detail-label">LOCATION</small>
+            <p id="detailLocation" class="detail-value"></p>
           </div>
-
-          <div class="info-box" style="display: flex; align-items: center; gap: 15px;">
-            <div class="icon-circle type-bg">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#b45309" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
-            </div>
-            <div>
-              <small class="detail-label">EMPLOYMENT TYPE</small>
-              <p id="detailType" class="detail-value"></p>
-            </div>
-          </div>
-
-          <div class="info-box" style="display: flex; align-items: center; gap: 15px;">
-            <div class="icon-circle apps-bg">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#991b1b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-            </div>
-            <div>
-              <small class="detail-label">APPLICATIONS RECEIVED</small>
-              <p id="detailCount" class="detail-value"></p>
-            </div>
-          </div>
-
         </div>
 
-      <div id="detailDescription" class="rich-text-content" style="line-height: 1.8; font-size: 1.1rem; color: #333;">
+        <div class="info-box" style="display: flex; align-items: center; gap: 15px;">
+          <div class="icon-circle dept-bg">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+              <circle cx="8.5" cy="7" r="4"></circle>
+              <polyline points="17 11 19 13 23 9"></polyline>
+            </svg>
+          </div>
+          <div>
+            <small class="detail-label">DEPARTMENT</small>
+            <p id="detailDept" class="detail-value"></p>
+          </div>
         </div>
+
+        <div class="info-box" style="display: flex; align-items: center; gap: 15px;">
+          <div class="icon-circle salary-bg">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="12" y1="1" x2="12" y2="23"></line>
+              <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+            </svg>
+          </div>
+          <div>
+            <small class="detail-label">SALARY RANGE</small>
+            <p id="detailSalary" class="detail-value"></p>
+          </div>
+        </div>
+
+        <div class="info-box" style="display: flex; align-items: center; gap: 15px;">
+          <div class="icon-circle type-bg">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#b45309" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+              <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+            </svg>
+          </div>
+          <div>
+            <small class="detail-label">EMPLOYMENT TYPE</small>
+            <p id="detailType" class="detail-value"></p>
+          </div>
+        </div>
+
+        <div class="info-box" style="display: flex; align-items: center; gap: 15px;">
+          <div class="icon-circle apps-bg">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#991b1b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+              <circle cx="9" cy="7" r="4"></circle>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+            </svg>
+          </div>
+          <div>
+            <small class="detail-label">APPLICATIONS RECEIVED</small>
+            <p id="detailCount" class="detail-value"></p>
+          </div>
+        </div>
+
+      </div>
+
+      <div id="detailDescription" class="rich-text-content" style="line-height: 1.8; font-size: 1.1rem; color: #333;"></div>
     </div>
 
     <div id="backdrop" class="backdrop"></div>
@@ -188,7 +218,14 @@
       </div>
     </aside>
 
-    <script src="{{ url_for('static', filename='js/view_jobs.js') }}"></script>
+    <!-- ✅ BACK TO TOP BUTTON -->
+    <button id="back-to-top" aria-label="Back to top">↑</button>
+
   </div>
-</body>
-</html>
+{% endblock %}
+
+{% block footer %}
+  {{ super() }}
+  <script src="{{ url_for('static', filename='js/home.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/view_jobs.js') }}"></script>
+{% endblock %}

@@ -1,6 +1,6 @@
 from dotenv import load_dotenv
 import os
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, Response, url_for
 import requests
 from flask_caching import Cache
 
@@ -98,6 +98,38 @@ def view_jobs():
 @cache.cached(timeout=300)
 def apply_now():
     return render_template("apply_now.html")
+
+@app.route("/sitemap.xml")
+def sitemap():
+    pages = [
+        ("home", "weekly", "1.0"),
+        ("products_plastic", "weekly", "0.9"),
+        ("products_styro", "weekly", "0.9"),
+        ("view_jobs", "daily", "0.7"),
+    ]
+
+    lines = [
+        '<?xml version="1.0" encoding="UTF-8"?>',
+        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
+    ]
+    for endpoint, changefreq, priority in pages:
+        lines.append("  <url>")
+        lines.append(f"    <loc>{url_for(endpoint, _external=True)}</loc>")
+        lines.append(f"    <changefreq>{changefreq}</changefreq>")
+        lines.append(f"    <priority>{priority}</priority>")
+        lines.append("  </url>")
+    lines.append("</urlset>")
+
+    return Response("\n".join(lines), mimetype="application/xml")
+
+@app.route("/robots.txt")
+def robots():
+    content = [
+        "User-agent: *",
+        "Allow: /",
+        f"Sitemap: {url_for('sitemap', _external=True)}",
+    ]
+    return Response("\n".join(content), mimetype="text/plain")
 
 # --------------------------------------------------
 # API ROUTES (PROXY TO ERPNEXT)

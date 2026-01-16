@@ -22,11 +22,16 @@ html, body {
   color: #0f1724;
 }
 
+/* If your header is fixed/sticky, content needs top space */
 .container {
   max-width: 1100px;
   margin: 0 auto;
-  padding: 20px;
+  padding: 20px; 
+
+  /* ✅ ADD THIS */
+  padding-top: calc(var(--nav-height) + 40px);
 }
+
 
 /* --- Header & Search --- */
 .header {
@@ -286,6 +291,7 @@ html, body {
   /* Keep the container plain and simple */
   .container {
     padding: 15px;
+    padding-top: calc(var(--nav-height) + 24px);
     max-width: 100%;
     overflow-x: hidden; /* Prevent horizontal scroll */
   }

@@ -1,0 +1,41 @@
+<header class="home-header">
+    <div class="brand">
+        <img src="{{ url_for('static', filename='images/QC.png') }}" class="brand-logo">
+        <img src="{{ url_for('static', filename='images/MC.png') }}" class="brand-logo">
+    </div>
+
+    <nav class="home-nav">
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li class="has-dropdown">
+                <a href="#">Products</a>
+                <ul class="dropdown-menu">
+                    <li><a href="/products_plastic">Plastic</a></li>
+                    <li><a href="/products_styro">Styrofoam</a></li>
+                </ul>
+            </li>
+            <li><a href="/#about-us">About</a></li>
+            <li><a href="/#jobs">Careers</a></li>
+            <li><a href="/#contact-us">Contact</a></li>
+        </ul>
+    </nav>
+
+    <div class="header-tools">
+        <button class="menu-toggle" id="menuToggle">&#9776;</button>
+        <a href="{{ API_BASE_URL }}" class="btn-login">Login</a>
+    </div>
+</header>
+
+<!-- Mobile navigation (for small screens) -->
+<nav id="mobileNav" class="mobile-nav" aria-hidden="true">
+    <a href="/">Home</a>
+    <a href="#" id="mobileDropdownToggle" aria-expanded="false">Products <i class="fa fa-chevron-down"></i></a>
+    <div id="mobileDropdown" class="mobile-dropdown" aria-hidden="true">
+        <a href="/products_plastic">Plastic</a>
+        <a href="/products_styro">Styrofoam</a>
+    </div>
+    <a href="/#about-us">About</a>
+    <a href="/#jobs">Careers</a>
+    <a href="/#contact-us">Contact</a>
+    <a href="{{ API_BASE_URL }}" class="mobile-login">Login</a>
+</nav>
