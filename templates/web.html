@@ -13,6 +13,7 @@
     <meta property="og:url" content="{{ request.base_url }}">
     <meta property="og:type" content="{% block og_type %}website{% endblock %}">
     <meta property="og:image" content="{% block og_image %}{{ request.url_root.rstrip('/') }}{{ url_for('static', filename='images/Intro.png') }}{% endblock %}">
+    <meta property="og:site_name" content="Q.C. Styropackaging & Multiplast Corporation">
 
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="{% block twitter_title %}{{ self.title() }}{% endblock %}">
@@ -30,6 +31,49 @@
     </noscript>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/icons.css') }}">
     <link rel="shortcut icon" href="{{ url_for('static', filename='images/favicon.ico') }}" type="image/x-icon">
+
+    {% block structured_data %}
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "Organization",
+          "name": "Q.C. Styropackaging & Multiplast Corporation",
+          "url": "{{ request.url_root.rstrip('/') }}",
+          "logo": "{{ url_for('static', filename='images/QC.png', _external=True) }}"
+        },
+        {
+          "@type": "WebSite",
+          "name": "Q.C. Styropackaging & Multiplast Corporation",
+          "url": "{{ request.url_root.rstrip('/') }}"
+        },
+        {
+          "@type": "SiteNavigationElement",
+          "name": [
+            "Home",
+            "Plastic Products",
+            "Styrofoam Products",
+            "Careers"
+          ],
+          "url": [
+            "{{ url_for('home', _external=True) }}",
+            "{{ url_for('products_plastic', _external=True) }}",
+            "{{ url_for('products_styro', _external=True) }}",
+            "{{ url_for('view_jobs', _external=True) }}"
+          ]
+        },
+        {
+          "@type": "WebPage",
+          "name": "{{ self.title() }}",
+          "description": "{{ self.meta_description() }}",
+          "url": "{{ request.base_url }}",
+          "inLanguage": "en"
+        }
+      ]
+    }
+    </script>
+    {% endblock %}
     {% endblock %}
 </head>
 <body>
