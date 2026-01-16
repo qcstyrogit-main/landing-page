@@ -1,81 +1,51 @@
 /* ==================================================
-    TERMS OF USE - COMPACT TYPOGRAPHIC UI (NO DUAL SCROLL)
+    TERMS OF USE - COMPACT TYPOGRAPHIC UI
+    (MATCH PRIVACY POLICY)
 ================================================== */
 
-/* ✅ Global safety: prevents horizontal overflow + nested scrollbars */
 *,
 *::before,
 *::after {
     box-sizing: border-box;
 }
 
-html,
-body {
-    margin: 0;
-    padding: 0;
-    height: auto;
-    overflow-x: hidden;     /* ✅ stops side-scroll */
-    overflow-y: auto;       /* ✅ only ONE vertical scrollbar (browser) */
-}
-
-/* If your site has a parent wrapper that forces scroll (common in layouts),
-   you may also need to ensure it doesn't create a second scroll.
-   Example: .page-wrapper { overflow: visible; } */
-
-/* -------------------------------------------------- */
-
 :root {
-    /* ✅ smaller + more readable width */
     --tou-content-width: 72ch;
-
     --brand-blue: #133880;
     --tou-text: #334155;
     --tou-heading: #0f172a;
     --tou-accent: #ed1c24;
-
     --bg-light: #ffffff;
-
-    /* ✅ compact spacing scale */
     --tou-pad-y: 48px;
     --tou-pad-x: 20px;
 }
 
-/* --- Layout Setup --- */
 .terms-of-use-section {
     background-color: var(--bg-light);
     color: var(--tou-text);
     font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
-
-    /* ✅ don’t allow section to create its own scroll container */
     overflow: visible;
     width: 100%;
 }
 
-/* Wrapper ensures consistent side-padding on mobile */
 .terms-of-use-wrapper {
     padding: var(--tou-pad-y) var(--tou-pad-x);
     display: flex;
     flex-direction: column;
     align-items: center;
-
-    /* ✅ IMPORTANT: do NOT use height/100vh/overflow here */
     height: auto;
     min-height: 0;
     overflow: visible;
 }
 
-/* --- Typographic Container (No Box/Borders) --- */
 .terms-of-use-content {
     width: 100%;
     max-width: var(--tou-content-width);
     line-height: 1.7;
-
-    /* ✅ prevent long links/text from pushing layout */
     overflow-wrap: anywhere;
     word-break: normal;
 }
 
-/* --- Headings (smaller) --- */
 .terms-of-use-content h1 {
     font-size: clamp(1.8rem, 3.6vw, 2.6rem);
     color: var(--tou-heading);
@@ -93,19 +63,16 @@ body {
     margin-bottom: 1rem;
     font-weight: 750;
     letter-spacing: -0.01em;
-
     padding-top: 1.25rem;
     border-top: 1px solid #f1f5f9;
 }
 
-/* --- Body Text (smaller) --- */
 .terms-of-use-content p {
     font-size: 1rem;
     margin: 0 0 1rem 0;
     color: var(--tou-text);
 }
 
-/* --- Modern List Styling (compact) --- */
 .terms-of-use-content ul {
     margin: 1.25rem 0;
     padding: 0;
@@ -119,14 +86,13 @@ body {
 }
 
 .terms-of-use-content li::before {
-    content: "→";
+    content: ">";
     position: absolute;
     left: 0;
     color: var(--tou-accent);
     font-weight: 800;
 }
 
-/* --- Links & Interactive --- */
 .terms-of-use-content a {
     color: var(--brand-blue);
     text-decoration: none;
@@ -140,7 +106,6 @@ body {
     color: var(--tou-accent);
 }
 
-/* --- Contact / Address Box (compact) --- */
 .terms-of-use-content address {
     margin: 1.5rem 0;
     padding: 1.25rem;
@@ -148,11 +113,9 @@ body {
     border-radius: 12px;
     font-style: normal;
     border: 1px solid #e2e8f0;
-
     overflow-wrap: anywhere;
 }
 
-/* --- Final Acknowledgment --- */
 .terms-of-use-content p:last-of-type {
     margin-top: 2.5rem;
     font-size: 0.9rem;
@@ -161,9 +124,6 @@ body {
     text-align: center;
 }
 
-/* =========================================
-    MOBILE OPTIMIZATIONS (smaller + safer)
-========================================= */
 @media (max-width: 640px) {
     :root {
         --tou-pad-y: 34px;
@@ -183,15 +143,3 @@ body {
         font-size: 0.98rem;
     }
 }
-
-/* =========================================
-    OPTIONAL “NUCLEAR” FIX (only if you STILL get dual scroll)
-    Add this ONLY if you have a parent container with overflow:auto
-========================================= */
-/*
-.terms-of-use-section,
-.terms-of-use-wrapper,
-.terms-of-use-content {
-    overflow: visible !important;
-}
-*/

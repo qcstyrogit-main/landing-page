@@ -1,151 +1,145 @@
 /* ==================================================
-    PRIVACY POLICY - CLEAN TYPOGRAPHIC UI
-    (MATCHED WITH TERMS OF USE)
+    PRIVACY POLICY - COMPACT TYPOGRAPHIC UI
+    (MATCH TERMS OF USE)
 ================================================== */
 
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
 :root {
-    --pp-content-width: 800px;
+    --pp-content-width: 72ch;
     --brand-blue: #133880;
     --pp-text: #334155;
     --pp-heading: #0f172a;
     --pp-accent: #ed1c24;
     --bg-light: #ffffff;
+    --pp-pad-y: 48px;
+    --pp-pad-x: 20px;
 }
 
-/* --- Layout Setup --- */
 .privacy-policy-section {
     background-color: var(--bg-light);
     color: var(--pp-text);
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    padding: 0;
-    margin: 0;
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+    overflow: visible;
+    width: 100%;
 }
 
-/* Wrapper ensures consistent side-padding */
 .privacy-policy-wrapper {
-    padding: 80px 24px;
+    padding: var(--pp-pad-y) var(--pp-pad-x);
     display: flex;
     flex-direction: column;
     align-items: center;
+    height: auto;
+    min-height: 0;
+    overflow: visible;
 }
 
-/* --- Typographic Container (No Box) --- */
 .privacy-policy-content {
     width: 100%;
     max-width: var(--pp-content-width);
-    line-height: 1.8;
+    line-height: 1.7;
+    overflow-wrap: anywhere;
+    word-break: normal;
 }
 
-/* --- Headings --- */
 .privacy-policy-content h1 {
-    font-size: clamp(2.5rem, 6vw, 4rem);
+    font-size: clamp(1.8rem, 3.6vw, 2.6rem);
     color: var(--pp-heading);
     font-weight: 850;
-    letter-spacing: -0.04em;
-    margin-bottom: 1.5rem;
-    line-height: 1.1;
+    letter-spacing: -0.03em;
+    margin: 0 0 1rem 0;
+    line-height: 1.12;
     text-align: left;
 }
 
 .privacy-policy-content h2 {
-    font-size: 1.75rem;
+    font-size: 1.25rem;
     color: var(--pp-heading);
-    margin-top: 4rem;
-    margin-bottom: 1.5rem;
-    font-weight: 700;
-    letter-spacing: -0.02em;
-    padding-top: 2rem;
-    border-top: 1px solid #f1f5f9; /* SAME divider as TOU */
+    margin-top: 2.25rem;
+    margin-bottom: 1rem;
+    font-weight: 750;
+    letter-spacing: -0.01em;
+    padding-top: 1.25rem;
+    border-top: 1px solid #f1f5f9;
 }
 
-/* --- Body Text --- */
 .privacy-policy-content p {
-    font-size: 1.125rem;
-    margin-bottom: 1.5rem;
+    font-size: 1rem;
+    margin: 0 0 1rem 0;
     color: var(--pp-text);
 }
 
-/* --- Modern List Styling (Arrow Bullets) --- */
 .privacy-policy-content ul {
-    margin: 2rem 0;
+    margin: 1.25rem 0;
     padding: 0;
 }
 
 .privacy-policy-content li {
     list-style: none;
-    padding: 12px 0 12px 30px;
+    padding: 10px 0 10px 26px;
     position: relative;
     border-bottom: 1px solid #f1f5f9;
 }
 
 .privacy-policy-content li::before {
-    content: "→";
+    content: ">";
     position: absolute;
     left: 0;
     color: var(--pp-accent);
-    font-weight: bold;
+    font-weight: 800;
 }
 
-/* --- Links & Interactive --- */
 .privacy-policy-content a {
     color: var(--brand-blue);
     text-decoration: none;
-    font-weight: 600;
-    box-shadow: inset 0 -2px 0 rgba(19, 56, 128, 0.1);
+    font-weight: 650;
+    box-shadow: inset 0 -2px 0 rgba(19, 56, 128, 0.12);
     transition: all 0.2s ease;
 }
 
 .privacy-policy-content a:hover {
-    box-shadow: inset 0 -10px 0 rgba(19, 56, 128, 0.05);
+    box-shadow: inset 0 -10px 0 rgba(19, 56, 128, 0.06);
     color: var(--pp-accent);
 }
 
-/* --- Contact / Address Box --- */
 .privacy-policy-content address {
-    margin: 3rem 0;
-    padding: 2rem;
+    margin: 1.5rem 0;
+    padding: 1.25rem;
     background: #f8fafc;
     border-radius: 12px;
     font-style: normal;
     border: 1px solid #e2e8f0;
+    overflow-wrap: anywhere;
 }
 
-/* --- Final Acknowledgment (Same as TOU) --- */
 .privacy-policy-content p:last-of-type {
-    margin-top: 5rem;
-    font-size: 0.95rem;
+    margin-top: 2.5rem;
+    font-size: 0.9rem;
     color: var(--brand-blue);
     opacity: 0.6;
     text-align: center;
 }
 
-/* =========================================
-    MOBILE OPTIMIZATIONS (Consistency Fixes)
-========================================= */
 @media (max-width: 640px) {
-    .privacy-policy-wrapper {
-        padding: 60px 20px;
+    :root {
+        --pp-pad-y: 34px;
+        --pp-pad-x: 16px;
     }
 
     .privacy-policy-content h1 {
-        font-size: 2.2rem;
+        font-size: 1.65rem;
     }
 
     .privacy-policy-content h2 {
-        font-size: 1.4rem;
-        margin-top: 3rem;
+        font-size: 1.15rem;
+        margin-top: 2rem;
     }
 
     .privacy-policy-content p {
-        font-size: 1.05rem;
-    }
-
-    /* Safety for small screens */
-    address,
-    p,
-    li,
-    a {
-        word-wrap: break-word;
-        overflow-wrap: break-word;
+        font-size: 0.98rem;
     }
 }
