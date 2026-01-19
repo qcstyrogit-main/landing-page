@@ -57,13 +57,6 @@ function getPrimaryFilterContainer() {
   return sidebar || drawer;
 }
 
-function companyInitials(name) {
-  if (!name) return "CO";
-  const words = name.trim().split(/\s+/).slice(0, 2);
-  const letters = words.map(word => word[0]).join("");
-  return letters.toUpperCase();
-}
-
 /**
  * Updated to handle Seconds, Minutes, Hours, Days, and Weeks
  * Accepts either a Date string or a number (days)
@@ -168,7 +161,6 @@ function renderList(list) {
     
     card.innerHTML = `
         <div class="job-card-body">
-          <div class="company-logo" aria-hidden="true">${companyInitials(j.company)}</div>
           <div class="job-main">
             <div class="job-header">
                 <h3 class="job-title">${j.title || 'N/A'}</h3>
