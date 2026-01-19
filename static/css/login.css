@@ -12,7 +12,7 @@ html, body {
     padding: 0;
     height: 100%;
     width: 100%;
-    font-family: 'Inter', -apple-system, sans-serif;
+    font-family: 'Roboto', -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
     overflow: hidden; /* Prevent scrolling on the main login screen */
 }
 
@@ -78,7 +78,7 @@ body {
 
 /* Style form labels */
 .form-row label {
-    font-family: 'Roboto', sans-serif; /* Change font */
+    font-family: inherit; /* Match global font */
     font-weight: 500;                  /* Optional: medium weight */
     color: #94a3b8;                    /* Change text color */
     font-size: 0.95rem;                /* Adjust size if needed */

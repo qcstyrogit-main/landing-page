@@ -613,6 +613,16 @@
 
   <!-- DARK OVERLAY -->
   <div id="sidebarOverlay" class="sidebar-overlay"></div>
+
+  <!-- SUCCESS POPUP -->
+  <div id="inquirySuccessPopup" class="inquiry-popup" aria-hidden="true">
+    <div class="inquiry-popup-card" role="dialog" aria-modal="true" aria-labelledby="inquiryPopupTitle">
+      <button type="button" class="popup-close" aria-label="Close message">&times;</button>
+      <div class="popup-badge" aria-hidden="true">OK</div>
+      <h3 id="inquiryPopupTitle">Inquiry Sent</h3>
+      <p id="inquiryPopupMessage">Your inquiry has been sent successfully.</p>
+    </div>
+  </div>
 {% endblock %}
 
 {% block footer %}

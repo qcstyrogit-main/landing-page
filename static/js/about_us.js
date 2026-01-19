@@ -5,6 +5,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const nextBtn = document.querySelector('.next-btn');
     const eventCards = document.querySelectorAll('.events-cards .event-card');
 
+    if (!eventCardsContainer || !eventWrapper || eventCards.length === 0) {
+        return;
+    }
+
     // ===========================
     // DUPLICATE CARDS (ONCE)
     // ===========================
@@ -12,7 +16,8 @@ document.addEventListener("DOMContentLoaded", () => {
         eventCardsContainer.appendChild(card.cloneNode(true));
     });
 
-    let scrollSpeed = 0.5;
+    let scrollSpeed = 0.7;
+    let scrollRemainder = 0;
     let isDragging = false;
     let isPaused = false;
     let startX, scrollLeft;
@@ -24,6 +29,12 @@ document.addEventListener("DOMContentLoaded", () => {
     };
     updateDimensions();
     window.addEventListener('resize', updateDimensions);
+    window.addEventListener('load', updateDimensions);
+
+    if (window.ResizeObserver) {
+        const observer = new ResizeObserver(() => updateDimensions());
+        observer.observe(eventCardsContainer);
+    }
 
     // ===========================
     // NORMALIZE SCROLL (KEY FIX)
@@ -41,8 +52,13 @@ document.addEventListener("DOMContentLoaded", () => {
     // ===========================
     const animate = () => {
         if (!isDragging && !isPaused) {
-            eventCardsContainer.scrollLeft += scrollSpeed;
-            normalizeScroll();
+            scrollRemainder += scrollSpeed;
+            const step = Math.floor(scrollRemainder);
+            if (step > 0) {
+                eventCardsContainer.scrollLeft += step;
+                scrollRemainder -= step;
+                normalizeScroll();
+            }
         }
         requestAnimationFrame(animate);
     };

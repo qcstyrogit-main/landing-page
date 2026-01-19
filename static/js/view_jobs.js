@@ -3,20 +3,20 @@ const jobsList = document.getElementById('jobsList');
 const resultsCount = document.getElementById('resultsCount');
 
 // Layout Containers
-const listViewContainer = document.getElementById('listViewContainer'); 
-const jobDetailView = document.getElementById('jobDetailView'); 
+const listViewContainer = document.getElementById('listViewContainer');
+const jobDetailView = document.getElementById('jobDetailView');
 
 // Filter Containers (Desktop)
 const companyOptions = document.getElementById('companyOptions');
 const departmentOptions = document.getElementById('departmentOptions');
-const locationOptions = document.getElementById('locationOptions'); 
-const typeOptions = document.getElementById('typeOptions');         
+const locationOptions = document.getElementById('locationOptions');
+const typeOptions = document.getElementById('typeOptions');
 
 // Filter Containers (Mobile Drawer)
 const companyOptionsDrawer = document.getElementById('companyOptionsDrawer');
 const departmentOptionsDrawer = document.getElementById('departmentOptionsDrawer');
-const locationOptionsDrawer = document.getElementById('locationOptionsDrawer'); 
-const typeOptionsDrawer = document.getElementById('typeOptionsDrawer');         
+const locationOptionsDrawer = document.getElementById('locationOptionsDrawer');
+const typeOptionsDrawer = document.getElementById('typeOptionsDrawer');
 
 // UI Navigation & Buttons
 const openFilters = document.getElementById('openFilters');
@@ -44,12 +44,24 @@ const detailDept = document.getElementById('detailDept');
 const detailSalary = document.getElementById('detailSalary');
 const detailType = document.getElementById('detailType');
 const detailCount = document.getElementById('detailCount');
+const detailEmpty = document.getElementById('detailEmpty');
 
-let jobsData = []; 
+let jobsData = [];
 
 // ------------------- Helper Functions -------------------
 function unique(arr, key) {
   return Array.from(new Set(arr.map(a => a[key]).filter(val => val && val !== ""))).sort();
+}
+
+function getPrimaryFilterContainer() {
+  return sidebar || drawer;
+}
+
+function companyInitials(name) {
+  if (!name) return "CO";
+  const words = name.trim().split(/\s+/).slice(0, 2);
+  const letters = words.map(word => word[0]).join("");
+  return letters.toUpperCase();
 }
 
 /**
@@ -102,40 +114,6 @@ function formatPosted(value) {
   return diffInWeeks === 1 ? '1 week ago' : `${diffInWeeks} weeks ago`;
 }
 
-// ------------------- View Management -------------------
-function showJobDetail(job, isFromRouting = false) {
-    // Logic for persistence
-    window.location.hash = `job-${job.name || job.id}`;
-
-    // Hide List, Show Detail
-    if (listViewContainer) listViewContainer.style.display = 'none';
-    jobDetailView.style.display = 'block';
-    
-    if (!isFromRouting) window.scrollTo(0, 0);
-
-    breadcrumbTitle.textContent = job.title;
-    detailTitle.textContent = job.title;
-    detailCompany.textContent = job.company;
-    
-    // Use the updated format function here
-    detailPosted.textContent = formatPosted(job.postedDays);
-
-    detailLocation.textContent = job.location || 'N/A';
-    detailDept.textContent = job.department || 'N/A';
-    detailSalary.textContent = job.salary || 'N/A'; 
-    detailType.textContent = job.employment_type || 'Full-time';
-    detailCount.textContent = job.applicants || '0';
-    
-    detailDescription.innerHTML = job.description || '<p>No description provided.</p>';
-}
-
-if (backToJobs) {
-    backToJobs.addEventListener('click', () => {
-        jobDetailView.style.display = 'none';
-        if (listViewContainer) listViewContainer.style.display = 'block';
-    });
-}
-
 // ------------------- Render Options (Dynamic Filters with Counts) -------------------
 function renderOptions() {
   const comps = unique(jobsData, 'company');
@@ -165,9 +143,11 @@ function renderOptions() {
   if(locationOptionsDrawer) locationOptionsDrawer.innerHTML = generateCheckboxHTML(locs, 'location', 'location');
   if(typeOptionsDrawer) typeOptionsDrawer.innerHTML = generateCheckboxHTML(types, 'employment_type', 'employment_type');
 
-  sidebar.querySelectorAll('input').forEach(input => {
-    input.addEventListener('change', () => applyFrom(sidebar));
-  });
+  if (sidebar) {
+    sidebar.querySelectorAll('input').forEach(input => {
+      input.addEventListener('change', () => applyFrom(sidebar));
+    });
+  }
 }
 
 // ------------------- Render Job List (Replaced Alert with Detail View) -------------------
@@ -188,55 +168,59 @@ function renderList(list) {
     
     card.innerHTML = `
         <div class="job-card-body">
-          <div class="job-header">
-              <h3 class="job-title">${j.title || 'N/A'}</h3>
-              <span class="type-badge">${j.employment_type || 'Full-time'}</span>
-          </div>
-          
-          <div class="job-company-row">
-              <span class="company-name">${j.company || 'N/A'}</span>
-              <span class="dot">·</span>
-              <span class="posted-date">${formatPosted(j.postedDays)}</span>
-          </div>
+          <div class="company-logo" aria-hidden="true">${companyInitials(j.company)}</div>
+          <div class="job-main">
+            <div class="job-header">
+                <h3 class="job-title">${j.title || 'N/A'}</h3>
+                <span class="type-badge">${j.employment_type || 'Full-time'}</span>
+            </div>
+            
+            <div class="job-company-row">
+                <span class="company-name">${j.company || 'N/A'}</span>
+                <span class="dot">&middot;</span>
+                <span class="posted-date">${formatPosted(j.postedDays)}</span>
+            </div>
 
-          <div class="job-details">
-              <div class="detail-item">
-                  <span class="icon">
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                          <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 1 1 18 0z"></path>
-                          <circle cx="12" cy="10" r="3"></circle>
-                      </svg>
-                  </span>
-                  <span>${j.location || 'N/A'}</span> 
-              </div>
+            <div class="job-meta">
+                <div class="detail-item">
+                    <span class="icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 1 1 18 0z"></path>
+                            <circle cx="12" cy="10" r="3"></circle>
+                        </svg>
+                    </span>
+                    <span>${j.location || 'N/A'}</span> 
+                </div>
 
-              <div class="detail-item">
-                  <span class="icon">
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                          <line x1="6" y1="3" x2="6" y2="15"></line>
-                          <circle cx="18" cy="6" r="3"></circle>
-                          <circle cx="6" cy="18" r="3"></circle>
-                          <path d="M18 9a9 9 0 0 1-9 9"></path>
-                      </svg>
-                  </span>
-                  <span>${j.department || 'N/A'}</span>
-              </div>
+                <div class="detail-item">
+                    <span class="icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="6" y1="3" x2="6" y2="15"></line>
+                            <circle cx="18" cy="6" r="3"></circle>
+                            <circle cx="6" cy="18" r="3"></circle>
+                            <path d="M18 9a9 9 0 0 1-9 9"></path>
+                        </svg>
+                    </span>
+                    <span>${j.department || 'N/A'}</span>
+                </div>
 
-              <div class="detail-item">
-                  <span class="icon">
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                          <ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
-                          <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path>
-                          <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path>
-                      </svg>
-                  </span>
-                  <span>${j.salary || 'N/A'}</span>
-              </div>
+                <div class="detail-item">
+                    <span class="icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
+                            <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path>
+                            <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path>
+                        </svg>
+                    </span>
+                    <span>${j.salary || 'N/A'}</span>
+                </div>
+            </div>
           </div>
+          <div class="job-side"></div>
         </div>
 
         <div class="job-card-footer">
-          Applications received: <strong>${j.applicants || 0}</strong>
+          <span>Applications received: <strong>${j.applicants || 0}</strong></span>
         </div>
     `;
 
@@ -299,15 +283,19 @@ function closeDrawerFn() {
 }
 
 // ------------------- Event Listeners (Retained) -------------------
-applyFilters.addEventListener('click', () => applyFrom(sidebar));
+if (applyFilters) {
+  applyFilters.addEventListener('click', () => applyFrom(sidebar));
+}
 applyDrawer.addEventListener('click', () => applyFrom(drawer));
 
-clearAll.addEventListener('click', () => {
-  sidebar.querySelectorAll('input').forEach(i => i.checked = false);
-  const any = sidebar.querySelector('input[name="posting"][value="any"]');
-  if (any) any.checked = true;
-  applyFrom(sidebar);
-});
+if (clearAll && sidebar) {
+  clearAll.addEventListener('click', () => {
+    sidebar.querySelectorAll('input').forEach(i => i.checked = false);
+    const any = sidebar.querySelector('input[name="posting"][value="any"]');
+    if (any) any.checked = true;
+    applyFrom(sidebar);
+  });
+}
 
 clearDrawer.addEventListener('click', () => {
   drawer.querySelectorAll('input').forEach(i => i.checked = false);
@@ -320,18 +308,18 @@ openFilters.addEventListener('click', openDrawer);
 closeDrawer.addEventListener('click', closeDrawerFn);
 backdrop.addEventListener('click', closeDrawerFn);
 
-searchInput.addEventListener('input', () => applyFrom(sidebar));
+searchInput.addEventListener('input', () => applyFrom(getPrimaryFilterContainer()));
 clearSearch.addEventListener('click', () => {
   searchInput.value = '';
-  applyFrom(sidebar);
+  applyFrom(getPrimaryFilterContainer());
 });
 
 // ------------------- Data Fetching (Retained) -------------------
 async function fetchJobs() {
   try {
     const [jobsRes, countsRes] = await Promise.all([
-      fetch("/api/jobs"),                  
-      fetch("/api/job-applicant-counts")   
+      fetch("/api/jobs"),
+      fetch("/api/job-applicant-counts")
     ]);
 
     const jobsJson = await jobsRes.json();
@@ -345,7 +333,7 @@ async function fetchJobs() {
       applicants: counts[j.name] || 0
     }));
 
-    renderOptions(); 
+    renderOptions();
     renderList(jobsData);
 
     handleRouting();
@@ -388,17 +376,30 @@ function handleRouting() {
 function showListView() {
     currentJob = null; // Clear active job
     if (jobDetailView) jobDetailView.style.display = 'none';
-    if (listViewContainer) listViewContainer.style.display = 'block';
+    if (detailEmpty) detailEmpty.style.display = 'block';
+    if (listViewContainer) {
+        const isDesktop = window.matchMedia('(min-width: 901px)').matches;
+        listViewContainer.classList.remove('detail-open', 'detail-only');
+        listViewContainer.classList.toggle('detail-ready', isDesktop);
+        listViewContainer.style.display = 'block';
+    }
 }
 
 function showJobDetail(job, isFromRouting = false) {
     // Store the job object globally for the Apply button to use
-    currentJob = job; 
+    currentJob = job;
 
     window.location.hash = `job-${job.name || job.id}`;
 
-    if (listViewContainer) listViewContainer.style.display = 'none';
-    jobDetailView.style.display = 'block';
+    if (detailEmpty) detailEmpty.style.display = 'none';
+    if (listViewContainer) {
+        const isDesktop = window.matchMedia('(min-width: 901px)').matches;
+        listViewContainer.style.display = 'block';
+        listViewContainer.classList.add('detail-open');
+        listViewContainer.classList.remove('detail-ready');
+        listViewContainer.classList.toggle('detail-only', !isDesktop);
+    }
+    if (jobDetailView) jobDetailView.style.display = 'block';
     
     if (!isFromRouting) window.scrollTo(0, 0);
 
@@ -409,7 +410,7 @@ function showJobDetail(job, isFromRouting = false) {
     detailPosted.textContent = formatPosted(job.postedDays);
     detailLocation.textContent = job.location || 'N/A';
     detailDept.textContent = job.department || 'N/A';
-    detailSalary.textContent = job.salary || 'N/A'; 
+    detailSalary.textContent = job.salary || 'N/A';
     detailType.textContent = job.employment_type || 'Full-time';
     detailCount.textContent = job.applicants || '0';
     
@@ -420,7 +421,7 @@ function showJobDetail(job, isFromRouting = false) {
 
 if (backToJobs) {
     backToJobs.addEventListener('click', () => {
-        window.location.hash = ''; 
+        window.location.hash = '';
         showListView();
     });
 }
@@ -442,6 +443,17 @@ if (applyBtn) {
 
 // Listen for the hash change (helps with back/forward browser buttons)
 window.addEventListener('hashchange', handleRouting);
+
+window.addEventListener('resize', () => {
+    if (!listViewContainer) return;
+    const isDesktop = window.matchMedia('(min-width: 901px)').matches;
+    if (currentJob) {
+        listViewContainer.classList.toggle('detail-only', !isDesktop);
+    } else {
+        listViewContainer.classList.toggle('detail-ready', isDesktop);
+        listViewContainer.classList.remove('detail-only');
+    }
+});
 
 // Call routing on initial load
 window.addEventListener('load', handleRouting);

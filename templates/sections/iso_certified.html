@@ -1,9 +1,14 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='css/iso_certified.css') }}">
 
 <section id="iso-certified" class="sustainability-layer fade-in-layer">
-    <div class="sustainability-text">
+    <div class="sustainability-text iso-card">
+        <div class="iso-header">
+            <span class="iso-chip">ISO</span>
+            <span class="iso-kicker">Certified Quality Standards</span>
+        </div>
         <h1>ISO Certified</h1>
         <p>Q.C. Styropackaging and Multiplast Corporation is proudly certified with ISO standards.</p>
+        <div class="iso-divider" aria-hidden="true"></div>
 
         <div class="iso-images">
             <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/QC.png') }}" class="iso-logo" alt="QC logo">

@@ -1,32 +1,103 @@
 /* =========================================
    ABOUT US SECTION - IMPROVED UI
 ========================================= */
-/* Make About section full-bleed like intro: no outer margins, content centered inside */
 #about-us {
+    --about-ink: #0c1b2a;
+    --about-ink-soft: rgba(12, 27, 42, 0.72);
+    --about-accent: #ed1d26;
+    --about-accent-strong: #133880;
+    --about-card: rgba(255, 255, 255, 0.92);
+
     width: 100%;
-    padding-top: calc(var(--nav-height) + 8px); /* leave space for fixed header */
-    padding-bottom: 3rem;
+    padding-top: calc(var(--nav-height) + 24px);
+    padding-bottom: 4rem;
     box-sizing: border-box;
-    background: #f9fbff;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    color: #133880;
+    background:
+        radial-gradient(820px 420px at 12% 10%, rgba(237, 29, 38, 0.14), transparent 65%),
+        radial-gradient(680px 360px at 88% 20%, rgba(19, 56, 128, 0.16), transparent 60%),
+        linear-gradient(180deg, #fdfefe 0%, #eef3f7 55%, #f7fafc 100%);
+    font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    color: var(--about-ink);
     margin: 0;
+    position: relative;
+    overflow: hidden;
 }
 
 .about-us-section {
     width: 100%;
     max-width: none;
     margin: 0;
-    padding: 0; /* content padding is on .about-us-content now */
+    padding: 0;
     background: transparent;
     border-radius: 0;
     box-shadow: none;
+    position: relative;
+}
+
+#about-us::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+        radial-gradient(circle at 20% 25%, rgba(237, 29, 38, 0.1), transparent 36%),
+        radial-gradient(circle at 80% 15%, rgba(20, 78, 121, 0.12), transparent 40%);
+    opacity: 0.8;
+    pointer-events: none;
 }
 
 .about-us-content {
-    max-width: 1280px; /* center the inner content like intro */
+    max-width: 1280px;
     margin: 0 auto;
-    padding: 2rem; /* inner spacing similar to intro-content */
+    padding: 2.5rem 2rem;
+    position: relative;
+    z-index: 1;
+}
+
+.about-us-header {
+    text-align: center;
+    margin-bottom: 2.6rem;
+    animation: about-fade-up 0.8s ease both;
+}
+
+.about-us-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.35rem 0.8rem;
+    border-radius: 999px;
+    background: rgba(237, 29, 38, 0.12);
+    color: #133880;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    font-size: 0.72rem;
+    margin: 0 0 0.85rem 0;
+}
+
+.about-us-header h2 {
+    font-family: inherit;
+    font-size: clamp(2rem, 3.6vw, 3.1rem);
+    margin: 0 0 0.75rem 0;
+    letter-spacing: 0.02em;
+}
+
+.about-us-lede {
+    max-width: 720px;
+    margin: 0 auto;
+    color: var(--about-ink-soft);
+    font-weight: 500;
+    font-size: 1.05rem;
+    line-height: 1.7;
+}
+
+.about-us-media {
+    position: relative;
+    margin-bottom: 3rem;
+    border-radius: 24px;
+    padding: 12px;
+    background: linear-gradient(135deg, rgba(237, 29, 38, 0.12), rgba(19, 56, 128, 0.12));
+    box-shadow: 0 22px 40px rgba(10, 32, 52, 0.18);
+    animation: about-fade-up 0.9s ease both;
 }
 
 /* =========================================
@@ -34,14 +105,14 @@
 ========================================= */
 #history-video {
     width: 100%;
-    border-radius: 16px;
-    margin-bottom: 45px;
-    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.16);
-    transition: transform 0.3s ease;
+    border-radius: 18px;
+    display: block;
+    box-shadow: 0 12px 26px rgba(10, 32, 52, 0.18);
+    transition: transform 0.35s ease;
 }
 
 #history-video:hover {
-    transform: scale(1.02);
+    transform: scale(1.015);
 }
 
 /* =========================================
@@ -50,7 +121,7 @@
 .about-us-cards {
     display: flex;
     flex-wrap: wrap;
-    gap: 30px;
+    gap: 26px;
     justify-content: center;
     padding-bottom: 15px;
 }
@@ -61,21 +132,19 @@
     overflow: hidden;
 }
 
-/* Update this specific block in your CSS */
 .events-cards {
     display: flex;
     gap: 20px;
-    overflow-x: hidden; /* Changed from auto to hide scrollbar */
-    scroll-behavior: auto; /* IMPORTANT: must be auto for JS animation */
+    overflow-x: hidden;
+    scroll-behavior: auto;
     padding-bottom: 12px;
     -ms-overflow-style: none;
     scrollbar-width: none;
 }
+
 .events-cards::-webkit-scrollbar {
     display: none;
 }
-
-
 
 .events-cards.dragging {
     cursor: grabbing;
@@ -87,34 +156,34 @@
 ========================================= */
 .about-us-cards .card,
 .event-card {
-    background: #fff;
-    flex: 0 0 320px; /* Fixed width for desktop */
+    background: var(--about-card);
+    flex: 0 0 320px;
     min-width: 320px;
     max-width: 320px;
-    padding: 32px 28px;
-    text-align: center;
-    border: 1.5px solid #d7dce7;
-    border-radius: 18px;
-    box-shadow: 0 14px 32px rgba(19, 56, 128, 0.1);
+    padding: 32px 28px 36px;
+    text-align: left;
+    border: 1px solid rgba(12, 27, 42, 0.12);
+    border-radius: 20px;
+    box-shadow: 0 18px 34px rgba(10, 32, 52, 0.12);
     position: relative;
     overflow: hidden;
     transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
-
-    /* 🔧 Auto-scaling background */
-    background-image: url("data:image/svg+xml,%3Csvg%20width%3D'100%25'%20height%3D'100%25'%20viewBox%3D'0%200%20450%20120'%20xmlns%3D'http://www.w3.org/2000/svg'%3E%3Cpath%20d%3D'M0%2040%20Q75%2080%20150%2040%20T300%2040%20T450%2040%20V120%20H0%20Z'%20fill%3D'%23ED1C24'/%3E%3C/svg%3E");
+    background-image:
+        radial-gradient(120px 120px at 85% 10%, rgba(237, 29, 38, 0.14), transparent 70%),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(243, 246, 250, 0.92));
     background-repeat: no-repeat;
-    background-size: contain;       /* Cover scales with card */
-    background-position: bottom center;
+    background-size: cover;
+    background-position: center;
     cursor: pointer;
+    animation: about-fade-up 0.9s ease both;
 }
 
 .about-us-cards .card:hover,
 .event-card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 20px 40px rgba(19, 56, 128, 0.18);
-    border-color: #ed1c24;
+    transform: translateY(-10px);
+    box-shadow: 0 24px 44px rgba(10, 32, 52, 0.18);
+    border-color: rgba(237, 29, 38, 0.45);
 }
-
 
 /* =========================================
    CARD TEXT
@@ -122,32 +191,32 @@
 .about-us-cards .card h3,
 .event-card h4 {
     margin-bottom: 18px;
-    font-size: 30px;
-    font-weight: 800;
-    color: #0a4e96;
-    text-transform: uppercase;
-    letter-spacing: 1.2px;
+    font-size: 26px;
+    font-weight: 700;
+    color: #133880;
+    text-transform: none;
+    letter-spacing: 0.02em;
     transition: color 0.3s ease;
 }
 
 .about-us-cards .card:hover h3,
 .event-card:hover h4 {
-    color: #ed1c24;
+    color: #ed1d26;
 }
 
 .about-us-cards .card p,
 .event-card p {
     font-size: 16px;
-    font-weight: 700;
-    color: #133880;
-    line-height: 1.75;
+    font-weight: 500;
+    color: var(--about-ink-soft);
+    line-height: 1.7;
     white-space: pre-line;
     transition: color 0.3s ease;
 }
 
 .about-us-cards .card:hover p,
 .event-card:hover p {
-    color: #444a6b;
+    color: var(--about-ink);
 }
 
 /* =========================================
@@ -157,22 +226,23 @@
     text-align: center;
     max-width: 900px;
     margin: 60px auto 0;
+    animation: about-fade-up 0.95s ease both;
 }
 
 .our-events-description h2 {
-    font-size: 2.8rem;
-    font-weight: 900;
-    color: #0a4e96;
+    font-size: 2.6rem;
+    font-weight: 700;
+    color: #133880;
     margin-bottom: 18px;
-    letter-spacing: 0.07em;
+    letter-spacing: 0.04em;
 }
 
 .our-events-description p {
     font-size: 1.1rem;
-    font-weight: 700;
-    color: #133880;
+    font-weight: 500;
+    color: var(--about-ink-soft);
     line-height: 1.65;
-    text-transform: uppercase;
+    text-transform: none;
 }
 
 /* =========================================
@@ -181,20 +251,62 @@
 .event-card {
     display: block;
     color: inherit;
+    text-decoration: none;
+    position: relative;
+    min-height: 360px;
+    padding: 16px;
 }
 
 .event-card img {
     width: 100%;
-    height: 220px;
+    height: 100%;
+    min-height: 320px;
     object-fit: cover;
-    border-top-left-radius: 18px;
-    border-top-right-radius: 18px;
-    margin-bottom: 18px;
+    border-radius: 18px;
+    display: block;
     transition: transform 0.3s ease;
 }
 
 .event-card:hover img {
-    transform: scale(1.05);
+    transform: scale(1.04);
+}
+
+.event-card::before {
+    content: "";
+    position: absolute;
+    inset: 16px;
+    border-radius: 18px;
+    background: linear-gradient(180deg, rgba(13, 24, 48, 0.05) 0%, rgba(13, 24, 48, 0.7) 100%);
+    z-index: 1;
+    transition: opacity 0.3s ease;
+}
+
+.event-card .event-text {
+    position: absolute;
+    left: 24px;
+    right: 24px;
+    bottom: 26px;
+    z-index: 2;
+    background: rgba(19, 56, 128, 0.88);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    color: #fff;
+    padding: 12px 14px;
+    border-radius: 14px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    box-shadow: 0 12px 22px rgba(13, 24, 48, 0.25);
+}
+
+.event-card .event-text p {
+    margin: 0;
+    font-size: 0.9rem;
+    line-height: 1.4;
+    color: #fff;
+}
+
+.event-card:hover .event-text {
+    background: rgba(237, 29, 38, 0.9);
 }
 
 /* =========================================
@@ -204,7 +316,7 @@
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    background: rgba(10, 78, 150, 0.75);
+    background: rgba(19, 56, 128, 0.78);
     color: #fff;
     border: none;
     padding: 10px 14px;
@@ -213,12 +325,12 @@
     border-radius: 6px;
     font-size: 1.3rem;
     transition: background 0.3s ease;
-    box-shadow: 0 2px 8px rgba(10, 78, 150, 0.5);
+    box-shadow: 0 2px 8px rgba(10, 32, 52, 0.5);
 }
 
 .carousel-btn:hover {
-    background: rgba(237, 28, 36, 0.85);
-    box-shadow: 0 6px 20px rgba(237, 28, 36, 0.75);
+    background: rgba(237, 29, 38, 0.9);
+    box-shadow: 0 6px 20px rgba(237, 29, 38, 0.45);
 }
 
 .prev-btn {
@@ -240,17 +352,49 @@
     border: none;
     border-radius: 12px;
     cursor: pointer;
-    background: linear-gradient(135deg, #ed1c24, #ff5733);
+    background: linear-gradient(135deg, #ed1d26, #c3161c);
     color: #fff;
-    box-shadow: 0 8px 20px rgba(237, 28, 36, 0.3);
+    box-shadow: 0 8px 20px rgba(237, 29, 38, 0.3);
     transition: all 0.35s ease;
     user-select: none;
 }
 
 .show-more-btn:hover {
     transform: translateY(-4px) scale(1.06);
-    box-shadow: 0 12px 30px rgba(237, 28, 36, 0.45);
-    background: linear-gradient(135deg, #ff5733, #ed1c24);
+    box-shadow: 0 12px 30px rgba(237, 29, 38, 0.4);
+    background: linear-gradient(135deg, #ff3740, #b31218);
+}
+
+.about-us-cards .card:nth-child(1) { animation-delay: 0.05s; }
+.about-us-cards .card:nth-child(2) { animation-delay: 0.12s; }
+.about-us-cards .card:nth-child(3) { animation-delay: 0.2s; }
+.event-card:nth-child(1) { animation-delay: 0.05s; }
+.event-card:nth-child(2) { animation-delay: 0.1s; }
+.event-card:nth-child(3) { animation-delay: 0.15s; }
+.event-card:nth-child(4) { animation-delay: 0.2s; }
+
+@keyframes about-fade-up {
+    from {
+        opacity: 0;
+        transform: translateY(18px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .about-us-header,
+    .about-us-media,
+    .about-us-cards .card,
+    .event-card,
+    .our-events-description {
+        animation: none;
+    }
+    #history-video {
+        transition: none;
+    }
 }
 
 /* =========================================
@@ -270,6 +414,10 @@
         padding: 2.5rem 1rem;
     }
 
+    .about-us-content {
+        padding: 2rem 1.2rem;
+    }
+
     #history-video {
         margin-bottom: 30px;
         border-radius: 14px;
@@ -282,30 +430,47 @@
 
     .about-us-cards .card,
     .event-card {
-        flex: 0 0 95%; /* Cards almost full-width on mobile */
+        flex: 0 0 95%;
         min-width: unset;
         max-width: unset;
         padding: 28px 24px;
+        text-align: left;
     }
 
     .about-us-cards .card h3,
     .event-card h4 {
-        font-size: 24px;
+        font-size: 22px;
     }
 
     .our-events-description h2 {
-        font-size: 2rem;
+        font-size: 2.05rem;
     }
 
     .event-card img {
         height: 180px;
-        border-radius: 14px 14px 0 0;
+        border-radius: 16px;
+        min-height: 240px;
     }
 
     .carousel-btn {
         font-size: 1.1rem;
         padding: 8px 12px;
     }
+
+    .event-card {
+        min-height: 320px;
+        padding: 12px;
+    }
+
+    .event-card::before {
+        inset: 12px;
+        border-radius: 16px;
+    }
+
+    .event-card .event-text {
+        left: 20px;
+        right: 20px;
+        bottom: 20px;
+        border-radius: 12px;
+    }
 }
-
-

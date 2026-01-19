@@ -364,6 +364,86 @@
 }
 
 /* -----------------------------------------
+   SUCCESS POPUP
+------------------------------------------ */
+.inquiry-popup {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(10, 15, 25, 0.55);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+    z-index: 10050;
+    padding: 20px;
+}
+
+.inquiry-popup.show {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.inquiry-popup-card {
+    position: relative;
+    background: #fff;
+    border-radius: 14px;
+    padding: 22px 24px 20px;
+    max-width: 360px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.2);
+    transform: translateY(10px);
+    transition: transform 0.2s ease;
+}
+
+.inquiry-popup.show .inquiry-popup-card {
+    transform: translateY(0);
+}
+
+.popup-badge {
+    width: 48px;
+    height: 48px;
+    border-radius: 999px;
+    background: #e6f9f0;
+    color: #067647;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 12px;
+    border: 1px solid #34d399;
+}
+
+.inquiry-popup-card h3 {
+    margin: 0 0 6px;
+    font-size: 1.25rem;
+    color: #0a4e96;
+}
+
+.inquiry-popup-card p {
+    margin: 0;
+    color: #4b5563;
+    line-height: 1.4;
+}
+
+.popup-close {
+    position: absolute;
+    top: 12px;
+    right: 14px;
+    background: transparent;
+    border: none;
+    font-size: 24px;
+    color: #3b3b3b;
+    cursor: pointer;
+}
+
+.popup-close:hover {
+    color: #ED1C24;
+}
+
+/* -----------------------------------------
    RESPONSIVE & MOBILE STYLES
 ------------------------------------------ */
 @media (max-width: 768px) {

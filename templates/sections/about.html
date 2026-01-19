@@ -3,11 +3,19 @@
 <section class="about-us-section" id="about-us">
     <div class="about-us-content">
 
+        <div class="about-us-header">
+            <p class="about-us-eyebrow">About Us</p>
+            <h2>Packaging solutions built on quality, care, and continuous improvement.</h2>
+            <p class="about-us-lede">Our teams deliver reliable products and services while staying true to our values.</p>
+        </div>
+
         <!-- History Video -->
-        <video id="history-video" width="100%" height="auto" autoplay muted loop>
-            <source src="{{ url_for('static', filename='images/media/history.mp4') }}" type="video/mp4">
-            Your browser does not support the video tag.
-        </video>
+        <div class="about-us-media">
+            <video id="history-video" width="100%" height="auto" autoplay muted loop>
+                <source src="{{ url_for('static', filename='images/media/history.mp4') }}" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+        </div>
 
         <!-- About Us Cards -->
         <div class="about-us-cards">

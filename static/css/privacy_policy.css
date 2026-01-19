@@ -23,7 +23,7 @@
 .privacy-policy-section {
     background-color: var(--bg-light);
     color: var(--pp-text);
-    font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
     overflow: visible;
     width: 100%;
 }

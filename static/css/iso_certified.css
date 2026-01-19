@@ -1,5 +1,5 @@
 /* =========================================
-   ISO CERTIFIED - INTRO-MATCHED UI (FIXED)
+   ISO CERTIFIED - FEATURE SECTION
 ========================================= */
 
 #iso-certified {
@@ -8,99 +8,155 @@
     align-items: center;
     justify-content: center;
     text-align: center;
-
-    /* ✅ Flexible height instead of forcing 100vh */
     min-height: clamp(65vh, 80vh, 100vh);
-
-    background-color: #f4f7fa;
-
-    /* ✅ Responsive padding */
+    background: linear-gradient(120deg, #f4f7fa 0%, #eef3ff 55%, #f8fbff 100%);
     padding: clamp(3rem, 6vw, 6rem) 1.5rem;
-
     box-sizing: border-box;
     position: relative;
     overflow: hidden;
 }
 
-/* --- Container --- */
-.iso-content {
-    width: 100%;
-    max-width: 1200px;
-    margin: 0 auto;
-    z-index: 2;
-
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-
-    /* ✅ Responsive spacing */
-    gap: clamp(1.5rem, 4vw, 3rem);
+#iso-certified::before,
+#iso-certified::after {
+    content: "";
+    position: absolute;
+    border-radius: 50%;
+    z-index: 0;
+    opacity: 0.55;
 }
 
-/* --- Typography --- */
+#iso-certified::before {
+    width: 420px;
+    height: 420px;
+    right: -140px;
+    top: -160px;
+    background: radial-gradient(circle, rgba(19, 56, 128, 0.18), rgba(19, 56, 128, 0));
+}
+
+#iso-certified::after {
+    width: 520px;
+    height: 520px;
+    left: -200px;
+    bottom: -220px;
+    background: radial-gradient(circle, rgba(33, 150, 243, 0.16), rgba(33, 150, 243, 0));
+}
+
+#iso-certified .sustainability-text {
+    text-align: center;
+}
+
+.iso-card {
+    width: min(980px, 100%);
+    padding: clamp(2rem, 4vw, 3.5rem);
+    border-radius: 28px;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(248, 251, 255, 0.96));
+    border: 1px solid rgba(19, 56, 128, 0.12);
+    box-shadow: 0 25px 60px rgba(15, 47, 107, 0.12);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    position: relative;
+    z-index: 1;
+}
+
+.iso-header {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.25rem;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+}
+
+.iso-chip {
+    background: linear-gradient(135deg, #0f2f6b, #1e6fd2);
+    color: #ffffff;
+    padding: 0.35rem 0.75rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+    border-radius: 999px;
+    box-shadow: 0 10px 20px rgba(15, 47, 107, 0.25);
+}
+
+.iso-kicker {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #355a9b;
+}
+
 #iso-certified h1 {
-    font-size: clamp(2rem, 4.5vw, 3.3rem);
-    color: #133880;
+    font-size: clamp(2.1rem, 4.5vw, 3.4rem);
+    color: #0f2f6b;
     font-weight: 800;
-    line-height: 1.15;
+    line-height: 1.1;
     margin: 0;
     letter-spacing: -0.02em;
 }
 
 #iso-certified p {
-    font-size: clamp(1rem, 1.8vw, 1.25rem);
-    line-height: 1.7;
+    font-size: clamp(1rem, 1.8vw, 1.2rem);
+    line-height: 1.8;
     color: #4a5568;
-    max-width: 760px;
+    max-width: 720px;
     margin: 0 auto;
 }
 
-/* --- Logo Layout --- */
+.iso-divider {
+    width: 140px;
+    height: 4px;
+    margin: 1.6rem auto 1.8rem;
+    border-radius: 999px;
+    background: linear-gradient(90deg, rgba(19, 56, 128, 0.1), rgba(19, 56, 128, 0.6), rgba(19, 56, 128, 0.1));
+}
+
 .iso-images {
     display: flex;
     justify-content: center;
     align-items: center;
     flex-wrap: wrap;
-
-    /* ✅ Responsive gap */
-    gap: clamp(1.5rem, 4vw, 4rem);
+    gap: clamp(1.25rem, 3vw, 3rem);
     width: 100%;
-
+    padding: clamp(1rem, 2.5vw, 1.75rem);
+    border-radius: 22px;
+    background: rgba(255, 255, 255, 0.7);
+    border: 1px solid rgba(19, 56, 128, 0.12);
     animation: fadeInUp 0.8s ease-out forwards;
 }
 
 .iso-logo {
-    /* ✅ Responsive logo sizing */
-    height: clamp(70px, 12vw, 140px);
+    height: clamp(70px, 11vw, 130px);
     width: auto;
     object-fit: contain;
-
-    filter: drop-shadow(0 10px 20px rgba(0,0,0,0.05));
+    padding: 0.5rem 0.9rem;
+    background: #ffffff;
+    border-radius: 16px;
+    border: 1px solid rgba(19, 56, 128, 0.08);
+    filter: drop-shadow(0 12px 18px rgba(15, 47, 107, 0.12));
     transition: transform 0.35s ease, filter 0.35s ease;
 }
 
 .iso-logo:hover {
-    transform: scale(1.06);
-    filter: drop-shadow(0 15px 30px rgba(19, 56, 128, 0.15));
+    transform: translateY(-4px) scale(1.04);
+    filter: drop-shadow(0 18px 28px rgba(19, 56, 128, 0.2));
 }
 
-/* --- Animation --- */
 @keyframes fadeInUp {
     from { opacity: 0; transform: translateY(24px); }
     to { opacity: 1; transform: translateY(0); }
 }
 
-/* =========================================
-   MOBILE OPTIMIZATION (NO EXTRA SPACE)
-========================================= */
 @media (max-width: 768px) {
     #iso-certified {
-        min-height: unset; /* ✅ Let content decide height */
+        min-height: unset;
         padding: clamp(3rem, 8vw, 5rem) 1.25rem;
     }
 
-    .iso-content {
-        gap: 2rem;
+    .iso-header {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .iso-divider {
+        width: 110px;
     }
 }
 

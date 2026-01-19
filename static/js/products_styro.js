@@ -122,6 +122,32 @@ document.addEventListener("DOMContentLoaded", () => {
     const inquiryFormEl = document.getElementById("productInquiryForm");
 
     const submitBtn = inquiryFormEl.querySelector(".submit-btn");
+    const successPopup = document.getElementById("inquirySuccessPopup");
+    const successPopupMessage = document.getElementById("inquiryPopupMessage");
+    const successPopupClose = successPopup.querySelector(".popup-close");
+
+    function openSuccessPopup(message) {
+        successPopupMessage.textContent = message;
+        successPopup.classList.add("show");
+        successPopup.setAttribute("aria-hidden", "false");
+    }
+
+    function closeSuccessPopup() {
+        successPopup.classList.remove("show");
+        successPopup.setAttribute("aria-hidden", "true");
+    }
+
+    successPopupClose.addEventListener("click", closeSuccessPopup);
+    successPopup.addEventListener("click", (event) => {
+        if (event.target === successPopup) {
+            closeSuccessPopup();
+        }
+    });
+    document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape" && successPopup.classList.contains("show")) {
+            closeSuccessPopup();
+        }
+    });
 
     // --- Open sidebar on card click ---
     cards.forEach(card => {
@@ -186,14 +212,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
     .then(res => res.json())
     .then(data => {
-        alert(data.message?.message || "Inquiry submitted successfully!");
+        const successMessage = data?.message?.message || data?.message || "Inquiry submitted successfully!";
+        openSuccessPopup(successMessage);
         inquiryFormEl.reset();
         inquiryForm.style.display = "none";
         productView.style.display = "block";
     })
     .catch(err => {
         console.error(err);
-        alert(data.message?.message || "Failed to submit inquiry. Please try again.");
+        alert("Failed to submit inquiry. Please try again.");
     })
     .finally(() => {
         submitBtn.disabled = false;

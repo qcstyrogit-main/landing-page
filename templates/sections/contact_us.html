@@ -19,227 +19,39 @@
                 </select>
             </div>
 
-            <!-- ======================
-                 LUZON Offices
-                 ====================== -->
-            <div class="contact_row" data-area="luzon">
-                <div class="contact_text">
-                    <h2>Head Office</h2>
-                    <p><svg class="icon" aria-hidden="true"><use href="#icon-location"></use></svg> 1200-H EDSA corner Seminary Road, Quezon City, Philippines</p>
-                    <p><svg class="icon" aria-hidden="true"><use href="#icon-phone"></use></svg> (632) 8-928-5002 to 09<br>
-                        8-928-0352<br>
-                        8-928-5015<br>
-                        8-928-5016<br>
-                        8-928-5017<br>
-                        8-928-5019
-                    </p>
-                    <p><svg class="icon" aria-hidden="true"><use href="#icon-fax"></use></svg> (632) 3-454-6151<br>3-458-7695</p>
-                    <p><svg class="icon" aria-hidden="true"><use href="#icon-mail"></use></svg> sales_qcsc@qcstyro.com (GMA)<br>
-                        sales_mcmanila@qcstyro.com (GMA)<br>
-                        sales_mcluzon@qcstyro.com (North & South Luzon)<br>
-                        sales_multi@qcstyro.com (Visayas & Mindanao)
-                    </p>
+            <div class="contact_mapboard">
+                <div class="map_stage">
+                    <img class="ph_map" src="{{ url_for('static', filename='images/philippines_map.svg') }}" alt="Map of the Philippines">
+                    <div class="map_markers" id="contactMapMarkers"></div>
                 </div>
-                <div class="contact_map">
-                    <iframe src="https://www.google.com/maps?q=MCY+Building,+1200-H+Epifanio+de+los+Santos+Ave,+Project+8,+Quezon+City,+1106+Metro+Manila&output=embed"
-                        allowfullscreen loading="lazy"></iframe>
-                </div>
-            </div>
-
-            <!-- ROW 2: La Union Office -->
-            <div class="contact_row" data-area="luzon">
-                <div class="contact_text">
-                    <h2>La Union Office</h2>
-                    <p><svg class="icon" aria-hidden="true"><use href="#icon-location"></use></svg> # 265 P. Burgos St., Brgy. Tanqui, City of San Fernando, La Union</p>
-                    <p><svg class="icon" aria-hidden="true"><use href="#icon-phone"></use></svg> 09209008954<br>(632) 8 072-6078957</p>
-                </div>
-                <div class="contact_map">
-                    <iframe src="https://www.google.com/maps?q=J88F+97H,+San+Fernando+City,+La+Union&output=embed"
-                        allowfullscreen loading="lazy"></iframe>
+                <div class="map_panel" id="contactDetailPanel">
+                    <div class="map_panel-header">
+                        <h2 id="contactPanelTitle">Select a location</h2>
+                        <span id="contactPanelTag" class="contact_tag">-</span>
+                    </div>
+                    <div class="map_panel-body" id="contactPanelBody">
+                        <p>Click a marker on the map to view office details.</p>
+                    </div>
+                    <div class="map_panel-map">
+                        <iframe
+                            id="contactPanelMap"
+                            title="Selected location map"
+                            src="https://www.google.com/maps?q=Philippines&output=embed"
+                            loading="lazy"
+                            referrerpolicy="no-referrer-when-downgrade"
+                        ></iframe>
+                    </div>
+                    <a class="map_panel-link" id="contactPanelLink" href="#" target="_blank" rel="noopener">Open map</a>
                 </div>
             </div>
+           
 
-            <!-- ROW 3: Laguna Office -->
-            <div class="contact_row" data-area="luzon">
-                <div class="contact_text">
-                    <h2>Laguna Office</h2>
-                    <p><svg class="icon" aria-hidden="true"><use href="#icon-location"></use></svg> Blk 4A Lot 1A ELFYU Compound Brgy. Batino Calamba Laguna</p>
-                    <p><svg class="icon" aria-hidden="true"><use href="#icon-phone"></use></svg> 09209107834</p>
-                </div>
-                <div class="contact_map">
-                    <iframe src="https://www.google.com/maps?q=54XH+P93,+Calamba,+4027+Laguna&output=embed"
-                        allowfullscreen loading="lazy"></iframe>
-                </div>
+            <!-- Message Us Button -->
+            <div class="message-btn-container">
+                <button type="button" class="message-btn" id="openContactPopup">
+                    Message Us
+                </button>
             </div>
-
-            <!-- ROW 4: Pampanga Office -->
-            <div class="contact_row" data-area="luzon">
-                <div class="contact_text">
-                    <h2>Pampanga Office</h2>
-                    <p><svg class="icon" aria-hidden="true"><use href="#icon-location"></use></svg> BLK 5, 3rd St. Dolores Homesite Subd., Dolores, City of San Fernando, Pampanga (near Springfield Resident)</p>
-                    <p><svg class="icon" aria-hidden="true"><use href="#icon-phone"></use></svg> 09209107836<br>(632) 8 963-66-29</p>
-                </div>
-                <div class="contact_map">
-                    <iframe src="https://www.google.com/maps?q=BLK+5,+3rd+St.+Dolores+Homesite+Subd.,+Dolores,+City+of+San+Fernando,+Pampanga&output=embed"
-                        allowfullscreen loading="lazy"></iframe>
-                </div>
-            </div>
-
-            <!-- ROW 5: Quezon Office -->
-            <div class="contact_row" data-area="luzon">
-                <div class="contact_text">
-                    <h2>Quezon Office</h2>
-                    <p><svg class="icon" aria-hidden="true"><use href="#icon-location"></use></svg> Ylang Ylang St., Zaballero Subd., Brgy. Gulang Gulang, Lucena City, Quezon</p>
-                    <p><svg class="icon" aria-hidden="true"><use href="#icon-phone"></use></svg> 09209062734</p>
-                </div>
-                <div class="contact_map">
-                    <iframe src="https://www.google.com/maps?q=Ylang+Ylang+St.,+Zaballero+Subd.,+Brgy.+Gulang+Gulang,+Lucena+City,+Quezon&output=embed"
-                        allowfullscreen loading="lazy"></iframe>
-                </div>
-            </div>
-
-            <!-- ======================
-                 VISAYAS Offices
-                 ====================== -->
-            <div class="contact_row" data-area="visayas">
-                <div class="contact_text">
-                    <h2>Bacolod Office</h2>
-                    <p><svg class="icon" aria-hidden="true"><use href="#icon-location"></use></svg> NEW BACOLOD JL BLDG., Napoleon D. Gonzaga corner Lopez Jaena St., Bacolod City, Negros Occidental 6100</p>
-                    <p><svg class="icon" aria-hidden="true"><use href="#icon-phone"></use></svg> 09189442673<br>(632) 8 034-433-6571</p>
-                </div>
-                <div class="contact_map">
-                    <iframe src="https://www.google.com/maps?q=Napoleon+D.+Gonzaga+St+%26+Lopez+Jaena+St,+Bacolod+City,+Negros+Occidental&output=embed" 
-                        allowfullscreen loading="lazy"></iframe>
-                </div>
-            </div>
-
-            <div class="contact_row" data-area="visayas">
-                <div class="contact_text">
-                    <h2>Cebu Office</h2>
-                    <p><svg class="icon" aria-hidden="true"><use href="#icon-location"></use></svg> B27 J. King & Sons Warehouse Complex, Brgy. Cambaro, Mandaue City, Cebu</p>
-                    <p><svg class="icon" aria-hidden="true"><use href="#icon-phone"></use></svg> (632) 8 0920-911-4866<br>
-                    <p><svg class="icon" aria-hidden="true"><use href="#icon-fax"></use></svg> (632) 8 032-344-4192<br>(632) 8 032-505-0590</p>
-                </div>
-                <div class="contact_map">
-                    <iframe src="https://www.google.com/maps?q=B27+J.+King+%26+Sons+Warehouse+Complex,+Brgy.+Cambaro,+Mandaue+City,+Cebu&output=embed" 
-                        allowfullscreen loading="lazy"></iframe>
-                </div>
-            </div>
-
-            <div class="contact_row" data-area="visayas">
-                <div class="contact_text">
-                    <h2>Iloilo Office</h2>
-                    <p><svg class="icon" aria-hidden="true"><use href="#icon-location"></use></svg> CARDC Compound Door B-8, Alliance Warehouse, Brgy. Baldoza, La Paz, Iloilo City</p>
-                    <p><svg class="icon" aria-hidden="true"><use href="#icon-phone"></use></svg> 09189442931</p>
-                </div>
-                <div class="contact_map">
-                    <iframe src="https://www.google.com/maps?q=CARDC+Compound+Door+B-8,+Alliance+Warehouse,+Brgy.+Baldoza,+La+Paz,+Iloilo+City&output=embed" 
-                        allowfullscreen loading="lazy"></iframe>
-                </div>
-            </div>
-
-            <!-- ======================
-                 MINDANAO Offices
-                 ====================== -->
-            <div class="contact_row" data-area="mindanao">
-                <div class="contact_text">
-                    <h2>Cagayan de Oro Office</h2>
-                    <p><svg class="icon" aria-hidden="true"><use href="#icon-location"></use></svg> Door #8, Misco Compound, Cugman, Cagayan de Oro City</p>
-                    <p><svg class="icon" aria-hidden="true"><use href="#icon-phone"></use></svg> 09209114861<br>(632) 8 088-327-1969</p>
-                </div>
-                <div class="contact_map">
-                    <iframe src="https://www.google.com/maps?q=Door+%238,+Misco+Compound,+Cugman,+Cagayan+de+Oro+City&output=embed" 
-                        allowfullscreen loading="lazy"></iframe>
-                </div>
-            </div>
-
-            <div class="contact_row" data-area="mindanao">
-                <div class="contact_text">
-                    <h2>Davao Office</h2>
-                    <p><svg class="icon" aria-hidden="true"><use href="#icon-location"></use></svg> GRI Bldg., Door 4-B Mintrade Drive, Brgy. Centro R. Castillo, Agdao, Davao City</p>
-                    <p><svg class="icon" aria-hidden="true"><use href="#icon-phone"></use></svg> 09209114867</p>
-                </div>
-                <div class="contact_map">
-                    <iframe src="https://www.google.com/maps?q=GRI+Bldg.,+Door+4-B+Mintrade+Drive,+Brgy.+Centro+R.+Castillo,+Agdao,+Davao+City&output=embed" 
-                        allowfullscreen loading="lazy"></iframe>
-                </div>
-            </div>
-
-            <div class="contact_row" data-area="mindanao">
-                <div class="contact_text">
-                    <h2>Zamboanga Office</h2>
-                    <p><svg class="icon" aria-hidden="true"><use href="#icon-location"></use></svg> Fronting Old Servitek, beside BGS Hardware, Don Alfaro St., Tetuan, Zamboanga City</p>
-                    <p><svg class="icon" aria-hidden="true"><use href="#icon-phone"></use></svg> (632) 8 0918-944-2671<br>(632) 8 992-0138</p>
-                </div>
-                <div class="contact_map">
-                    <iframe src="https://www.google.com/maps?q=Fronting+Old+Servitek,+beside+BGS+Hardware,+Don+Alfaro+St.,+Tetuan,+Zamboanga+City&output=embed" 
-                        allowfullscreen loading="lazy"></iframe>
-                </div>
-            </div>
-
-            <!-- ======================
-                 PLANT
-                 ====================== -->
-            <!-- ROW: Guyong Plant -->
-            <div class="contact_row" data-area="plant">
-                <div class="contact_text">
-                    <h2>Guyong Plant</h2>
-                    <p><svg class="icon" aria-hidden="true"><use href="#icon-location"></use></svg> Km. 35 Bgy. Guyong, Sta. Maria, Bulacan, Philippines</p>
-                    <p><svg class="icon" aria-hidden="true"><use href="#icon-phone"></use></svg> (632) 8-928-5002 to 09 Trunkline<br>
-                        (632) 8-924-3796<br>
-                        (632) 3-454-6151
-                    </p>
-                    <p><svg class="icon" aria-hidden="true"><use href="#icon-mail"></use></svg> sales_qcsc@qcstyro.com (GMA)</p>
-                </div>
-                <div class="contact_map">
-                    <iframe src="https://www.google.com/maps?q=Km+35+Bgy+Guyong,+Sta+Maria,+Bulacan,+Philippines&output=embed"
-                        allowfullscreen loading="lazy"></iframe>
-                </div>
-            </div>
-
-
-            <!-- ROW: Sta Clara Plant -->
-            <div class="contact_row" data-area="plant">
-                <div class="contact_text">
-                    <h2>Sta Clara Plant</h2>
-                    <p><svg class="icon" aria-hidden="true"><use href="#icon-location"></use></svg> #25 Sitio Malinis, Lawang Bato, Valenzuela City, Philippines</p>
-                    <p><svg class="icon" aria-hidden="true"><use href="#icon-phone"></use></svg> (632) 8-928-5002 to 09 Trunkline<br>
-                        (632) 8-924-3796<br>
-                        (632) 3-454-6151
-                    </p>
-                    <p><svg class="icon" aria-hidden="true"><use href="#icon-mail"></use></svg> sales_qcsc@qcstyro.com (GMA)</p>
-                </div>
-                <div class="contact_map">
-                    <iframe src="https://www.google.com/maps?q=25+Sitio+Malinis,+Lawang+Bato,+Valenzuela+City,+Philippines&output=embed"
-                        allowfullscreen loading="lazy"></iframe>
-                </div>
-            </div>
-
-
-            <!-- ROW: Valenzuela Plant -->
-            <div class="contact_row" data-area="plant">
-                <div class="contact_text">
-                    <h2>Valenzuela Plant</h2>
-                    <p><svg class="icon" aria-hidden="true"><use href="#icon-location"></use></svg> #25 Sitio Malinis, Lawang Bato, Valenzuela City, Philippines</p>
-                    <p><svg class="icon" aria-hidden="true"><use href="#icon-phone"></use></svg> (02) 928-5002 to 09 Trunkline<br>
-                        (632) 8-924-3796<br>
-                        (632) 8-454-6151
-                    </p>
-                    <p><svg class="icon" aria-hidden="true"><use href="#icon-mail"></use></svg> sales_qcsc@qcstyro.com (GMA)</p>
-                </div>
-                <div class="contact_map">
-                    <iframe src="https://www.google.com/maps?q=25+Sitio+Malinis,+Lawang+Bato,+Valenzuela+City,+Philippines&output=embed"
-                        allowfullscreen loading="lazy"></iframe>
-                </div>
-            </div>
-
-
-        <!-- Message Us Button -->
-        <div class="message-btn-container">
-            <button type="button" class="message-btn" id="openContactPopup">
-                Message Us
-            </button>
-        </div>
 
             <!-- Overlay -->
             <div id="contactOverlay" class="contact-overlay"></div>
@@ -280,6 +92,15 @@
                 </form>
             </div>
 
+            <!-- Success Popup -->
+            <div id="contactSuccessPopup" class="contact-success-popup" aria-hidden="true">
+                <div class="contact-success-card" role="dialog" aria-modal="true" aria-labelledby="contactSuccessTitle">
+                    <button type="button" class="contact-success-close" aria-label="Close message">&times;</button>
+                    <div class="contact-success-badge" aria-hidden="true">OK</div>
+                    <h3 id="contactSuccessTitle">Message Sent</h3>
+                    <p id="contactSuccessMessage">Your inquiry has been sent successfully.</p>
+                </div>
+            </div>
 
             <!-- Visit Us on Our Socials -->
             <div class="contact-socials">
@@ -299,8 +120,6 @@
 
         </div>
     </section>
-</section>
 
 <!-- JS for Area Filter -->
 <script src="{{ url_for('static', filename='js/contact_us.js') }}"></script>
-

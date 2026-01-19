@@ -21,63 +21,35 @@
   <div class="container">
 
     <div id="listViewContainer" style="display: none;">
-      <header class="header">
-        <div class="header-left">
+      <header class="page-hero">
+        <div class="hero-copy">
+          <p class="eyebrow">QC & MC Careers</p>
           <h1 class="title">Job Openings</h1>
-          <p class="subtitle">Find available positions</p>
+          <p class="subtitle">Search by role, department, or location. Updated daily.</p>
         </div>
-        <div class="header-right">
+        <div class="hero-actions">
           <div class="search">
-            <input id="searchInput" type="search" placeholder="Search jobs, departments or company" />
+            <span class="search-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+            </span>
+            <input id="searchInput" type="search" placeholder="Search jobs, departments, or company" />
             <button id="clearSearch" aria-label="Clear search">
               <svg class="icon" aria-hidden="true"><use href="#icon-x"></use></svg>
             </button>
           </div>
-          <button id="openFilters" class="filter-btn">Filters</button>
+          <button id="openFilters" class="filter-btn">
+            <svg class="icon" aria-hidden="true" viewBox="0 0 24 24">
+              <path d="M3 5h18M6 12h12M10 19h4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
+            </svg>
+            Filters
+          </button>
         </div>
       </header>
 
       <main class="layout">
-        <aside class="sidebar" id="sidebar">
-          <div class="sidebar-inner">
-            <div class="sidebar-header">
-              <h3>Filters</h3>
-              <button id="clearAll" class="link-btn">Clear All</button>
-            </div>
-
-            <div class="filter-group">
-              <h4>Company</h4>
-              <div id="companyOptions" class="options"></div>
-            </div>
-
-            <div class="filter-group">
-              <h4>Department</h4>
-              <div id="departmentOptions" class="options"></div>
-            </div>
-
-            <div class="filter-group">
-              <h4>Employment Type</h4>
-              <div id="typeOptions" class="options"></div>
-            </div>
-
-            <div class="filter-group">
-              <h4>Location</h4>
-              <div id="locationOptions" class="options"></div>
-            </div>
-
-            <div class="filter-group">
-              <h4>Posting Date</h4>
-              <label class="opt"><input type="radio" name="posting" value="any" checked /> Any</label>
-              <label class="opt"><input type="radio" name="posting" value="7" /> Last 7 days</label>
-              <label class="opt"><input type="radio" name="posting" value="30" /> Last 30 days</label>
-            </div>
-
-            <div class="sidebar-actions">
-              <button id="applyFilters" class="apply">Apply</button>
-            </div>
-          </div>
-        </aside>
-
         <section class="content">
           <div class="toolbar">
             <div id="activeFilters" class="active-filters">Filters</div>
@@ -86,100 +58,118 @@
 
           <div id="jobsList" class="jobs-list"></div>
         </section>
+
+        <aside class="detail-panel">
+          <div id="detailEmpty" class="detail-empty">
+            <div class="detail-empty-card">
+              <div class="detail-empty-icon">
+                <svg viewBox="0 0 64 64" aria-hidden="true">
+                  <circle cx="32" cy="32" r="30" fill="#f1f5ff"></circle>
+                  <rect x="18" y="18" width="28" height="28" rx="8" fill="#ffffff" stroke="#c7d2fe" stroke-width="2"></rect>
+                  <rect x="24" y="26" width="16" height="3" rx="1.5" fill="#c7d2fe"></rect>
+                  <rect x="24" y="34" width="20" height="3" rx="1.5" fill="#c7d2fe"></rect>
+                </svg>
+              </div>
+              <h3>Select a job</h3>
+              <p>Display details here</p>
+            </div>
+          </div>
+
+          <div id="jobDetailView" style="display: none;">
+            <nav class="breadcrumb">
+              <span id="backToJobs">Job Openings</span>
+              <span class="chevron">&gt;</span>
+              <span id="breadcrumbTitle"></span>
+            </nav>
+            <div class="detail-header">
+              <div class="header-info">
+                <h1 id="detailTitle"></h1>
+                <p class="detail-subtitle">
+                  <span id="detailCompany"></span> &middot; <span id="detailPosted"></span>
+                </p>
+              </div>
+            </div>
+
+            <!-- Detail grid -->
+            <div class="detail-grid">
+
+              <div class="info-box">
+                <div class="icon-circle location-bg">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                    <circle cx="12" cy="10" r="3"></circle>
+                  </svg>
+                </div>
+                <div>
+                  <small class="detail-label">LOCATION</small>
+                  <p id="detailLocation" class="detail-value"></p>
+                </div>
+              </div>
+
+              <div class="info-box">
+                <div class="icon-circle dept-bg">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="8.5" cy="7" r="4"></circle>
+                    <polyline points="17 11 19 13 23 9"></polyline>
+                  </svg>
+                </div>
+                <div>
+                  <small class="detail-label">DEPARTMENT</small>
+                  <p id="detailDept" class="detail-value"></p>
+                </div>
+              </div>
+
+              <div class="info-box">
+                <div class="icon-circle salary-bg">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="12" y1="1" x2="12" y2="23"></line>
+                    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                  </svg>
+                </div>
+                <div>
+                  <small class="detail-label">SALARY RANGE</small>
+                  <p id="detailSalary" class="detail-value"></p>
+                </div>
+              </div>
+
+              <div class="info-box">
+                <div class="icon-circle type-bg">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                    <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+                  </svg>
+                </div>
+                <div>
+                  <small class="detail-label">EMPLOYMENT TYPE</small>
+                  <p id="detailType" class="detail-value"></p>
+                </div>
+              </div>
+
+              <div class="info-box">
+                <div class="icon-circle apps-bg">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="9" cy="7" r="4"></circle>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                  </svg>
+                </div>
+                <div>
+                  <small class="detail-label">APPLICATIONS RECEIVED</small>
+                  <p id="detailCount" class="detail-value"></p>
+                </div>
+              </div>
+
+            </div>
+
+            <div id="detailDescription" class="rich-text-content"></div>
+            <div class="detail-actions">
+              <button class="apply-btn-large">Apply Now</button>
+            </div>
+          </div>
+        </aside>
       </main>
-    </div>
-
-    <div id="jobDetailView" style="display: none;">
-      <nav class="breadcrumb">
-        <span id="backToJobs" style="cursor: pointer; font-weight: 500;">Job Openings</span>
-        <span class="chevron" style="margin: 0 8px; color: #999;">&gt;</span>
-        <span id="breadcrumbTitle" style="color: #666;"></span>
-      </nav>
-
-      <div class="detail-header" style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 40px; margin-top: 20px;">
-        <div class="header-info">
-          <h1 id="detailTitle" style="font-size: 2.5rem; margin: 0 0 10px 0;"></h1>
-          <p style="color: #666; font-size: 1.1rem;">
-            <span id="detailCompany"></span> &middot; <span id="detailPosted"></span>
-          </p>
-        </div>
-        <button class="apply-btn-large">Apply Now</button>
-      </div>
-
-      <!-- Detail grid -->
-      <div class="detail-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; background: transparent; padding: 20px 0; margin-bottom: 40px;">
-
-        <div class="info-box" style="display: flex; align-items: center; gap: 15px;">
-          <div class="icon-circle location-bg">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6347d1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-              <circle cx="12" cy="10" r="3"></circle>
-            </svg>
-          </div>
-          <div>
-            <small class="detail-label">LOCATION</small>
-            <p id="detailLocation" class="detail-value"></p>
-          </div>
-        </div>
-
-        <div class="info-box" style="display: flex; align-items: center; gap: 15px;">
-          <div class="icon-circle dept-bg">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-              <circle cx="8.5" cy="7" r="4"></circle>
-              <polyline points="17 11 19 13 23 9"></polyline>
-            </svg>
-          </div>
-          <div>
-            <small class="detail-label">DEPARTMENT</small>
-            <p id="detailDept" class="detail-value"></p>
-          </div>
-        </div>
-
-        <div class="info-box" style="display: flex; align-items: center; gap: 15px;">
-          <div class="icon-circle salary-bg">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <line x1="12" y1="1" x2="12" y2="23"></line>
-              <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
-            </svg>
-          </div>
-          <div>
-            <small class="detail-label">SALARY RANGE</small>
-            <p id="detailSalary" class="detail-value"></p>
-          </div>
-        </div>
-
-        <div class="info-box" style="display: flex; align-items: center; gap: 15px;">
-          <div class="icon-circle type-bg">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#b45309" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
-              <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
-            </svg>
-          </div>
-          <div>
-            <small class="detail-label">EMPLOYMENT TYPE</small>
-            <p id="detailType" class="detail-value"></p>
-          </div>
-        </div>
-
-        <div class="info-box" style="display: flex; align-items: center; gap: 15px;">
-          <div class="icon-circle apps-bg">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#991b1b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-              <circle cx="9" cy="7" r="4"></circle>
-              <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-              <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-            </svg>
-          </div>
-          <div>
-            <small class="detail-label">APPLICATIONS RECEIVED</small>
-            <p id="detailCount" class="detail-value"></p>
-          </div>
-        </div>
-
-      </div>
-
-      <div id="detailDescription" class="rich-text-content" style="line-height: 1.8; font-size: 1.1rem; color: #333;"></div>
     </div>
 
     <div id="backdrop" class="backdrop"></div>
