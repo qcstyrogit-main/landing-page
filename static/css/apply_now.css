@@ -9,6 +9,19 @@
 /* ✅ Header offset variable (adjust if needed) */
 :root {
     --site-header-height: 90px; /* desktop header height */
+    --bg: #f3f6f4;
+    --card: #ffffff;
+    --muted: #566272;
+    --border: #e3e8ee;
+    --primary: #133880;
+    --primary-dark: #0f2b66;
+    --accent: #ed1d26;
+    --success-bg: #eaf8f1;
+    --success-text: #1f7a53;
+    --radius: 16px;
+    --dark-text: #0b1f2a;
+    --label-gray: #7b8794;
+    --shadow: 0 16px 40px rgba(11, 31, 42, 0.08);
 }
 
 body {
@@ -211,7 +224,7 @@ select.form-select {
     margin-top: 40px;
 }
 
-button {
+.button-group button {
     padding: 8px 24px;
     border-radius: 6px;
     font-size: 14px;
