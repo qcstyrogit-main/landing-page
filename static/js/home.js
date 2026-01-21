@@ -34,14 +34,6 @@ backToTop.addEventListener('click', () => {
 });
 
 // ----------------------
-// Hide Chat Widget
-// ----------------------
-document.addEventListener("DOMContentLoaded", function() {
-    const chat = document.getElementById("chat-bubble");
-    if(chat) chat.style.display = "none";
-});
-
-// ----------------------
 // Mobile Menu & Dropdown
 // ----------------------
 document.addEventListener("DOMContentLoaded", function() {

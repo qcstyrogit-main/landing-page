@@ -30,6 +30,7 @@
         <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     </noscript>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/icons.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/chatbot.css') }}">
     <link rel="shortcut icon" href="{{ url_for('static', filename='images/favicon.ico') }}" type="image/x-icon">
 
     {% block structured_data %}
@@ -82,8 +83,40 @@
 
     {% block page_content %}{% endblock %}
 
+    <button id="chat-bubble" class="chat-bubble" type="button" aria-label="Open chat">
+        <svg class="icon" aria-hidden="true"><use href="#icon-chat"></use></svg>
+        <span id="chat-unread-badge" class="chat-unread-badge" aria-hidden="true">0</span>
+    </button>
+
+    <section id="chatbot-panel" class="chatbot-panel" aria-hidden="true" role="dialog" aria-label="Chatbot">
+        <header class="chatbot-header">
+            <div class="chatbot-heading">
+                <p class="chatbot-title">QC & MC Support</p>
+                <p class="chatbot-subtitle">Ask us anything about products or careers.</p>
+            </div>
+            <button class="chatbot-close" id="chatbot-close" type="button" aria-label="Close chat">
+                <svg class="icon" aria-hidden="true"><use href="#icon-x"></use></svg>
+            </button>
+        </header>
+        <div class="chatbot-body">
+            <div id="chatbot-messages" class="chatbot-messages" aria-live="polite"></div>
+            <div id="chat-typing" class="chatbot-typing" aria-hidden="true">
+                <span class="typing-dot"></span>
+                <span class="typing-dot"></span>
+                <span class="typing-dot"></span>
+                <span id="chat-typing-text" class="typing-text">Agent is typing...</span>
+            </div>
+        </div>
+        <form id="chatbot-form" class="chatbot-form">
+            <textarea id="chatbot-input" placeholder="Type your message..." rows="2" required></textarea>
+            <button type="submit">Send</button>
+        </form>
+        <p id="chatbot-status" class="chatbot-status" aria-live="polite"></p>
+    </section>
+
     {% block footer %}{% endblock %}
 
     <script src="{{ url_for('static', filename='js/image_formats.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/chatbot.js') }}"></script>
 </body>
 </html>

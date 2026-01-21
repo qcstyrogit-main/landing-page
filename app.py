@@ -1,5 +1,8 @@
 from dotenv import load_dotenv
 import os
+import json
+import re
+from html import unescape
 from flask import Flask, render_template, request, jsonify, Response, url_for as flask_url_for
 import requests
 from flask_caching import Cache
@@ -35,6 +38,180 @@ if not API_BASE_URL:
 # --------------------------------------------------
 app = Flask(__name__)
 ASSET_VERSION = os.getenv("ASSET_VERSION", "1")
+EVENTS_DATA_PATH = os.path.join(app.root_path, "static", "data", "events.json")
+
+DEFAULT_EVENTS = [
+    {
+        "title": "INVENTORY MANAGEMENT TRAINING SEPT 13, 2025",
+        "url": "/events/event1",
+        "thumbnail": "images/events/event1.png",
+        "alt": "Event 1"
+    },
+    {
+        "title": "CART COURIER TRANSPORT SYSTEM TRAINING",
+        "url": "/events/event2",
+        "thumbnail": "images/events/event2.png",
+        "alt": "Event 2"
+    },
+    {
+        "title": "AM OPERATIONAL PROCEDURE TRAINING",
+        "url": "/events/event3",
+        "thumbnail": "images/events/event3.png",
+        "alt": "Event 3"
+    },
+    {
+        "title": "1ST FRIDAY MASS",
+        "url": "https://www.facebook.com/share/p/1GKkdiM3Ke/",
+        "thumbnail": "images/events/event4.png",
+        "alt": "Event 4"
+    },
+    {
+        "title": "Manufacturing Convention",
+        "url": "/events/event5",
+        "thumbnail": "images/events/event5.png",
+        "alt": "Event 5"
+    },
+    {
+        "title": "Valentines Day",
+        "url": "/events/event6",
+        "thumbnail": "images/events/event6.png",
+        "alt": "Event 6"
+    },
+    {
+        "title": "Management Review",
+        "url": "/events/event7",
+        "thumbnail": "images/events/event7.png",
+        "alt": "Event 7"
+    },
+    {
+        "title": "2025 Manufacturing Convention",
+        "url": "/events/event8",
+        "thumbnail": "images/events/event8.png",
+        "alt": "Event 8"
+    },
+    {
+        "title": "2025 Annual Physical Exam",
+        "url": "/events/event9",
+        "thumbnail": "images/events/event9.png",
+        "alt": "Event 9"
+    }
+]
+
+OG_IMAGE_REGEX = re.compile(
+    r'<meta[^>]+property=["\']og:image["\'][^>]+content=["\']([^"\']+)["\']',
+    re.IGNORECASE
+)
+OG_TITLE_REGEX = re.compile(
+    r'<meta[^>]+property=["\']og:title["\'][^>]+content=["\']([^"\']+)["\']',
+    re.IGNORECASE
+)
+
+def fetch_events_from_erpnext(limit=9):
+    cache_key = f"website_events:{limit}"
+    cached = cache.get(cache_key)
+    if cached is not None:
+        app.logger.info("Events cache hit: %s items", len(cached))
+        return cached
+    try:
+        res = session.get(
+            f"{API_BASE_URL}/api/method/qcmc_logic.api.website_event.get_website_events",
+            params={"limit": limit},
+            timeout=8
+        )
+        res.raise_for_status()
+        payload = res.json()
+        items = payload.get("message") or payload.get("data") or []
+        if not isinstance(items, list):
+            app.logger.warning("Events API returned non-list payload")
+            return []
+        app.logger.info("Events API returned %s items", len(items))
+        cleaned = []
+        seen = set()
+        for item in items:
+            if not isinstance(item, dict):
+                continue
+            title = (item.get("title") or item.get("event_title") or item.get("name") or "").strip()
+            url = (item.get("url") or item.get("link") or "").strip()
+            thumbnail = (item.get("thumbnail") or item.get("image") or item.get("image_url") or "").strip()
+            if not title:
+                continue
+            if not url:
+                url = "#"
+            dedupe_key = f"{title.lower()}::{url}"
+            if dedupe_key in seen:
+                continue
+            seen.add(dedupe_key)
+            cleaned.append({
+                "title": title,
+                "url": url,
+                "thumbnail": thumbnail,
+                "alt": (item.get("alt") or title).strip()
+            })
+        cache.set(cache_key, cleaned, timeout=30)
+        return cleaned
+    except Exception:
+        app.logger.exception("Events API fetch failed")
+        cache.set(cache_key, [], timeout=30)
+        return []
+
+def fetch_og_meta(url):
+    if not url:
+        return {"image": "", "title": ""}
+    cache_key = f"og_image:{url}"
+    cached = cache.get(cache_key)
+    if cached:
+        return cached
+    try:
+        res = session.get(
+            url,
+            headers={"User-Agent": "Mozilla/5.0"},
+            timeout=8
+        )
+        if not res.ok:
+            cache.set(cache_key, {"image": "", "title": ""}, timeout=300)
+            return {"image": "", "title": ""}
+        html = res.text or ""
+        image_match = OG_IMAGE_REGEX.search(html)
+        title_match = OG_TITLE_REGEX.search(html)
+        image_url = unescape(image_match.group(1).strip()) if image_match else ""
+        title = unescape(title_match.group(1).strip()) if title_match else ""
+        payload = {"image": image_url, "title": title}
+        if image_url or title:
+            cache.set(cache_key, payload, timeout=3600)
+        else:
+            cache.set(cache_key, payload, timeout=300)
+        return payload
+    except Exception:
+        cache.set(cache_key, {"image": "", "title": ""}, timeout=300)
+        return {"image": "", "title": ""}
+
+def load_event_posts():
+    remote_events = fetch_events_from_erpnext()
+    if remote_events:
+        cleaned = []
+        for item in remote_events:
+            title = (item.get("title") or "").strip()
+            url = (item.get("url") or "").strip()
+            thumbnail = (item.get("thumbnail") or "").strip()
+            if not (title and url):
+                continue
+            if ("facebook.com" in url) and (not thumbnail or not title):
+                meta = fetch_og_meta(url)
+                if not thumbnail:
+                    thumbnail = meta.get("image", "")
+                if not title:
+                    title = meta.get("title", "").strip()
+            if not thumbnail:
+                continue
+            cleaned.append({
+                "title": title,
+                "url": url,
+                "thumbnail": thumbnail,
+                "alt": (item.get("alt") or title).strip()
+            })
+        if cleaned:
+            return cleaned
+    return []
 
 def cache_busted_url_for(endpoint, **values):
     if endpoint == "static":
@@ -85,7 +262,7 @@ def inject_api_url():
 @app.route("/")
 @cache.cached(timeout=300)
 def home():
-    return render_template("home.html", API_BASE_URL=API_BASE_URL)
+    return render_template("home.html", API_BASE_URL=API_BASE_URL, events=load_event_posts())
 
 @app.route("/products_plastic")
 @cache.cached(timeout=600)
@@ -250,6 +427,85 @@ def submit_job_applicant():
         return jsonify({"error": str(e)}), 500
 
 
+# ------------------ CLEFINCODE CHAT PROXY ----------------
+@app.route("/api/clefincode/create", methods=["POST"])
+def clefincode_create():
+    try:
+        res = session.post(
+            f"{API_BASE_URL}/api/method/clefincode_chat.api.api_1_0_1.chat_portal.create_guest_profile_and_channel",
+            json=request.json or {},
+            headers={"Content-Type": "application/json"},
+            timeout=15
+        )
+        return jsonify(res.json())
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/clefincode/send", methods=["POST"])
+def clefincode_send():
+    try:
+        res = session.post(
+            f"{API_BASE_URL}/api/method/clefincode_chat.api.api_1_0_1.chat_portal.send",
+            json=request.json or {},
+            headers={"Content-Type": "application/json"},
+            timeout=15
+        )
+        return jsonify(res.json())
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/clefincode/messages", methods=["GET"])
+def clefincode_messages():
+    try:
+        room = request.args.get("room")
+        if not room:
+            return jsonify({"error": "room is required"}), 400
+        res = session.get(
+            f"{API_BASE_URL}/api/method/clefincode_chat.api.api_1_0_1.chat_portal.get_messages",
+            params={"room": room},
+            timeout=15
+        )
+        return jsonify(res.json())
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/clefincode/settings", methods=["GET"])
+def clefincode_settings():
+    try:
+        token = request.args.get("token")
+        if not token:
+            return jsonify({"error": "token is required"}), 400
+        res = session.get(
+            f"{API_BASE_URL}/api/method/clefincode_chat.api.api_1_3_1.api.get_settings",
+            params={"token": token},
+            timeout=15
+        )
+        return jsonify(res.json())
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/clefincode/bot-topics", methods=["GET"])
+def clefincode_bot_topics():
+    try:
+        res = session.get(
+            f"{API_BASE_URL}/api/method/qcmc_logic.api.chatbot.get_bot_topics",
+            timeout=15
+        )
+        data = res.json()
+        message = data.get("message", {}) if isinstance(data, dict) else {}
+        payload = {
+            "greeting": message.get("greetings") or message.get("greeting") or "",
+            "topics": message.get("topics") or []
+        }
+        return jsonify(payload)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
 # --------------------------------------------------
 # SECURITY & CACHE HEADERS
 # --------------------------------------------------
@@ -257,7 +513,9 @@ def submit_job_applicant():
 def add_headers(response):
     response.headers["X-Content-Type-Options"] = "nosniff"
     response.headers["X-Frame-Options"] = "DENY"
-    if request.path.startswith("/static/"):
+    if request.path.startswith("/api/clefincode/"):
+        response.headers["Cache-Control"] = "no-store"
+    elif request.path.startswith("/static/"):
         response.headers["Cache-Control"] = "public, max-age=31536000, immutable"
     else:
         response.headers["Cache-Control"] = "public, max-age=300"

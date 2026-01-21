@@ -1,0 +1,56 @@
+[
+  {
+    "title": "INVENTORY MANAGEMENT TRAINING",
+    "url": "/events/event1",
+    "thumbnail": "images/events/event1.png",
+    "alt": "Event 1"
+  },
+  {
+    "title": "CART COURIER TRANSPORT SYSTEM TRAINING",
+    "url": "/events/event2",
+    "thumbnail": "images/events/event2.png",
+    "alt": "Event 2"
+  },
+  {
+    "title": "AM OPERATIONAL PROCEDURE TRAINING",
+    "url": "/events/event3",
+    "thumbnail": "images/events/event3.png",
+    "alt": "Event 3"
+  },
+  {
+    "title": "1ST FRIDAY MASS",
+    "url": "https://www.facebook.com/share/p/1GKkdiM3Ke/",
+    "thumbnail": "",
+    "alt": "Event 4"
+  },
+  {
+    "title": "Manufacturing Convention",
+    "url": "https://www.facebook.com/share/p/17Tx7FKbF8/",
+    "thumbnail": "",
+    "alt": "Event 5"
+  },
+  {
+    "title": "Valentines Day",
+    "url": "https://www.facebook.com/share/p/1C2VoMATzr/",
+    "thumbnail": "",
+    "alt": "Event 6"
+  },
+  {
+    "title": "Management Review",
+    "url": "https://www.facebook.com/share/p/1FLNd7QgmU/",
+    "thumbnail": "",
+    "alt": "Event 7"
+  },
+  {
+    "title": "2025 Manufacturing Convention",
+    "url": "/events/event8",
+    "thumbnail": "images/events/event8.png",
+    "alt": "Event 8"
+  },
+  {
+    "title": "2025 Annual Physical Exam",
+    "url": "https://www.facebook.com/share/p/1FnLPnUzg8/",
+    "thumbnail": "",
+    "alt": "Event 9"
+  }
+]

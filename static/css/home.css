@@ -496,59 +496,6 @@ html, body {
 
 
 
-/* Hide chat widget */
-/* #chat-bubble {
-    display: none !important;
-} */
-
-
-/* ------------------------------------------------ */
-/* CHAT BUBBLE - LOWER RIGHT, ABOVE Back-to-Top   */
-/* ------------------------------------------------ */
-#chat-bubble {
-    position: fixed !important;
-
-    bottom: 40px !important;  
-    right: 10px !important;
-
-    width: 55px !important;    
-    height: 55px !important;
-    
-
-    border-radius: 50% !important;
-
-    display: flex !important;
-    align-items: center;
-    justify-content: center;
-
-    font-size: 5px !important;
-
-    background: var(--primary-color) !important;
-    color: #fff !important;
-
-    box-shadow: 0 6px 16px rgba(19, 56, 128, 0.35) !important;
-    z-index: 9999 !important;
-
-    transition: transform 0.25s ease, box-shadow 0.25s ease;
-}
-
-/* Hover effect */
-#chat-bubble:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 10px 25px rgba(19, 56, 128, 0.45);
-}
-
-/* Optional: smaller on mobile */
-@media (max-width: 768px) {
-    #chat-bubble {
-        width: 50px !important;
-        height: 50px !important;
-        font-size: 1px !important;
-        bottom: 40px !important;  
-        right: 10px !important;
-    }
-}
-
 /* Close button inside mobile menu */
 .mobile-close {
     margin-top: 1rem;

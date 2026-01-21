@@ -9,13 +9,6 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
     }
 
-    // ===========================
-    // DUPLICATE CARDS (ONCE)
-    // ===========================
-    eventCards.forEach(card => {
-        eventCardsContainer.appendChild(card.cloneNode(true));
-    });
-
     let scrollSpeed = 0.7;
     let scrollRemainder = 0;
     let isDragging = false;

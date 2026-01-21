@@ -57,43 +57,17 @@
 
             <div class="events-wrapper">  
                 <div class="events-cards">
-                    <!-- Event Cards -->
-                    <a href="/events/event1" class="event-card">
-                        <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/events/event1.png') }}" alt="Event 1">
-                        <div class="event-text"><p>INVENTORY MANAGEMENT TRAINING SEPT 13, 2025</p></div>
+                    {% for event in events %}
+                    {% set is_external = event.url.startswith('http') %}
+                    {% set image_src = event.thumbnail %}
+                    {% if event.thumbnail and not event.thumbnail.startswith('http') and not event.thumbnail.startswith('/') %}
+                        {% set image_src = url_for('static', filename=event.thumbnail) %}
+                    {% endif %}
+                    <a href="{{ event.url }}" class="event-card"{% if is_external %} target="_blank" rel="noopener"{% endif %}>
+                        <img loading="lazy" decoding="async" src="{{ image_src }}" alt="{{ event.alt }}">
+                        <div class="event-text"><p>{{ event.title }}</p></div>
                     </a>
-                    <a href="/events/event2" class="event-card">
-                        <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/events/event2.png') }}" alt="Event 2">
-                        <div class="event-text"><p>CART COURIER TRANSPORT SYSTEM TRAINING</p></div>
-                    </a>
-                    <a href="/events/event3" class="event-card">
-                        <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/events/event3.png') }}" alt="Event 3">
-                        <div class="event-text"><p>AM OPERATIONAL PROCEDURE TRAINING</p></div>
-                    </a>
-                    <a href="/events/event4" class="event-card">
-                        <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/events/event4.png') }}" alt="Event 4">
-                        <div class="event-text"><p>1ST FRIDAY MASS</p></div>
-                    </a>
-                    <a href="/events/event5" class="event-card">
-                        <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/events/event5.png') }}" alt="Event 5">
-                        <div class="event-text"><p>Manufacturing Convention</p></div>
-                    </a>
-                    <a href="/events/event6" class="event-card">
-                        <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/events/event6.png') }}" alt="Event 6">
-                        <div class="event-text"><p>Valentines Day</p></div>
-                    </a>
-                    <a href="/events/event7" class="event-card">
-                        <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/events/event7.png') }}" alt="Event 7">
-                        <div class="event-text"><p>Management Review</p></div>
-                    </a>
-                    <a href="/events/event8" class="event-card">
-                        <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/events/event8.png') }}" alt="Event 8">
-                        <div class="event-text"><p>2025 Manufacturing Convention</p></div>
-                    </a>
-                    <a href="/events/event9" class="event-card">
-                        <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/events/event9.png') }}" alt="Event 9">
-                        <div class="event-text"><p>2025 Annual Physical Exam</p></div>
-                    </a>
+                    {% endfor %}
                 </div>
 
                 <!-- Optional Show More Button -->
