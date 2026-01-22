@@ -55,7 +55,7 @@ Modernized UI - Glassmorphism & Consistency Sync
     box-shadow: 0 20px 50px rgba(0, 80, 255, 0.1);
 }
 
-.jobs-text h2 {
+.jobs-text .jobs-eyebrow {
     font-size: 1rem;
     font-weight: 700;
     color: var(--accent-blue);
@@ -64,7 +64,7 @@ Modernized UI - Glassmorphism & Consistency Sync
     text-transform: uppercase;
 }
 
-.jobs-text h1 {
+.jobs-text .jobs-title {
     font-size: clamp(2rem, 4vw, 3rem);
     font-weight: 800;
     line-height: 1.1;
@@ -168,7 +168,7 @@ Modernized UI - Glassmorphism & Consistency Sync
         border-radius: 20px;
     }
 
-    .jobs-text h1 {
+    .jobs-text .jobs-title {
         font-size: 1.8rem;
     }
 }

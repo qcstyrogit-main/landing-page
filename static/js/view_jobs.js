@@ -107,6 +107,55 @@ function formatPosted(value) {
   return diffInWeeks === 1 ? '1 week ago' : `${diffInWeeks} weeks ago`;
 }
 
+function escapeHtml(value) {
+  if (value === undefined || value === null) return '';
+  return String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function sanitizeHtml(value) {
+  if (!value || typeof value !== 'string') return '';
+  if (!/[<>]/.test(value)) return '';
+
+  const allowedTags = new Set(['A', 'BR', 'P', 'B', 'STRONG', 'EM', 'I', 'UL', 'OL', 'LI']);
+  const template = document.createElement('template');
+  template.innerHTML = value;
+
+  const walk = (node) => {
+    Array.from(node.childNodes).forEach((child) => {
+      if (child.nodeType === Node.ELEMENT_NODE) {
+        const tag = child.tagName.toUpperCase();
+        if (!allowedTags.has(tag)) {
+          const text = document.createTextNode(child.textContent || '');
+          child.replaceWith(text);
+          return;
+        }
+        if (tag === 'A') {
+          const href = child.getAttribute('href') || '';
+          if (!href.startsWith('http://') && !href.startsWith('https://')) {
+            child.replaceWith(document.createTextNode(child.textContent || ''));
+            return;
+          }
+          child.setAttribute('target', '_blank');
+          child.setAttribute('rel', 'noopener noreferrer');
+        } else {
+          Array.from(child.attributes).forEach((attr) => child.removeAttribute(attr.name));
+        }
+        walk(child);
+      } else if (child.nodeType !== Node.TEXT_NODE) {
+        child.remove();
+      }
+    });
+  };
+
+  walk(template.content);
+  return template.innerHTML.trim();
+}
+
 // ------------------- Render Options (Dynamic Filters with Counts) -------------------
 function renderOptions() {
   const comps = unique(jobsData, 'company');
@@ -116,11 +165,12 @@ function renderOptions() {
   
   const generateCheckboxHTML = (list, name, dataKey) => {
     return list.map(val => {
+      const safeVal = escapeHtml(val);
       const count = jobsData.filter(j => j[dataKey] === val).length;
       return `
         <label class="opt">
-          <input type="checkbox" name="${name}" value="${val}"/> 
-          ${val} <span class="filter-count">(${count})</span>
+          <input type="checkbox" name="${name}" value="${safeVal}"/> 
+          ${safeVal} <span class="filter-count">(${count})</span>
         </label>
       `;
     }).join('');
@@ -158,17 +208,24 @@ function renderList(list) {
     const card = document.createElement('article');
     card.className = 'job-card';
     card.style.cursor = 'pointer';
+
+    const title = escapeHtml(j.title || 'N/A');
+    const type = escapeHtml(j.employment_type || 'Full-time');
+    const company = escapeHtml(j.company || 'N/A');
+    const location = escapeHtml(j.location || 'N/A');
+    const department = escapeHtml(j.department || 'N/A');
+    const salary = escapeHtml(j.salary || 'N/A');
     
     card.innerHTML = `
         <div class="job-card-body">
           <div class="job-main">
             <div class="job-header">
-                <h3 class="job-title">${j.title || 'N/A'}</h3>
-                <span class="type-badge">${j.employment_type || 'Full-time'}</span>
+                <h3 class="job-title">${title}</h3>
+                <span class="type-badge">${type}</span>
             </div>
             
             <div class="job-company-row">
-                <span class="company-name">${j.company || 'N/A'}</span>
+                <span class="company-name">${company}</span>
                 <span class="dot">&middot;</span>
                 <span class="posted-date">${formatPosted(j.postedDays)}</span>
             </div>
@@ -181,7 +238,7 @@ function renderList(list) {
                             <circle cx="12" cy="10" r="3"></circle>
                         </svg>
                     </span>
-                    <span>${j.location || 'N/A'}</span> 
+                    <span>${location}</span> 
                 </div>
 
                 <div class="detail-item">
@@ -193,7 +250,7 @@ function renderList(list) {
                             <path d="M18 9a9 9 0 0 1-9 9"></path>
                         </svg>
                     </span>
-                    <span>${j.department || 'N/A'}</span>
+                    <span>${department}</span>
                 </div>
 
                 <div class="detail-item">
@@ -204,7 +261,7 @@ function renderList(list) {
                             <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path>
                         </svg>
                     </span>
-                    <span>${j.salary || 'N/A'}</span>
+                    <span>${salary}</span>
                 </div>
             </div>
           </div>
@@ -406,7 +463,8 @@ function showJobDetail(job, isFromRouting = false) {
     detailType.textContent = job.employment_type || 'Full-time';
     detailCount.textContent = job.applicants || '0';
     
-    detailDescription.innerHTML = job.description || '<p>No description provided.</p>';
+    const safeDescription = sanitizeHtml(job.description || '');
+    detailDescription.innerHTML = safeDescription || '<p>No description provided.</p>';
 }
 
 // ------------------- Navigation Events -------------------

@@ -265,6 +265,57 @@
     border-top: 1px solid #eef2f7;
 }
 
+.chatbot-verify {
+    padding: 14px 16px 10px;
+    border-top: 1px solid #eef2f7;
+    background: #f8fafc;
+}
+
+.chatbot-verify-title {
+    margin: 0 0 6px;
+    font-weight: 700;
+    font-size: 13px;
+    color: #0f172a;
+}
+
+.chatbot-verify-question {
+    margin: 0 0 10px;
+    font-size: 12px;
+    color: #475569;
+}
+
+.chatbot-verify-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.chatbot-verify-row input {
+    flex: 1;
+    min-height: 38px;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 8px 10px;
+    font-size: 13px;
+}
+
+.chatbot-verify-row button {
+    padding: 8px 12px;
+    border-radius: 10px;
+    border: none;
+    background: #133880;
+    color: #fff;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.chatbot-verify-status {
+    margin: 8px 0 0;
+    font-size: 12px;
+    color: #0f172a;
+    min-height: 16px;
+}
+
 .chatbot-form textarea {
     flex: 1;
     padding: 10px 12px;

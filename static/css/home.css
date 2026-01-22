@@ -369,7 +369,8 @@ html, body {
 }
 
 /* MAIN LINKS */
-.mobile-nav a {
+.mobile-nav a,
+.mobile-nav button {
     padding: 1rem 1.2rem;
     color: var(--primary-color);
     text-decoration: none;
@@ -378,9 +379,14 @@ html, body {
     border-radius: 14px;
     margin-bottom: 0.4rem;
     transition: background 0.2s ease;
+    background: transparent;
+    border: none;
+    text-align: left;
+    cursor: pointer;
 }
 
-.mobile-nav a:hover {
+.mobile-nav a:hover,
+.mobile-nav button:hover {
     background: rgba(19, 56, 128, 0.06);
 }
 

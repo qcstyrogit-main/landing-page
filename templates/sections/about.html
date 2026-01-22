@@ -1,17 +1,15 @@
-<link rel="stylesheet" href="{{ url_for('static', filename='css/about_us.css') }}">
-
-<section class="about-us-section" id="about-us">
+<section class="about-us-section" id="about-us" aria-labelledby="about-title">
     <div class="about-us-content">
 
         <div class="about-us-header">
             <p class="about-us-eyebrow">About Us</p>
-            <h2>Packaging solutions built on quality, care, and continuous improvement.</h2>
+            <h2 id="about-title">Packaging solutions built on quality, care, and continuous improvement.</h2>
             <p class="about-us-lede">Our teams deliver reliable products and services while staying true to our values.</p>
         </div>
 
         <!-- History Video -->
         <div class="about-us-media">
-            <video id="history-video" width="100%" height="auto" autoplay muted loop>
+            <video id="history-video" width="100%" height="auto" autoplay muted loop playsinline preload="metadata" poster="{{ url_for('static', filename='images/Intro.png') }}">
                 <source src="{{ url_for('static', filename='images/media/history.mp4') }}" type="video/mp4">
                 Your browser does not support the video tag.
             </video>

@@ -74,7 +74,7 @@ Modernized Full-Width UI - Optimized for Mobile
     animation: fadeInUp 1s ease-out forwards;
 }
 
-.standard-text h1 {
+.standard-text .standard-title {
     font-size: clamp(1.8rem, 5vw, 3.8rem);
     color: #ffffff;
     font-weight: 800;
@@ -133,7 +133,7 @@ Modernized Full-Width UI - Optimized for Mobile
         background: rgba(0, 0, 0, 0.75); 
     }
 
-    .standard-text h1 {
+    .standard-text .standard-title {
         font-size: 1.75rem;
         line-height: 1.2;
     }

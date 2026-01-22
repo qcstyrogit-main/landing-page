@@ -1,20 +1,18 @@
-<link rel="stylesheet" href="{{ url_for('static', filename='css/footer.css') }}">
-
 <!-- Footer -->
 <footer class="custom-footer">
     <div class="footer-content">
         <span>© Copyright 2025</span>
         <span class="footer-links">
-            <a href="javascript:void(0)" id="privacyLink">Privacy Policy</a> |
-            <a href="javascript:void(0)" id="termofuseLink">Terms of Use</a>
+            <button type="button" id="privacyLink" class="footer-link">Privacy Policy</button> |
+            <button type="button" id="termofuseLink" class="footer-link">Terms of Use</button>
         </span>
     </div>
 </footer>
 
 <!-- Privacy Policy Modal -->
-<div id="privacyModal" class="modal">
+<div id="privacyModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="privacyModalTitle" aria-hidden="true">
     <div class="modal-content">
-        <span class="close">&times;</span>
+        <button type="button" class="close" aria-label="Close privacy policy">&times;</button>
         <div class="modal-body">
             {% include "sections/privacy_policy.html" %}
         </div>
@@ -22,9 +20,9 @@
 </div>
 
 <!-- Terms of Use Modal -->
-<div id="termofuseModal" class="modal">
+<div id="termofuseModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="termsModalTitle" aria-hidden="true">
     <div class="modal-content">
-        <span class="close">&times;</span>
+        <button type="button" class="close" aria-label="Close terms of use">&times;</button>
         <div class="modal-body">
             {% include "sections/term_of_use.html" %}
         </div>

@@ -1,10 +1,8 @@
-<link rel="stylesheet" href="{{ url_for('static', filename='css/intro.css') }}">
-
-<section class="intro-section">
+<section class="intro-section" id="products" aria-labelledby="products-title">
     <div class="intro-content">
         <!-- Left Text Column -->
         <div class="intro-text">
-            <h1>
+            <h1 id="products-title">
                 Continuous innovation meets<br>
                 World Class Standards
             </h1>
@@ -17,12 +15,36 @@
 
         <!-- Right Image Column -->
         <div class="intro-images">
-            <img src="{{ url_for('static', filename='images/products/Tray.png') }}" class="active" loading="eager" decoding="async" fetchpriority="high" alt="Tray products">
-            <img src="{{ url_for('static', filename='images/products/Eps_Psp_Bowl.png') }}" loading="lazy" decoding="async" alt="EPS and PSP bowl products">
-            <img src="{{ url_for('static', filename='images/products/Hotdog_Boxes.png') }}" loading="lazy" decoding="async" alt="Hotdog box products">
-            <img src="{{ url_for('static', filename='images/products/Noodle_Cups.png') }}" loading="lazy" decoding="async" alt="Noodle cup products">
-            <img src="{{ url_for('static', filename='images/products/Plastic_Products.png') }}" loading="lazy" decoding="async" alt="Plastic products">
-            <img src="{{ url_for('static', filename='images/products/Plates.png') }}" loading="lazy" decoding="async" alt="Plate products">
+            <picture>
+                <source type="image/avif" srcset="{{ url_for('static', filename='images/products/Tray.avif') }}">
+                <source type="image/webp" srcset="{{ url_for('static', filename='images/products/Tray.webp') }}">
+                <img src="{{ url_for('static', filename='images/products/Tray.png') }}" class="active" loading="eager" decoding="async" fetchpriority="high" alt="Tray products">
+            </picture>
+            <picture>
+                <source type="image/avif" srcset="{{ url_for('static', filename='images/products/Eps_Psp_Bowl.avif') }}">
+                <source type="image/webp" srcset="{{ url_for('static', filename='images/products/Eps_Psp_Bowl.webp') }}">
+                <img src="{{ url_for('static', filename='images/products/Eps_Psp_Bowl.png') }}" loading="lazy" decoding="async" alt="EPS and PSP bowl products">
+            </picture>
+            <picture>
+                <source type="image/avif" srcset="{{ url_for('static', filename='images/products/Hotdog_Boxes.avif') }}">
+                <source type="image/webp" srcset="{{ url_for('static', filename='images/products/Hotdog_Boxes.webp') }}">
+                <img src="{{ url_for('static', filename='images/products/Hotdog_Boxes.png') }}" loading="lazy" decoding="async" alt="Hotdog box products">
+            </picture>
+            <picture>
+                <source type="image/avif" srcset="{{ url_for('static', filename='images/products/Noodle_Cups.avif') }}">
+                <source type="image/webp" srcset="{{ url_for('static', filename='images/products/Noodle_Cups.webp') }}">
+                <img src="{{ url_for('static', filename='images/products/Noodle_Cups.png') }}" loading="lazy" decoding="async" alt="Noodle cup products">
+            </picture>
+            <picture>
+                <source type="image/avif" srcset="{{ url_for('static', filename='images/products/Plastic_Products.avif') }}">
+                <source type="image/webp" srcset="{{ url_for('static', filename='images/products/Plastic_Products.webp') }}">
+                <img src="{{ url_for('static', filename='images/products/Plastic_Products.png') }}" loading="lazy" decoding="async" alt="Plastic products">
+            </picture>
+            <picture>
+                <source type="image/avif" srcset="{{ url_for('static', filename='images/products/Plates.avif') }}">
+                <source type="image/webp" srcset="{{ url_for('static', filename='images/products/Plates.webp') }}">
+                <img src="{{ url_for('static', filename='images/products/Plates.png') }}" loading="lazy" decoding="async" alt="Plate products">
+            </picture>
         </div>
     </div>
 </section>

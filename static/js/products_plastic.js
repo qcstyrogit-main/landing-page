@@ -194,11 +194,13 @@ document.addEventListener("DOMContentLoaded", () => {
     const inqHp = document.getElementById("inqHp");
 
 
+    const headers = window.withCsrf
+        ? window.withCsrf({ "Content-Type": "application/x-www-form-urlencoded" })
+        : { "Content-Type": "application/x-www-form-urlencoded" };
+
     fetch("/api/send-inquiry-mc", {
         method: "POST",
-        headers: {
-            "Content-Type": "application/x-www-form-urlencoded"
-        },
+        headers,
         body: new URLSearchParams({
             name: inqName.value.trim(),
             email: inqEmail.value.trim(),

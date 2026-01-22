@@ -3,6 +3,8 @@
 {% block title %}Job Application | QC & MC{% endblock %}
 {% block meta_description %}Apply for open roles at QC and MC through the job application form.{% endblock %}
 {% block meta_robots %}noindex, nofollow{% endblock %}
+{% block og_image %}{{ request.url_root.rstrip('/') }}{{ url_for('static', filename='images/careers/team.png') }}{% endblock %}
+{% block twitter_image %}{{ request.url_root.rstrip('/') }}{{ url_for('static', filename='images/careers/team.png') }}{% endblock %}
 
 {% block head %}
   {{ super() }}
@@ -27,6 +29,7 @@
       <hr>
 
       <form id="applicationForm">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
           <div class="form-group">
               <label>Job Opening</label>
               <input type="text" id="jobIdDisplay" value="" disabled>

@@ -2,6 +2,8 @@
 
 {% block title %}Job Openings | QC & MC{% endblock %}
 {% block meta_description %}Explore current job openings at QC and MC. Filter by department, location, and type to find the right role.{% endblock %}
+{% block og_image %}{{ request.url_root.rstrip('/') }}{{ url_for('static', filename='images/careers/team.png') }}{% endblock %}
+{% block twitter_image %}{{ request.url_root.rstrip('/') }}{{ url_for('static', filename='images/careers/team.png') }}{% endblock %}
 
 {% block head %}
   {{ super() }}
@@ -83,7 +85,7 @@
             </nav>
             <div class="detail-header">
               <div class="header-info">
-                <h1 id="detailTitle"></h1>
+                <h2 id="detailTitle"></h2>
                 <p class="detail-subtitle">
                   <span id="detailCompany"></span> &middot; <span id="detailPosted"></span>
                 </p>

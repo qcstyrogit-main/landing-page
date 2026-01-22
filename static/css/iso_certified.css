@@ -83,7 +83,7 @@
     color: #355a9b;
 }
 
-#iso-certified h1 {
+#iso-certified .iso-title {
     font-size: clamp(2.1rem, 4.5vw, 3.4rem);
     color: #0f2f6b;
     font-weight: 800;
@@ -165,7 +165,7 @@
         padding: 3rem 1rem;
     }
 
-    #iso-certified h1 {
+    #iso-certified .iso-title {
         font-size: 1.85rem;
     }
 

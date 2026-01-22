@@ -2,8 +2,11 @@ from dotenv import load_dotenv
 import os
 import json
 import re
+import secrets
+from time import time
+from collections import deque
 from html import unescape
-from flask import Flask, render_template, request, jsonify, Response, url_for as flask_url_for
+from flask import Flask, render_template, request, jsonify, Response, url_for as flask_url_for, session as flask_session, g
 import requests
 from flask_caching import Cache
 
@@ -37,6 +40,10 @@ if not API_BASE_URL:
 # APP INIT
 # --------------------------------------------------
 app = Flask(__name__)
+app.config["SECRET_KEY"] = os.getenv("SECRET_KEY") or os.getenv("FLASK_SECRET_KEY")
+if not app.config["SECRET_KEY"]:
+    app.logger.warning("SECRET_KEY not set; using ephemeral key")
+    app.config["SECRET_KEY"] = secrets.token_urlsafe(32)
 ASSET_VERSION = os.getenv("ASSET_VERSION", "1")
 EVENTS_DATA_PATH = os.path.join(app.root_path, "static", "data", "events.json")
 
@@ -113,7 +120,7 @@ def fetch_events_from_erpnext(limit=9):
         app.logger.info("Events cache hit: %s items", len(cached))
         return cached
     try:
-        res = session.get(
+        res = http_session.get(
             f"{API_BASE_URL}/api/method/qcmc_logic.api.website_event.get_website_events",
             params={"limit": limit},
             timeout=8
@@ -162,7 +169,7 @@ def fetch_og_meta(url):
     if cached:
         return cached
     try:
-        res = session.get(
+        res = http_session.get(
             url,
             headers={"User-Agent": "Mozilla/5.0"},
             timeout=8
@@ -246,14 +253,71 @@ if not API_BASE_URL:
 # --------------------------------------------------
 # HTTP SESSION (REUSE CONNECTIONS)
 # --------------------------------------------------
-session = requests.Session()
-session.headers.update({
+http_session = requests.Session()
+http_session.headers.update({
     "Accept": "application/json"
 })
 
+def get_csrf_token():
+    token = flask_session.get("csrf_token")
+    if not token:
+        token = secrets.token_urlsafe(32)
+        flask_session["csrf_token"] = token
+    return token
+
 @app.context_processor
-def inject_api_url():
-    return dict(API_BASE_URL=API_BASE_URL)
+def inject_globals():
+    return dict(
+        API_BASE_URL=API_BASE_URL,
+        csrf_token=get_csrf_token,
+        csp_nonce=getattr(g, "csp_nonce", "")
+    )
+
+# --------------------------------------------------
+# SECURITY: RATE LIMITS + CSRF
+# --------------------------------------------------
+RATE_LIMITS = {
+    "/api/send-inquiry-mc": (20, 300),
+    "/api/send-inquiry-qc": (20, 300),
+    "/api/contact-us": (15, 300),
+    "/api/submit-job-applicant": (10, 600),
+    "/api/clefincode/create": (30, 300),
+    "/api/clefincode/send": (60, 300),
+}
+RATE_STATE = {}
+
+def is_rate_limited(ip, key, limit, window_seconds):
+    now = time()
+    bucket = RATE_STATE.get((ip, key))
+    if bucket is None:
+        bucket = deque()
+        RATE_STATE[(ip, key)] = bucket
+    cutoff = now - window_seconds
+    while bucket and bucket[0] < cutoff:
+        bucket.popleft()
+    if len(bucket) >= limit:
+        return True
+    bucket.append(now)
+    return False
+
+@app.before_request
+def security_before_request():
+    g.csp_nonce = secrets.token_urlsafe(16)
+
+    if request.method in ("POST", "PUT", "PATCH", "DELETE") and request.path.startswith("/api/"):
+        limit_cfg = RATE_LIMITS.get(request.path)
+        if limit_cfg:
+            ip = request.headers.get("X-Forwarded-For", request.remote_addr) or "unknown"
+            limit, window_seconds = limit_cfg
+            if is_rate_limited(ip, request.path, limit, window_seconds):
+                return jsonify({"error": "rate_limited"}), 429
+
+        token = request.headers.get("X-CSRF-Token") or request.form.get("csrf_token")
+        if not token and request.is_json:
+            payload = request.get_json(silent=True) or {}
+            token = payload.get("csrf_token")
+        if not token or token != flask_session.get("csrf_token"):
+            return jsonify({"error": "csrf_failed"}), 403
 
 
 # --------------------------------------------------
@@ -322,7 +386,7 @@ def robots():
 @app.route("/api/send-inquiry-mc", methods=["POST"])
 def send_inquiry_mc():
     try:
-        res = session.post(
+        res = http_session.post(
             f"{API_BASE_URL}/api/method/qcmc_logic.api.send_inquiry.send_inquiry_mc",
             data=request.form,
             timeout=10
@@ -335,7 +399,7 @@ def send_inquiry_mc():
 @app.route("/api/send-inquiry-qc", methods=["POST"])
 def send_inquiry_qc():
     try:
-        res = session.post(
+        res = http_session.post(
             f"{API_BASE_URL}/api/method/qcmc_logic.api.send_inquiry.send_inquiry_qc",
             data=request.form,
             timeout=10
@@ -348,7 +412,7 @@ def send_inquiry_qc():
 @app.route("/api/contact-us", methods=["POST"])
 def contact_us():
     try:
-        res = session.post(
+        res = http_session.post(
             f"{API_BASE_URL}/api/method/qcmc_logic.api.contact_us.send_contact_inquiry",
             data=request.form,
             timeout=10
@@ -363,7 +427,7 @@ def contact_us():
 @cache.cached(timeout=120)
 def get_jobs():
     try:
-        res = session.get(
+        res = http_session.get(
             f"{API_BASE_URL}/api/method/qcmc_logic.api.job_openings.get_job_openings",
             timeout=8
         )
@@ -377,7 +441,7 @@ def get_jobs():
 @cache.cached(timeout=120)
 def get_job_applicant_counts():
     try:
-        res = session.get(
+        res = http_session.get(
             f"{API_BASE_URL}/api/method/qcmc_logic.api.job_openings.get_job_applicant_counts",
             timeout=8
         )
@@ -414,7 +478,7 @@ def submit_job_applicant():
             ),
         }
 
-        res = session.post(
+        res = http_session.post(
             f"{API_BASE_URL}/api/method/qcmc_logic.api.job_openings.submit_job_applicant_custom",
             json=erp_payload,
             headers={"Content-Type": "application/json"},
@@ -431,7 +495,7 @@ def submit_job_applicant():
 @app.route("/api/clefincode/create", methods=["POST"])
 def clefincode_create():
     try:
-        res = session.post(
+        res = http_session.post(
             f"{API_BASE_URL}/api/method/clefincode_chat.api.api_1_0_1.chat_portal.create_guest_profile_and_channel",
             json=request.json or {},
             headers={"Content-Type": "application/json"},
@@ -445,7 +509,7 @@ def clefincode_create():
 @app.route("/api/clefincode/send", methods=["POST"])
 def clefincode_send():
     try:
-        res = session.post(
+        res = http_session.post(
             f"{API_BASE_URL}/api/method/clefincode_chat.api.api_1_0_1.chat_portal.send",
             json=request.json or {},
             headers={"Content-Type": "application/json"},
@@ -462,7 +526,7 @@ def clefincode_messages():
         room = request.args.get("room")
         if not room:
             return jsonify({"error": "room is required"}), 400
-        res = session.get(
+        res = http_session.get(
             f"{API_BASE_URL}/api/method/clefincode_chat.api.api_1_0_1.chat_portal.get_messages",
             params={"room": room},
             timeout=15
@@ -478,7 +542,7 @@ def clefincode_settings():
         token = request.args.get("token")
         if not token:
             return jsonify({"error": "token is required"}), 400
-        res = session.get(
+        res = http_session.get(
             f"{API_BASE_URL}/api/method/clefincode_chat.api.api_1_3_1.api.get_settings",
             params={"token": token},
             timeout=15
@@ -491,7 +555,7 @@ def clefincode_settings():
 @app.route("/api/clefincode/bot-topics", methods=["GET"])
 def clefincode_bot_topics():
     try:
-        res = session.get(
+        res = http_session.get(
             f"{API_BASE_URL}/api/method/qcmc_logic.api.chatbot.get_bot_topics",
             timeout=15
         )
@@ -513,12 +577,41 @@ def clefincode_bot_topics():
 def add_headers(response):
     response.headers["X-Content-Type-Options"] = "nosniff"
     response.headers["X-Frame-Options"] = "DENY"
+    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    response.headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=(), payment=(), usb=()"
+    response.headers["Cross-Origin-Opener-Policy"] = "same-origin"
+
+    nonce = getattr(g, "csp_nonce", "")
+    csp = [
+        "default-src 'self'",
+        "base-uri 'self'",
+        "form-action 'self'",
+        "frame-ancestors 'none'",
+        "object-src 'none'",
+        f"script-src 'self' 'nonce-{nonce}' https://cdnjs.cloudflare.com",
+        "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com",
+        "img-src 'self' data: https:",
+        "font-src 'self' https://fonts.gstatic.com",
+        "connect-src 'self' https://psgc.gitlab.io https://open.er-api.com",
+        "frame-src https://www.google.com https://maps.google.com",
+        "media-src 'self'",
+    ]
+    response.headers["Content-Security-Policy"] = "; ".join(csp)
+
     if request.path.startswith("/api/clefincode/"):
         response.headers["Cache-Control"] = "no-store"
     elif request.path.startswith("/static/"):
         response.headers["Cache-Control"] = "public, max-age=31536000, immutable"
     else:
         response.headers["Cache-Control"] = "public, max-age=300"
+
+    response.set_cookie(
+        "csrf_token",
+        get_csrf_token(),
+        secure=request.is_secure,
+        httponly=False,
+        samesite="Lax"
+    )
     return response
 
 

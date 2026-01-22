@@ -1,11 +1,8 @@
-<!-- Custom CSS -->
-<link rel="stylesheet" href="{{ url_for('static', filename='css/contact_us.css') }}">
-
-<section id="contact-us" class="contact_us-section">
+<section id="contact-us" class="contact_us-section" aria-labelledby="contact-title">
     <div class="contact_us-content">
 
             <!-- Header -->
-            <h1 class="contact-header">Our Offices & Plants</h1>
+            <h1 id="contact-title" class="contact-header">Our Offices & Plants</h1>
 
             <!-- Area Filter -->
             <div class="area-filter">
@@ -54,15 +51,16 @@
             </div>
 
             <!-- Overlay -->
-            <div id="contactOverlay" class="contact-overlay"></div>
+            <div id="contactOverlay" class="contact-overlay" aria-hidden="true"></div>
 
             <!-- Popup -->
-            <div id="contactPopup" class="contact-popup">
-                <button class="contact-close" id="closeContactPopup">&times;</button>
+            <div id="contactPopup" class="contact-popup" role="dialog" aria-modal="true" aria-labelledby="contactPopupTitle" aria-hidden="true">
+                <button type="button" class="contact-close" id="closeContactPopup" aria-label="Close contact form">&times;</button>
 
-                <h3>Contact Us</h3>
+                <h3 id="contactPopupTitle">Contact Us</h3>
 
                 <form id="contactForm">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     <input id="contactName" name="name" type="text" placeholder="Name" required>
                     <input id="contactCompany" name="company" type="text" placeholder="Company Name">
                     <input id="contactNo" name="contact_no" type="text" placeholder="Contact No.">
@@ -106,13 +104,13 @@
             <div class="contact-socials">
                 <h2>Visit Us on Our Socials</h2>
                 <div class="social-icons">
-                    <a href="https://www.facebook.com/people/QC-Styropackaging-and-Multiplast-Corporation/100063668176290/" target="_blank" class="social-link facebook">
+                    <a href="https://www.facebook.com/people/QC-Styropackaging-and-Multiplast-Corporation/100063668176290/" target="_blank" rel="noopener noreferrer" class="social-link facebook">
                         <svg class="icon icon-lg" aria-hidden="true"><use href="#icon-facebook"></use></svg>
                     </a>
-                    <a href="https://www.instagram.com/YourPage" target="_blank" class="social-link instagram">
+                    <!-- <a href="https://www.instagram.com/YourPage" target="_blank" rel="noopener noreferrer" class="social-link instagram">
                         <svg class="icon icon-lg" aria-hidden="true"><use href="#icon-instagram"></use></svg>
-                    </a>
-                    <a href="#" class="social-link viber" onclick="openViber()">
+                    </a> -->
+                    <a href="#" class="social-link viber" id="viberLink">
                         <svg class="icon icon-lg" aria-hidden="true"><use href="#icon-chat"></use></svg>
                     </a>
                 </div>

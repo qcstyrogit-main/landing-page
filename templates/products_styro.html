@@ -2,6 +2,8 @@
 
 {% block title %}Styrofoam Products | QC & MC{% endblock %}
 {% block meta_description %}Browse QC and MC styrofoam packaging products including boxes, trays, cups, and plates.{% endblock %}
+{% block og_image %}{{ request.url_root.rstrip('/') }}{{ url_for('static', filename='images/products/Hotdog_Boxes.png') }}{% endblock %}
+{% block twitter_image %}{{ request.url_root.rstrip('/') }}{{ url_for('static', filename='images/products/Hotdog_Boxes.png') }}{% endblock %}
 
 {% block head %}
   {{ super() }}
@@ -784,6 +786,7 @@
       <div id="inquiryForm" style="display:none;">
         <h3>Product Inquiry</h3>
         <form id="productInquiryForm">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
           <input type="text" name="hp" id="inqHp" style="display:none">
 
           <input type="text" id="inqProduct" placeholder="Product Name" required readonly>

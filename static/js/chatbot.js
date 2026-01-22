@@ -11,6 +11,11 @@
   const unreadBadge = document.getElementById('chat-unread-badge');
   const typingIndicator = document.getElementById('chat-typing');
   const typingText = document.getElementById('chat-typing-text');
+  const verifyPanel = document.getElementById('chatbot-verify');
+  const verifyInput = document.getElementById('chatbot-verify-input');
+  const verifyBtn = document.getElementById('chatbot-verify-btn');
+  const verifyQuestion = document.getElementById('chatbot-verify-question');
+  const verifyStatus = document.getElementById('chatbot-verify-status');
 
   if (!bubble || !panel || !form || !input || !messagesEl) return;
 
@@ -71,6 +76,8 @@
   ];
   let topics = defaultTopics.slice();
   let dynamicGreeting = '';
+  const verifyKey = 'chatbot_verified_math';
+  let verifyAnswer = null;
 
   hydrateIdentity();
   loadHistory();
@@ -106,6 +113,11 @@
 
   form.addEventListener('submit', async (event) => {
     event.preventDefault();
+    if (!isVerified()) {
+      setStatus('Please complete the human check.');
+      updateVerificationUI();
+      return;
+    }
     const content = input.value.trim();
     if (!content) return;
 
@@ -146,7 +158,12 @@
     if (open) {
       panel.classList.add('open');
       panel.setAttribute('aria-hidden', 'false');
-      input.focus();
+      updateVerificationUI();
+      if (isVerified()) {
+        input.focus();
+      } else if (verifyInput) {
+        verifyInput.focus();
+      }
       clearUnread();
       startPolling();
       if (topicsPromise && typeof topicsPromise.then === 'function') {
@@ -158,6 +175,70 @@
       panel.classList.remove('open');
       panel.setAttribute('aria-hidden', 'true');
     }
+  }
+
+  function isVerified() {
+    return sessionStorage.getItem(verifyKey) === '1';
+  }
+
+  function setVerified(value) {
+    if (value) {
+      sessionStorage.setItem(verifyKey, '1');
+    } else {
+      sessionStorage.removeItem(verifyKey);
+    }
+  }
+
+  function generateQuestion() {
+    const a = Math.floor(Math.random() * 8) + 2;
+    const b = Math.floor(Math.random() * 8) + 2;
+    verifyAnswer = a + b;
+    if (verifyQuestion) {
+      verifyQuestion.textContent = `What is ${a} + ${b}?`;
+    }
+    if (verifyInput) verifyInput.value = '';
+    if (verifyStatus) verifyStatus.textContent = '';
+  }
+
+  function updateVerificationUI() {
+    if (!verifyPanel || !form) return;
+    const verified = isVerified();
+    verifyPanel.style.display = verified ? 'none' : 'block';
+    form.style.display = verified ? 'flex' : 'none';
+    if (!verified) {
+      generateQuestion();
+    }
+  }
+
+  function handleVerificationAttempt() {
+    if (!verifyInput) return;
+    const value = parseInt(verifyInput.value.trim(), 10);
+    if (!Number.isFinite(value)) {
+      if (verifyStatus) verifyStatus.textContent = 'Please enter a number.';
+      return;
+    }
+    if (value === verifyAnswer) {
+      setVerified(true);
+      if (verifyStatus) verifyStatus.textContent = 'Verified! You can now chat.';
+      updateVerificationUI();
+      input.focus();
+    } else {
+      if (verifyStatus) verifyStatus.textContent = 'Incorrect. Try another question.';
+      generateQuestion();
+      verifyInput.focus();
+    }
+  }
+
+  if (verifyBtn) {
+    verifyBtn.addEventListener('click', handleVerificationAttempt);
+  }
+  if (verifyInput) {
+    verifyInput.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter') {
+        event.preventDefault();
+        handleVerificationAttempt();
+      }
+    });
   }
 
   function startPolling() {
@@ -187,7 +268,12 @@
     bubble.className = `chatbot-message ${outbound ? 'outbound' : 'inbound'}`;
     const contentEl = document.createElement('div');
     contentEl.className = 'chatbot-message-content';
-    contentEl.innerHTML = isHtml ? content : formatMessage(content);
+    if (isHtml) {
+      const sanitized = sanitizeHtml(content);
+      contentEl.innerHTML = sanitized || formatMessage(stripHtml(content));
+    } else {
+      contentEl.innerHTML = formatMessage(content);
+    }
 
     const timeEl = document.createElement('div');
     timeEl.className = 'chatbot-message-time';
@@ -236,9 +322,12 @@
   }
 
   async function createGuestRoom({ content, sender, senderEmail }) {
+    const headers = window.withCsrf
+      ? window.withCsrf({ 'Content-Type': 'application/json' })
+      : { 'Content-Type': 'application/json' };
     const response = await fetch(endpoints.create, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers,
       body: JSON.stringify({
         content,
         sender,
@@ -263,9 +352,12 @@
   async function sendMessage({ content, sender, senderEmail }) {
     if (!chatState.room) throw new Error('Missing room');
 
+    const headers = window.withCsrf
+      ? window.withCsrf({ 'Content-Type': 'application/json' })
+      : { 'Content-Type': 'application/json' };
     const response = await fetch(endpoints.send, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers,
       body: JSON.stringify({
         content,
         room: chatState.room,
@@ -333,7 +425,12 @@
   function appendBotMessage(text, options = {}) {
     const bubble = document.createElement('div');
     bubble.className = 'chatbot-message inbound chatbot-message-bot';
-    bubble.innerHTML = options.isHtml ? text : formatMessage(text);
+    if (options.isHtml) {
+      const sanitized = sanitizeHtml(text);
+      bubble.innerHTML = sanitized || formatMessage(stripHtml(text));
+    } else {
+      bubble.innerHTML = formatMessage(text);
+    }
     const timeEl = document.createElement('div');
     timeEl.className = 'chatbot-message-time';
     timeEl.textContent = formatTimestamp(Date.now());
@@ -615,7 +712,7 @@
 
   function formatMessage(text) {
     const escaped = escapeHtml(text);
-    const withLinks = escaped.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank" rel="noopener">$1</a>');
+    const withLinks = escaped.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>');
     return withLinks.replace(/\n/g, '<br>');
   }
 

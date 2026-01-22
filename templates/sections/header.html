@@ -8,7 +8,7 @@
         <ul>
             <li><a href="/">Home</a></li>
             <li class="has-dropdown">
-                <a href="#">Products</a>
+                <a href="/#products" aria-haspopup="true">Products</a>
                 <ul class="dropdown-menu">
                     <li><a href="/products_plastic">Plastic</a></li>
                     <li><a href="/products_styro">Styrofoam</a></li>
@@ -21,7 +21,7 @@
     </nav>
 
     <div class="header-tools">
-        <button class="menu-toggle" id="menuToggle">&#9776;</button>
+        <button class="menu-toggle" id="menuToggle" aria-label="Open menu" aria-controls="mobileNav" aria-expanded="false">&#9776;</button>
         <a href="{{ API_BASE_URL }}" class="btn-login">Login</a>
     </div>
 </header>
@@ -29,10 +29,11 @@
 <!-- Mobile navigation (for small screens) -->
 <nav id="mobileNav" class="mobile-nav" aria-hidden="true">
     <a href="/">Home</a>
-    <a href="#" id="mobileDropdownToggle" aria-expanded="false">
-        Products
+    <a href="/#products" class="mobile-products-link">Products</a>
+    <button type="button" id="mobileDropdownToggle" class="mobile-dropdown-toggle" aria-expanded="false" aria-haspopup="true" aria-controls="mobileDropdown">
+        Product Categories
         <svg class="icon" aria-hidden="true"><use href="#icon-chevron-down"></use></svg>
-    </a>
+    </button>
     <div id="mobileDropdown" class="mobile-dropdown" aria-hidden="true">
         <a href="/products_plastic">Plastic</a>
         <a href="/products_styro">Styrofoam</a>

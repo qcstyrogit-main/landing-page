@@ -379,6 +379,14 @@ document.addEventListener("DOMContentLoaded", () => {
     const contactFormEl = document.getElementById("contactForm");
     if (!contactFormEl) return;
 
+    const viberLink = document.getElementById("viberLink");
+    if (viberLink) {
+        viberLink.addEventListener("click", (event) => {
+            event.preventDefault();
+            openViber();
+        });
+    }
+
     const submitBtn = contactFormEl.querySelector(".submit-btn");
     const successPopup = document.getElementById("contactSuccessPopup");
     const successPopupMessage = document.getElementById("contactSuccessMessage");
@@ -425,11 +433,13 @@ document.addEventListener("DOMContentLoaded", () => {
         const inquiry = document.getElementById("contactInquiry");
         const hp = document.getElementById("contactHp");
 
+        const headers = window.withCsrf
+            ? window.withCsrf({ "Content-Type": "application/x-www-form-urlencoded" })
+            : { "Content-Type": "application/x-www-form-urlencoded" };
+
         fetch("/api/contact-us", {
             method: "POST",
-            headers: {
-                "Content-Type": "application/x-www-form-urlencoded"
-            },
+            headers,
             body: new URLSearchParams({
                 name: name.value.trim(),
                 company: company.value.trim(),
@@ -467,20 +477,69 @@ document.addEventListener("DOMContentLoaded", () => {
     const closeBtn = document.getElementById("closeContactPopup");
     const popup = document.getElementById("contactPopup");
     const overlay = document.getElementById("contactOverlay");
+    let lastFocused = null;
+    let trapHandler = null;
+
+    function getFocusable(container) {
+        if (!container) return [];
+        return Array.from(
+            container.querySelectorAll('input, select, textarea, button:not([disabled]), [tabindex]:not([tabindex="-1"])')
+        ).filter(el => el.offsetParent !== null);
+    }
+
+    function trapFocus() {
+        const focusable = getFocusable(popup);
+        if (!focusable.length) return;
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+
+        trapHandler = (event) => {
+            if (event.key === "Tab") {
+                if (event.shiftKey && document.activeElement === first) {
+                    event.preventDefault();
+                    last.focus();
+                } else if (!event.shiftKey && document.activeElement === last) {
+                    event.preventDefault();
+                    first.focus();
+                }
+            }
+            if (event.key === "Escape") {
+                closePopup();
+            }
+        };
+        document.addEventListener("keydown", trapHandler);
+        first.focus();
+    }
+
+    function releaseFocus() {
+        if (trapHandler) {
+            document.removeEventListener("keydown", trapHandler);
+            trapHandler = null;
+        }
+        if (lastFocused) lastFocused.focus();
+        lastFocused = null;
+    }
 
     // Function to open popup
     function openPopup() {
+        lastFocused = document.activeElement;
         popup.style.display = "block";
         overlay.style.display = "block";
+        popup.setAttribute("aria-hidden", "false");
+        overlay.setAttribute("aria-hidden", "false");
 
         // Optional: add slide-up animation
         popup.style.animation = "slideUp 0.4s ease forwards";
+        trapFocus();
     }
 
     // Function to close popup
     function closePopup() {
         popup.style.display = "none";
         overlay.style.display = "none";
+        popup.setAttribute("aria-hidden", "true");
+        overlay.setAttribute("aria-hidden", "true");
+        releaseFocus();
     }
 
     // Click handlers

@@ -235,9 +235,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
         try {
+            const headers = window.withCsrf
+                ? window.withCsrf({ "Content-Type": "application/json" })
+                : { "Content-Type": "application/json" };
+
             const response = await fetch("/api/submit-job-applicant", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers,
                 body: JSON.stringify(formData)
             });
 

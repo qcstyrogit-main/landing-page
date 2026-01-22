@@ -7,8 +7,42 @@
 {{ super() }}
 
 <!-- CSS -->
-<link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
-<link rel="stylesheet" href="{{ url_for('static', filename='css/footer.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/home.bundle.css') }}">
+<link rel="preload" as="image" href="{{ url_for('static', filename='images/products/Tray.avif') }}" type="image/avif">
+{% endblock %}
+
+{% block structured_data %}
+{{ super() }}
+<script type="application/ld+json" nonce="{{ csp_nonce }}">
+{
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  "name": "Homepage sections",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Products", "url": "{{ request.url_root.rstrip('/') }}/#products" },
+    { "@type": "ListItem", "position": 2, "name": "About", "url": "{{ request.url_root.rstrip('/') }}/#about-us" },
+    { "@type": "ListItem", "position": 3, "name": "Careers", "url": "{{ request.url_root.rstrip('/') }}/#jobs" },
+    { "@type": "ListItem", "position": 4, "name": "Sustainability", "url": "{{ request.url_root.rstrip('/') }}/#sustainability" },
+    { "@type": "ListItem", "position": 5, "name": "ISO Certified", "url": "{{ request.url_root.rstrip('/') }}/#iso-certified" },
+    { "@type": "ListItem", "position": 6, "name": "Contact", "url": "{{ request.url_root.rstrip('/') }}/#contact-us" }
+  ]
+}
+</script>
+<script type="application/ld+json" nonce="{{ csp_nonce }}">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "{{ request.url_root.rstrip('/') }}/" },
+    { "@type": "ListItem", "position": 2, "name": "Products", "item": "{{ request.url_root.rstrip('/') }}/#products" },
+    { "@type": "ListItem", "position": 3, "name": "About", "item": "{{ request.url_root.rstrip('/') }}/#about-us" },
+    { "@type": "ListItem", "position": 4, "name": "Careers", "item": "{{ request.url_root.rstrip('/') }}/#jobs" },
+    { "@type": "ListItem", "position": 5, "name": "Sustainability", "item": "{{ request.url_root.rstrip('/') }}/#sustainability" },
+    { "@type": "ListItem", "position": 6, "name": "ISO Certified", "item": "{{ request.url_root.rstrip('/') }}/#iso-certified" },
+    { "@type": "ListItem", "position": 7, "name": "Contact", "item": "{{ request.url_root.rstrip('/') }}/#contact-us" }
+  ]
+}
+</script>
 {% endblock %}
 
 {% block page_content %}
@@ -25,23 +59,23 @@
         <!-- Navigation -->
         <nav class="home-nav">
             <ul>
-                <li><a href="/">Home</a></li>
+                <li><a href="/" {% if request.path == "/" %}aria-current="page"{% endif %}>Home</a></li>
                 <li class="has-dropdown">
-                    <a href="#">Products</a>
+                    <a href="/#products" aria-haspopup="true">Products</a>
                     <ul class="dropdown-menu">
                         <li><a href="/products_plastic">Plastic</a></li>
                         <li><a href="/products_styro">Styrofoam</a></li>
                     </ul>
                 </li>
-                <li><a href="#about-us">About</a></li>
-                <li><a href="#jobs">Careers</a></li>
-                <li><a href="#contact-us">Contact</a></li>
+                <li><a href="/#about-us">About</a></li>
+                <li><a href="/#jobs">Careers</a></li>
+                <li><a href="/#contact-us">Contact</a></li>
             </ul>
         </nav>
 
         <!-- Right-side tools: mobile toggle + login -->
         <div class="header-tools">
-            <button class="menu-toggle" id="menuToggle">&#9776;</button>
+            <button class="menu-toggle" id="menuToggle" aria-label="Open menu" aria-controls="mobileNav" aria-expanded="false">&#9776;</button>
             <!-- <a href="https://erp.qcstyro.com/login" class="btn-login">Login</a> -->
             <a href="{{ API_BASE_URL }}" class="btn-login">Login</a>
         </div>
@@ -49,18 +83,19 @@
 
     <!-- Mobile navigation (for small screens) -->
     <nav id="mobileNav" class="mobile-nav" aria-hidden="true">
-        <a href="/">Home</a>
-        <a href="#" id="mobileDropdownToggle" aria-expanded="false">
-            Products
+        <a href="/" {% if request.path == "/" %}aria-current="page"{% endif %}>Home</a>
+        <a href="/#products" class="mobile-products-link">Products</a>
+        <button type="button" id="mobileDropdownToggle" class="mobile-dropdown-toggle" aria-expanded="false" aria-haspopup="true" aria-controls="mobileDropdown">
+            Product Categories
             <svg class="icon" aria-hidden="true"><use href="#icon-chevron-down"></use></svg>
-        </a>
+        </button>
         <div id="mobileDropdown" class="mobile-dropdown" aria-hidden="true">
             <a href="/products_plastic">Plastic</a>
             <a href="/products_styro">Styrofoam</a>
         </div>
-        <a href="#about-us">About</a>
-        <a href="#jobs">Careers</a>
-        <a href="#contact-us">Contact</a>
+        <a href="/#about-us">About</a>
+        <a href="/#jobs">Careers</a>
+        <a href="/#contact-us">Contact</a>
         <!-- <a href="https://erp.qcstyro.com/login" class="mobile-login">Login</a> -->
          <a href="{{ API_BASE_URL }}" class="mobile-login">Login</a>
     </nav>

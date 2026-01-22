@@ -37,13 +37,19 @@ body{
   gap: 15px;
 }
 
-.custom-footer .footer-links a {
+.custom-footer .footer-links a,
+.custom-footer .footer-links button {
   color: #fff;
   text-decoration: none;
   font-size: 0.75rem;
   margin: 0 3px;
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
 }
-.custom-footer .footer-links a:hover {
+.custom-footer .footer-links a:hover,
+.custom-footer .footer-links button:hover {
   color: #40aeee;
 }
 
@@ -94,6 +100,7 @@ body{
   padding: 6px 10px;
   background: #fff;
   border-radius: 8px;
+  border: none;
 }
 
 .modal-content .close:hover {

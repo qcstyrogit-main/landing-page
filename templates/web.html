@@ -7,6 +7,7 @@
     <meta name="description" content="{% block meta_description %}QC and MC packaging products, careers, and contact information.{% endblock %}">
     <meta name="robots" content="{% block meta_robots %}index, follow{% endblock %}">
     <link rel="canonical" href="{{ request.base_url }}">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <meta property="og:title" content="{% block og_title %}{{ self.title() }}{% endblock %}">
     <meta property="og:description" content="{% block og_description %}{{ self.meta_description() }}{% endblock %}">
@@ -24,17 +25,16 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
-    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
-    <noscript>
-        <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-    </noscript>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/icons.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/chatbot.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/icons.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/footer.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/privacy_policy.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/term_of_use.css') }}">
     <link rel="shortcut icon" href="{{ url_for('static', filename='images/favicon.ico') }}" type="image/x-icon">
 
     {% block structured_data %}
-    <script type="application/ld+json">
+    <script type="application/ld+json" nonce="{{ csp_nonce }}">
     {
       "@context": "https://schema.org",
       "@graph": [
@@ -107,13 +107,30 @@
                 <span id="chat-typing-text" class="typing-text">Agent is typing...</span>
             </div>
         </div>
+        <div id="chatbot-verify" class="chatbot-verify" aria-live="polite">
+            <p class="chatbot-verify-title">Human verification</p>
+            <p id="chatbot-verify-question" class="chatbot-verify-question">Please solve the math question.</p>
+            <div class="chatbot-verify-row">
+                <input
+                    id="chatbot-verify-input"
+                    type="text"
+                    inputmode="numeric"
+                    autocomplete="off"
+                    placeholder="Your answer"
+                    aria-label="Answer the math question"
+                >
+                <button type="button" id="chatbot-verify-btn">Verify</button>
+            </div>
+            <p id="chatbot-verify-status" class="chatbot-verify-status" aria-live="polite"></p>
+        </div>
         <form id="chatbot-form" class="chatbot-form">
-            <textarea id="chatbot-input" placeholder="Type your message..." rows="2" required></textarea>
+            <textarea id="chatbot-input" placeholder="Type your message..." rows="2" required aria-label="Chat message"></textarea>
             <button type="submit">Send</button>
         </form>
         <p id="chatbot-status" class="chatbot-status" aria-live="polite"></p>
     </section>
 
+    <script src="{{ url_for('static', filename='js/csrf.js') }}"></script>
     {% block footer %}{% endblock %}
 
     <script src="{{ url_for('static', filename='js/image_formats.js') }}"></script>
