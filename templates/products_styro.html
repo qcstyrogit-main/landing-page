@@ -2,8 +2,8 @@
 
 {% block title %}Styropor Products | QC & MC{% endblock %}
 {% block meta_description %}Browse QC and MC styrofoam packaging products including boxes, trays, cups, and plates.{% endblock %}
-{% block og_image %}{{ request.url_root.rstrip('/') }}{{ url_for('static', filename='images/products/Hotdog_Boxes.png') }}{% endblock %}
-{% block twitter_image %}{{ request.url_root.rstrip('/') }}{{ url_for('static', filename='images/products/Hotdog_Boxes.png') }}{% endblock %}
+{% block og_image %}{{ (canonical_base_url or request.url_root.rstrip('/')) }}{{ url_for('static', filename='images/products/Hotdog_Boxes.png') }}{% endblock %}
+{% block twitter_image %}{{ (canonical_base_url or request.url_root.rstrip('/')) }}{{ url_for('static', filename='images/products/Hotdog_Boxes.png') }}{% endblock %}
 
 {% block head %}
   {{ super() }}

@@ -4,11 +4,12 @@ import json
 import re
 import secrets
 from time import time
+from datetime import date
+from urllib.parse import urlparse
 from collections import deque
 from html import unescape
 from flask import Flask, render_template, request, jsonify, Response, url_for as flask_url_for, session as flask_session, g
 import requests
-from urllib.parse import urlparse
 from flask_caching import Cache
 
 def load_env():
@@ -48,6 +49,37 @@ if not app.config["SECRET_KEY"]:
 ASSET_VERSION = os.getenv("ASSET_VERSION", "1")
 EVENTS_DATA_PATH = os.path.join(app.root_path, "static", "data", "events.json")
 CACHE_BUST_TOKEN = os.getenv("CACHE_BUST_TOKEN", "")
+CANONICAL_BASE_URL = os.getenv("CANONICAL_BASE_URL", "").rstrip("/")
+HREFLANGS = [lang.strip() for lang in os.getenv("HREFLANGS", "en").split(",") if lang.strip()]
+
+PRODUCT_CATEGORY_URLS = {
+    "products_plastic": [
+        "egg-tray",
+        "ice-cream-cups",
+        "kubyertos",
+        "lids",
+        "microwavable-tray",
+        "pet-cups",
+        "plastic-tray",
+        "pp-bowl",
+        "salad-trays-cover",
+        "sauce-cups",
+        "traditional-cups",
+    ],
+    "products_styro": [
+        "cooler",
+        "eps-psp-bowl",
+        "hamburger-box",
+        "hotdog-box",
+        "industrial",
+        "lunch-packs",
+        "noodle-cup",
+        "plates",
+        "spaghetti-box",
+        "styro-cup",
+        "tray",
+    ],
+}
 
 
 OG_IMAGE_REGEX = re.compile(
@@ -227,8 +259,30 @@ def inject_globals():
     return dict(
         API_BASE_URL=API_BASE_URL,
         csrf_token=get_csrf_token,
-        csp_nonce=getattr(g, "csp_nonce", "")
+        csp_nonce=getattr(g, "csp_nonce", ""),
+        canonical_base_url=CANONICAL_BASE_URL
     )
+
+def get_base_url():
+    return CANONICAL_BASE_URL or request.url_root.rstrip("/")
+
+def is_internal_url(url, base_url):
+    if not url:
+        return False
+    if url.startswith("/"):
+        return True
+    parsed = urlparse(url)
+    if not parsed.scheme or not parsed.netloc:
+        return False
+    base = urlparse(base_url)
+    return parsed.netloc == base.netloc
+
+def normalize_url(url, base_url):
+    if not url:
+        return ""
+    if url.startswith("/"):
+        return f"{base_url}{url}"
+    return url
 
 # --------------------------------------------------
 # SECURITY: RATE LIMITS + CSRF
@@ -309,6 +363,8 @@ def apply_now():
 
 @app.route("/sitemap.xml")
 def sitemap():
+    base_url = get_base_url()
+    today = date.today().isoformat()
     pages = [
         ("home", "weekly", "1.0"),
         ("products_plastic", "weekly", "0.9"),
@@ -318,16 +374,71 @@ def sitemap():
 
     lines = [
         '<?xml version="1.0" encoding="UTF-8"?>',
-        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
+        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" '
+        'xmlns:xhtml="http://www.w3.org/1999/xhtml">'
     ]
     for endpoint, changefreq, priority in pages:
         lines.append("  <url>")
-        lines.append(f"    <loc>{flask_url_for(endpoint, _external=True)}</loc>")
+        loc = f"{base_url}{flask_url_for(endpoint)}"
+        lines.append(f"    <loc>{loc}</loc>")
+        if HREFLANGS:
+            for lang in HREFLANGS:
+                lines.append(
+                    f'    <xhtml:link rel="alternate" hreflang="{lang}" href="{loc}" />'
+                )
+            lines.append(f'    <xhtml:link rel="alternate" hreflang="x-default" href="{loc}" />')
+        lines.append(f"    <lastmod>{today}</lastmod>")
         lines.append(f"    <changefreq>{changefreq}</changefreq>")
         lines.append(f"    <priority>{priority}</priority>")
         lines.append("  </url>")
+
+    # Optional category URLs (query-based, crawlable)
+    for endpoint, categories in PRODUCT_CATEGORY_URLS.items():
+        for category in categories:
+            loc = f"{base_url}{flask_url_for(endpoint)}?category={category}"
+            lines.append("  <url>")
+            lines.append(f"    <loc>{loc}</loc>")
+            if HREFLANGS:
+                for lang in HREFLANGS:
+                    lines.append(
+                        f'    <xhtml:link rel="alternate" hreflang="{lang}" href="{loc}" />'
+                    )
+                lines.append(f'    <xhtml:link rel="alternate" hreflang="x-default" href="{loc}" />')
+            lines.append(f"    <lastmod>{today}</lastmod>")
+            lines.append("    <changefreq>weekly</changefreq>")
+            lines.append("    <priority>0.6</priority>")
+            lines.append("  </url>")
     lines.append("</urlset>")
 
+    return Response("\n".join(lines), mimetype="application/xml")
+
+@app.route("/sitemap-events.xml")
+def sitemap_events():
+    base_url = get_base_url()
+    today = date.today().isoformat()
+    events = load_event_posts()
+    lines = [
+        '<?xml version="1.0" encoding="UTF-8"?>',
+        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" '
+        'xmlns:xhtml="http://www.w3.org/1999/xhtml">'
+    ]
+    for event in events:
+        url = normalize_url((event or {}).get("url", "").strip(), base_url)
+        if not is_internal_url(url, base_url):
+            continue
+        lines.append("  <url>")
+        lines.append(f"    <loc>{url}</loc>")
+        if HREFLANGS:
+            for lang in HREFLANGS:
+                lines.append(
+                    f'    <xhtml:link rel="alternate" hreflang="{lang}" href="{url}" />'
+                )
+            lines.append(f'    <xhtml:link rel="alternate" hreflang="x-default" href="{url}" />')
+        lines.append(f"    <lastmod>{today}</lastmod>")
+        lines.append("    <changefreq>weekly</changefreq>")
+        lines.append("    <priority>0.6</priority>")
+        lines.append("  </url>")
+    lines.append("</urlset>")
     return Response("\n".join(lines), mimetype="application/xml")
 
 @app.route("/robots.txt")
@@ -336,6 +447,7 @@ def robots():
         "User-agent: *",
         "Allow: /",
         f"Sitemap: {flask_url_for('sitemap', _external=True)}",
+        f"Sitemap: {flask_url_for('sitemap_events', _external=True)}",
     ]
     return Response("\n".join(content), mimetype="text/plain")
 

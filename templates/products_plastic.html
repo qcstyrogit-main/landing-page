@@ -2,8 +2,8 @@
 
 {% block title %}Plastic Products | QC & MC{% endblock %}
 {% block meta_description %}Browse QC and MC plastic packaging products including trays, cups, bowls, and lids.{% endblock %}
-{% block og_image %}{{ request.url_root.rstrip('/') }}{{ url_for('static', filename='images/products/Plastic_Products.png') }}{% endblock %}
-{% block twitter_image %}{{ request.url_root.rstrip('/') }}{{ url_for('static', filename='images/products/Plastic_Products.png') }}{% endblock %}
+{% block og_image %}{{ (canonical_base_url or request.url_root.rstrip('/')) }}{{ url_for('static', filename='images/products/Plastic_Products.png') }}{% endblock %}
+{% block twitter_image %}{{ (canonical_base_url or request.url_root.rstrip('/')) }}{{ url_for('static', filename='images/products/Plastic_Products.png') }}{% endblock %}
 
 {% block head %}
   {{ super() }}

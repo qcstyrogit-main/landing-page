@@ -2,8 +2,8 @@
 
 {% block title %}Job Openings | QC & MC{% endblock %}
 {% block meta_description %}Explore current job openings at QC and MC. Filter by department, location, and type to find the right role.{% endblock %}
-{% block og_image %}{{ request.url_root.rstrip('/') }}{{ url_for('static', filename='images/careers/team.png') }}{% endblock %}
-{% block twitter_image %}{{ request.url_root.rstrip('/') }}{{ url_for('static', filename='images/careers/team.png') }}{% endblock %}
+{% block og_image %}{{ (canonical_base_url or request.url_root.rstrip('/')) }}{{ url_for('static', filename='images/careers/team.png') }}{% endblock %}
+{% block twitter_image %}{{ (canonical_base_url or request.url_root.rstrip('/')) }}{{ url_for('static', filename='images/careers/team.png') }}{% endblock %}
 
 {% block head %}
   {{ super() }}

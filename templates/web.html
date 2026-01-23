@@ -6,20 +6,20 @@
     <title>{% block title %}QC & MC{% endblock %}</title>
     <meta name="description" content="{% block meta_description %}QC and MC packaging products, careers, and contact information.{% endblock %}">
     <meta name="robots" content="{% block meta_robots %}index, follow{% endblock %}">
-    <link rel="canonical" href="{{ request.base_url }}">
+    <link rel="canonical" href="{{ (canonical_base_url or request.url_root.rstrip('/')) ~ request.path }}">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <meta property="og:title" content="{% block og_title %}{{ self.title() }}{% endblock %}">
     <meta property="og:description" content="{% block og_description %}{{ self.meta_description() }}{% endblock %}">
-    <meta property="og:url" content="{{ request.base_url }}">
+    <meta property="og:url" content="{{ (canonical_base_url or request.url_root.rstrip('/')) ~ request.path }}">
     <meta property="og:type" content="{% block og_type %}website{% endblock %}">
-    <meta property="og:image" content="{% block og_image %}{{ request.url_root.rstrip('/') }}{{ url_for('static', filename='images/Intro.png') }}{% endblock %}">
+    <meta property="og:image" content="{% block og_image %}{{ (canonical_base_url or request.url_root.rstrip('/')) }}{{ url_for('static', filename='images/Intro.png') }}{% endblock %}">
     <meta property="og:site_name" content="Q.C. Styropackaging & Multiplast Corporation">
 
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="{% block twitter_title %}{{ self.title() }}{% endblock %}">
     <meta name="twitter:description" content="{% block twitter_description %}{{ self.meta_description() }}{% endblock %}">
-    <meta name="twitter:image" content="{% block twitter_image %}{{ request.url_root.rstrip('/') }}{{ url_for('static', filename='images/Intro.png') }}{% endblock %}">
+    <meta name="twitter:image" content="{% block twitter_image %}{{ (canonical_base_url or request.url_root.rstrip('/')) }}{{ url_for('static', filename='images/Intro.png') }}{% endblock %}">
 
     {% block head %}
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -44,13 +44,13 @@
         {
           "@type": "Organization",
           "name": "Q.C. Styropackaging & Multiplast Corporation",
-          "url": "{{ request.url_root.rstrip('/') }}",
-          "logo": "{{ url_for('static', filename='images/QC.png', _external=True) }}"
+          "url": "{{ canonical_base_url or request.url_root.rstrip('/') }}",
+          "logo": "{{ (canonical_base_url or request.url_root.rstrip('/')) }}{{ url_for('static', filename='images/QC.png') }}"
         },
         {
           "@type": "WebSite",
           "name": "Q.C. Styropackaging & Multiplast Corporation",
-          "url": "{{ request.url_root.rstrip('/') }}"
+          "url": "{{ canonical_base_url or request.url_root.rstrip('/') }}"
         },
         {
           "@type": "SiteNavigationElement",
@@ -71,7 +71,7 @@
           "@type": "WebPage",
           "name": "{{ self.title() }}",
           "description": "{{ self.meta_description() }}",
-          "url": "{{ request.base_url }}",
+          "url": "{{ (canonical_base_url or request.url_root.rstrip('/')) ~ request.path }}",
           "inLanguage": "en"
         }
       ]

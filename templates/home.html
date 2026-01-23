@@ -2,8 +2,8 @@
 
 {% block title %}QC Styropackaging Corporation & Multiplast Corporation{% endblock %}
 {% block meta_description %}QC and MC packaging products, career opportunities, and contact information.{% endblock %}
-{% block og_image %}{{ request.url_root.rstrip('/') }}{{ url_for('static', filename='images/Intro.png') }}{% endblock %}
-{% block twitter_image %}{{ request.url_root.rstrip('/') }}{{ url_for('static', filename='images/Intro.png') }}{% endblock %}
+{% block og_image %}{{ (canonical_base_url or request.url_root.rstrip('/')) }}{{ url_for('static', filename='images/Intro.png') }}{% endblock %}
+{% block twitter_image %}{{ (canonical_base_url or request.url_root.rstrip('/')) }}{{ url_for('static', filename='images/Intro.png') }}{% endblock %}
 
 {% block head %}
 {{ super() }}
@@ -23,12 +23,12 @@
   "@type": "ItemList",
   "name": "Homepage sections",
   "itemListElement": [
-    { "@type": "ListItem", "position": 1, "name": "Products", "url": "{{ request.url_root.rstrip('/') }}/#products" },
-    { "@type": "ListItem", "position": 2, "name": "About", "url": "{{ request.url_root.rstrip('/') }}/#about-us" },
-    { "@type": "ListItem", "position": 3, "name": "Careers", "url": "{{ request.url_root.rstrip('/') }}/#jobs" },
-    { "@type": "ListItem", "position": 4, "name": "Sustainability", "url": "{{ request.url_root.rstrip('/') }}/#sustainability" },
-    { "@type": "ListItem", "position": 5, "name": "ISO Certified", "url": "{{ request.url_root.rstrip('/') }}/#iso-certified" },
-    { "@type": "ListItem", "position": 6, "name": "Contact", "url": "{{ request.url_root.rstrip('/') }}/#contact-us" }
+    { "@type": "ListItem", "position": 1, "name": "Products", "url": "{{ (canonical_base_url or request.url_root.rstrip('/')) }}/#products" },
+    { "@type": "ListItem", "position": 2, "name": "About", "url": "{{ (canonical_base_url or request.url_root.rstrip('/')) }}/#about-us" },
+    { "@type": "ListItem", "position": 3, "name": "Careers", "url": "{{ (canonical_base_url or request.url_root.rstrip('/')) }}/#jobs" },
+    { "@type": "ListItem", "position": 4, "name": "Sustainability", "url": "{{ (canonical_base_url or request.url_root.rstrip('/')) }}/#sustainability" },
+    { "@type": "ListItem", "position": 5, "name": "ISO Certified", "url": "{{ (canonical_base_url or request.url_root.rstrip('/')) }}/#iso-certified" },
+    { "@type": "ListItem", "position": 6, "name": "Contact", "url": "{{ (canonical_base_url or request.url_root.rstrip('/')) }}/#contact-us" }
   ]
 }
 </script>
@@ -37,13 +37,13 @@
   "@context": "https://schema.org",
   "@type": "BreadcrumbList",
   "itemListElement": [
-    { "@type": "ListItem", "position": 1, "name": "Home", "item": "{{ request.url_root.rstrip('/') }}/" },
-    { "@type": "ListItem", "position": 2, "name": "Products", "item": "{{ request.url_root.rstrip('/') }}/#products" },
-    { "@type": "ListItem", "position": 3, "name": "About", "item": "{{ request.url_root.rstrip('/') }}/#about-us" },
-    { "@type": "ListItem", "position": 4, "name": "Careers", "item": "{{ request.url_root.rstrip('/') }}/#jobs" },
-    { "@type": "ListItem", "position": 5, "name": "Sustainability", "item": "{{ request.url_root.rstrip('/') }}/#sustainability" },
-    { "@type": "ListItem", "position": 6, "name": "ISO Certified", "item": "{{ request.url_root.rstrip('/') }}/#iso-certified" },
-    { "@type": "ListItem", "position": 7, "name": "Contact", "item": "{{ request.url_root.rstrip('/') }}/#contact-us" }
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "{{ (canonical_base_url or request.url_root.rstrip('/')) }}/" },
+    { "@type": "ListItem", "position": 2, "name": "Products", "item": "{{ (canonical_base_url or request.url_root.rstrip('/')) }}/#products" },
+    { "@type": "ListItem", "position": 3, "name": "About", "item": "{{ (canonical_base_url or request.url_root.rstrip('/')) }}/#about-us" },
+    { "@type": "ListItem", "position": 4, "name": "Careers", "item": "{{ (canonical_base_url or request.url_root.rstrip('/')) }}/#jobs" },
+    { "@type": "ListItem", "position": 5, "name": "Sustainability", "item": "{{ (canonical_base_url or request.url_root.rstrip('/')) }}/#sustainability" },
+    { "@type": "ListItem", "position": 6, "name": "ISO Certified", "item": "{{ (canonical_base_url or request.url_root.rstrip('/')) }}/#iso-certified" },
+    { "@type": "ListItem", "position": 7, "name": "Contact", "item": "{{ (canonical_base_url or request.url_root.rstrip('/')) }}/#contact-us" }
   ]
 }
 </script>
