@@ -46,6 +46,7 @@ if not app.config["SECRET_KEY"]:
     app.config["SECRET_KEY"] = secrets.token_urlsafe(32)
 ASSET_VERSION = os.getenv("ASSET_VERSION", "1")
 EVENTS_DATA_PATH = os.path.join(app.root_path, "static", "data", "events.json")
+CACHE_BUST_TOKEN = os.getenv("CACHE_BUST_TOKEN", "")
 
 
 OG_IMAGE_REGEX = re.compile(
@@ -104,6 +105,15 @@ def fetch_events_from_erpnext(limit=9):
         app.logger.exception("Events API fetch failed")
         cache.set(cache_key, [], timeout=30)
         return []
+
+def clear_event_caches():
+    # Clear homepage cache and event lists
+    try:
+        cache.delete_memoized(home)
+    except Exception:
+        pass
+    for limit in (3, 6, 9, 12, 15):
+        cache.delete(f"website_events:{limit}")
 
 def fetch_og_meta(url):
     if not url:
@@ -512,6 +522,16 @@ def clefincode_bot_topics():
         return jsonify(payload)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+
+# ------------------ CACHE BUST (WEBHOOK) ----------------
+@app.route("/api/cache/events/refresh", methods=["POST"])
+def refresh_events_cache():
+    token = request.headers.get("X-Cache-Token") or request.args.get("token")
+    if not CACHE_BUST_TOKEN or token != CACHE_BUST_TOKEN:
+        return jsonify({"error": "unauthorized"}), 403
+    clear_event_caches()
+    return jsonify({"status": "ok"})
 
 
 # --------------------------------------------------

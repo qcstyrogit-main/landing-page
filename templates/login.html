@@ -15,8 +15,16 @@
     <div class="login-right">
         <div class="brand">
             <div class="brand-logos">
-                <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/QC.png') }}" alt="QC Logo" class="brand-logo" width="45" height="45">
-                <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/MC.png') }}" alt="MC Logo" class="brand-logo" width="45" height="45">
+                <picture>
+                    <source type="image/avif" srcset="{{ url_for('static', filename='images/QC.avif') }}">
+                    <source type="image/webp" srcset="{{ url_for('static', filename='images/QC.webp') }}">
+                    <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/QC.png') }}" alt="QC Logo" class="brand-logo" width="45" height="45">
+                </picture>
+                <picture>
+                    <source type="image/avif" srcset="{{ url_for('static', filename='images/MC.avif') }}">
+                    <source type="image/webp" srcset="{{ url_for('static', filename='images/MC.webp') }}">
+                    <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/MC.png') }}" alt="MC Logo" class="brand-logo" width="45" height="45">
+                </picture>
             </div>
             <h1>Login to QC & MC ERP</h1>
         </div>
