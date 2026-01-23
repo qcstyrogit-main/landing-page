@@ -3,11 +3,23 @@ document.addEventListener("DOMContentLoaded", () => {
     const eventWrapper = document.querySelector('.events-wrapper');
     const prevBtn = document.querySelector('.prev-btn');
     const nextBtn = document.querySelector('.next-btn');
-    const eventCards = document.querySelectorAll('.events-cards .event-card');
+    let eventCards = Array.from(document.querySelectorAll('.events-cards .event-card'));
 
     if (!eventCardsContainer || !eventWrapper || eventCards.length === 0) {
         return;
     }
+
+    // Duplicate cards to enable seamless infinite looping
+    if (eventCards.length < 2) {
+        // Not enough items to loop smoothly
+        return;
+    }
+    const fragment = document.createDocumentFragment();
+    eventCards.forEach((card) => {
+        fragment.appendChild(card.cloneNode(true));
+    });
+    eventCardsContainer.appendChild(fragment);
+    eventCards = Array.from(eventCardsContainer.querySelectorAll('.event-card'));
 
     let scrollSpeed = 0.7;
     let scrollRemainder = 0;
