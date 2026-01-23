@@ -123,6 +123,7 @@
     align-items: center;
     justify-content: center;
     cursor: pointer;
+    touch-action: manipulation;
 }
 
 .map_marker::after {
@@ -803,6 +804,12 @@
     @keyframes slideUp {
         from { transform: translate(-50%, 100%); opacity: 0; }
         to { transform: translate(-50%, -50%); opacity: 1; }
+    }
+}
+
+@media (pointer: coarse) {
+    .map_markers {
+        display: none;
     }
 }
 /* List Toggle */

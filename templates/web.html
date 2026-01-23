@@ -26,11 +26,14 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/chatbot.css') }}">
+    <link rel="preload" href="{{ url_for('static', filename='css/chatbot.css') }}" as="style">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/chatbot.css') }}" media="print" data-media="all">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/icons.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/footer.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/privacy_policy.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/term_of_use.css') }}">
+    <link rel="preload" href="{{ url_for('static', filename='css/privacy_policy.css') }}" as="style">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/privacy_policy.css') }}" media="print" data-media="all">
+    <link rel="preload" href="{{ url_for('static', filename='css/term_of_use.css') }}" as="style">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/term_of_use.css') }}" media="print" data-media="all">
     <link rel="shortcut icon" href="{{ url_for('static', filename='images/favicon.ico') }}" type="image/x-icon">
 
     {% block structured_data %}
@@ -85,7 +88,7 @@
         {% block page_content %}{% endblock %}
     </main>
 
-    <button id="chat-bubble" class="chat-bubble" type="button" aria-label="Open chat">
+    <button id="chat-bubble" class="chat-bubble" type="button" aria-label="Open chat" data-chatbot-src="{{ url_for('static', filename='js/chatbot.js') }}">
         <svg class="icon" aria-hidden="true"><use href="#icon-chat"></use></svg>
         <span id="chat-unread-badge" class="chat-unread-badge" aria-hidden="true">0</span>
     </button>
@@ -132,10 +135,11 @@
         <p id="chatbot-status" class="chatbot-status" aria-live="polite"></p>
     </section>
 
-    <script src="{{ url_for('static', filename='js/csrf.js') }}"></script>
+    <script defer src="{{ url_for('static', filename='js/csrf.js') }}"></script>
     {% block footer %}{% endblock %}
 
-    <script src="{{ url_for('static', filename='js/image_formats.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/chatbot.js') }}"></script>
+    <script defer src="{{ url_for('static', filename='js/image_formats.js') }}"></script>
+    <script defer src="{{ url_for('static', filename='js/critical_css.js') }}"></script>
+    <script defer src="{{ url_for('static', filename='js/chatbot_loader.js') }}"></script>
 </body>
 </html>

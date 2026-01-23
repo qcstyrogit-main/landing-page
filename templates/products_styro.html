@@ -821,9 +821,10 @@
 
 {% block footer %}
   {{ super() }}
-  <script src="{{ url_for('static', filename='js/home.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/products_styro.js') }}"></script>
+  <script defer src="{{ url_for('static', filename='js/home.js') }}"></script>
+  <script defer src="{{ url_for('static', filename='js/products_styro.js') }}"></script>
 {% endblock %}
+
 
 
 

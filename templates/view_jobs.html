@@ -226,6 +226,7 @@
 
 {% block footer %}
   {{ super() }}
-  <script src="{{ url_for('static', filename='js/home.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/view_jobs.js') }}"></script>
+  <script defer src="{{ url_for('static', filename='js/home.js') }}"></script>
+  <script defer src="{{ url_for('static', filename='js/view_jobs.js') }}"></script>
 {% endblock %}
+

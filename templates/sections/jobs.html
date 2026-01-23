@@ -17,7 +17,11 @@
 
         <!-- Right Image Column -->
         <div class="jobs-image">
-            <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/careers/team.png') }}" alt="Team Image">
+            <picture>
+                <source type="image/avif" srcset="{{ url_for('static', filename='images/careers/team.avif') }}">
+                <source type="image/webp" srcset="{{ url_for('static', filename='images/careers/team.webp') }}">
+                <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/careers/team.png') }}" width="800" height="800" alt="QC & MC team">
+            </picture>
         </div>
     </div>
 </section>
