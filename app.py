@@ -596,11 +596,11 @@ def add_headers(response):
         "form-action 'self'",
         "frame-ancestors 'none'",
         "object-src 'none'",
-        f"script-src 'self' 'nonce-{nonce}' https://cdnjs.cloudflare.com https://img1.wsimg.com",
+        f"script-src 'self' 'nonce-{nonce}' 'sha256-j9UDKlBdU2OvJLCxxVGF011MFoS+SFn/EamE8+cU4VQ=' https://cdnjs.cloudflare.com https://img1.wsimg.com",
         "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com",
         "img-src 'self' data: https:",
         "font-src 'self' https://fonts.gstatic.com",
-        "connect-src 'self' https://psgc.gitlab.io https://open.er-api.com",
+        "connect-src 'self' https://psgc.gitlab.io https://open.er-api.com https://csp.secureserver.net",
         "frame-src https://www.google.com https://maps.google.com",
         "media-src 'self'",
     ]
