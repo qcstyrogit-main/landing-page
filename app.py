@@ -280,7 +280,7 @@ def security_before_request():
 # ROUTES (PAGES)
 # --------------------------------------------------
 @app.route("/")
-@cache.cached(timeout=300)
+@cache.cached(timeout=60)
 def home():
     return render_template("home.html", API_BASE_URL=API_BASE_URL, events=load_event_posts())
 
