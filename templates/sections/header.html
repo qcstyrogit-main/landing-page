@@ -1,7 +1,15 @@
 <header class="home-header">
     <div class="brand">
-        <img src="{{ url_for('static', filename='images/QC.png') }}" class="brand-logo" alt="QC Logo" width="45" height="45" decoding="async">
-        <img src="{{ url_for('static', filename='images/MC.png') }}" class="brand-logo" alt="MC Logo" width="45" height="45" decoding="async">
+        <picture>
+            <source type="image/avif" srcset="{{ url_for('static', filename='images/QC.avif') }}">
+            <source type="image/webp" srcset="{{ url_for('static', filename='images/QC.webp') }}">
+            <img src="{{ url_for('static', filename='images/QC.png') }}" class="brand-logo" alt="QC Logo" width="45" height="45" decoding="async">
+        </picture>
+        <picture>
+            <source type="image/avif" srcset="{{ url_for('static', filename='images/MC.avif') }}">
+            <source type="image/webp" srcset="{{ url_for('static', filename='images/MC.webp') }}">
+            <img src="{{ url_for('static', filename='images/MC.png') }}" class="brand-logo" alt="MC Logo" width="45" height="45" decoding="async">
+        </picture>
     </div>
 
     <nav class="home-nav">
