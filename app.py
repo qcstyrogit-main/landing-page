@@ -582,13 +582,21 @@ def add_headers(response):
     response.headers["Cross-Origin-Opener-Policy"] = "same-origin"
 
     nonce = getattr(g, "csp_nonce", "")
+    if response.mimetype == "text/html":
+        try:
+            body = response.get_data(as_text=True)
+            match = re.search(r'nonce="([^"]+)"', body)
+            if match:
+                nonce = match.group(1)
+        except Exception:
+            pass
     csp = [
         "default-src 'self'",
         "base-uri 'self'",
         "form-action 'self'",
         "frame-ancestors 'none'",
         "object-src 'none'",
-        f"script-src 'self' 'nonce-{nonce}' https://cdnjs.cloudflare.com",
+        f"script-src 'self' 'nonce-{nonce}' https://cdnjs.cloudflare.com https://img1.wsimg.com",
         "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com",
         "img-src 'self' data: https:",
         "font-src 'self' https://fonts.gstatic.com",
