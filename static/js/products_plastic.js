@@ -130,11 +130,13 @@ document.addEventListener("DOMContentLoaded", () => {
         successPopupMessage.textContent = message;
         successPopup.classList.add("show");
         successPopup.setAttribute("aria-hidden", "false");
+        successPopup.removeAttribute("inert");
     }
 
     function closeSuccessPopup() {
         successPopup.classList.remove("show");
         successPopup.setAttribute("aria-hidden", "true");
+        successPopup.setAttribute("inert", "");
     }
 
     successPopupClose.addEventListener("click", closeSuccessPopup);

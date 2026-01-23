@@ -158,6 +158,7 @@
     if (open) {
       panel.classList.add('open');
       panel.setAttribute('aria-hidden', 'false');
+      panel.removeAttribute('inert');
       updateVerificationUI();
       if (isVerified()) {
         input.focus();
@@ -174,6 +175,7 @@
     } else {
       panel.classList.remove('open');
       panel.setAttribute('aria-hidden', 'true');
+      panel.setAttribute('inert', '');
     }
   }
 

@@ -53,6 +53,7 @@ function openModal(modal, trigger) {
   lastFocused = trigger || document.activeElement;
   modal.style.display = "block";
   modal.setAttribute("aria-hidden", "false");
+  modal.removeAttribute("inert");
   document.body.classList.add("modal-open");
   trapFocus(modal);
 }
@@ -61,6 +62,7 @@ function closeModal(modal) {
   if (!modal) return;
   modal.style.display = "none";
   modal.setAttribute("aria-hidden", "true");
+  modal.setAttribute("inert", "");
   document.body.classList.remove("modal-open");
   releaseFocus();
 }

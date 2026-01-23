@@ -396,11 +396,13 @@ document.addEventListener("DOMContentLoaded", () => {
         successPopupMessage.textContent = message;
         successPopup.classList.add("show");
         successPopup.setAttribute("aria-hidden", "false");
+        successPopup.removeAttribute("inert");
     }
 
     function closeSuccessPopup() {
         successPopup.classList.remove("show");
         successPopup.setAttribute("aria-hidden", "true");
+        successPopup.setAttribute("inert", "");
     }
 
     if (successPopupClose) {
@@ -527,6 +529,7 @@ document.addEventListener("DOMContentLoaded", () => {
         overlay.style.display = "block";
         popup.setAttribute("aria-hidden", "false");
         overlay.setAttribute("aria-hidden", "false");
+        popup.removeAttribute("inert");
 
         // Optional: add slide-up animation
         popup.style.animation = "slideUp 0.4s ease forwards";
@@ -539,6 +542,7 @@ document.addEventListener("DOMContentLoaded", () => {
         overlay.style.display = "none";
         popup.setAttribute("aria-hidden", "true");
         overlay.setAttribute("aria-hidden", "true");
+        popup.setAttribute("inert", "");
         releaseFocus();
     }
 
