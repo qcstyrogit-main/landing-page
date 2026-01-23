@@ -119,6 +119,11 @@ html, body {
   background: transparent;
   border: 0;
   padding: 6px 8px;
+  min-width: 44px;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
   color: var(--muted);
   font-weight: 700;
@@ -366,6 +371,12 @@ html, body {
 #backToJobs {
   cursor: pointer;
   font-weight: 700;
+  background: transparent;
+  border: 0;
+  padding: 6px 10px;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
 }
 
 #backToJobs:hover {

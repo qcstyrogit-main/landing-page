@@ -166,6 +166,8 @@ html, body {
     cursor: pointer;
     padding: 0.6rem;
     border-radius: 10px;
+    min-width: 44px;
+    min-height: 44px;
     transition: background 0.2s;
     -webkit-tap-highlight-color: transparent; /* 1. Removes the blue flash */
     outline: none !important;                 /* 2. Removes the focus square */
@@ -338,6 +340,8 @@ html, body {
     cursor: pointer;
     padding: 0.6rem;
     border-radius: 10px;
+    min-width: 44px;
+    min-height: 44px;
     transition: background 0.2s;
     z-index: 1100;
 }
@@ -456,7 +460,7 @@ html, body {
 /* 7. MODERN BACK TO TOP (REFINED) */
 #back-to-top {
     position: fixed;
-    bottom: 40px;
+    bottom: calc(var(--footer-h, 52px) + 12px);
     left: 20px;
     z-index: 10000;
     
@@ -484,6 +488,11 @@ html, body {
     -webkit-tap-highlight-color: transparent; /* Removes the blue/grey square on tap */
     outline: none;                            /* Removes the focus square */
     user-select: none;                        /* Prevents text selection on long press */
+    display: none;
+}
+
+.home-page #back-to-top {
+    display: flex;
 }
 
 #back-to-top.show {

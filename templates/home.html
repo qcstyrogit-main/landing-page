@@ -13,6 +13,8 @@
 <link rel="preload" as="image" href="{{ url_for('static', filename='images/products/Tray.avif') }}" type="image/avif">
 {% endblock %}
 
+{% block body_class %}home-page{% endblock %}
+
 {% block structured_data %}
 {{ super() }}
 <script type="application/ld+json" nonce="{{ csp_nonce }}">

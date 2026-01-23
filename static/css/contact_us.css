@@ -116,7 +116,12 @@
     transform: translate(-50%, -50%);
     background: transparent;
     border: none;
+    width: 44px;
+    height: 44px;
     padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     cursor: pointer;
 }
 
@@ -380,6 +385,11 @@
     transition: transform 0.3s ease, filter 0.3s ease;
     cursor: pointer;
     filter: drop-shadow(0 0 1px rgba(0,0,0,0.6));
+    min-width: 44px;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .social-link .icon {
@@ -527,6 +537,11 @@
     color: #666;
     line-height: 1;
     z-index: 1001;
+    min-width: 44px;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .contact-close:hover {
@@ -608,6 +623,11 @@
     font-size: 24px;
     color: #3b3b3b;
     cursor: pointer;
+    min-width: 44px;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .contact-success-close:hover {
@@ -673,6 +693,7 @@
 
     .map_markers {
         inset: 0.8rem;
+        display: none;
     }
 
     .map_panel-map {
