@@ -2,6 +2,8 @@
 
 {% block title %}QC Styropackaging Corporation & Multiplast Corporation{% endblock %}
 {% block meta_description %}QC and MC packaging products, career opportunities, and contact information.{% endblock %}
+{% block og_image %}{{ request.url_root.rstrip('/') }}{{ url_for('static', filename='images/Intro.png') }}{% endblock %}
+{% block twitter_image %}{{ request.url_root.rstrip('/') }}{{ url_for('static', filename='images/Intro.png') }}{% endblock %}
 
 {% block head %}
 {{ super() }}
@@ -49,56 +51,7 @@
 
 <div class="custom-home-page">
 
-    <!-- Header -->
-    <header class="home-header">
-        <div class="brand">
-            <img src="{{ url_for('static', filename='images/QC.png') }}" class="brand-logo" alt="QC Logo" width="45" height="45" decoding="async">
-            <img src="{{ url_for('static', filename='images/MC.png') }}" class="brand-logo" alt="MC Logo" width="45" height="45" decoding="async">
-        </div>
-
-        <!-- Navigation -->
-        <nav class="home-nav">
-            <ul>
-                <li><a href="/" {% if request.path == "/" %}aria-current="page"{% endif %}>Home</a></li>
-                <li class="has-dropdown">
-                    <a href="/#products" aria-haspopup="true">Products</a>
-                    <ul class="dropdown-menu">
-                        <li><a href="/products_plastic">Plasticware</a></li>
-                        <li><a href="/products_styro">Styroware</a></li>
-                    </ul>
-                </li>
-                <li><a href="/#about-us">About</a></li>
-                <li><a href="/#jobs">Careers</a></li>
-                <li><a href="/#contact-us">Contact</a></li>
-            </ul>
-        </nav>
-
-        <!-- Right-side tools: mobile toggle + login -->
-        <div class="header-tools">
-            <button class="menu-toggle" id="menuToggle" aria-label="Open menu" aria-controls="mobileNav" aria-expanded="false">&#9776;</button>
-            <!-- <a href="https://erp.qcstyro.com/login" class="btn-login">Login</a> -->
-            <a href="{{ API_BASE_URL }}" class="btn-login">Login</a>
-        </div>
-    </header>
-
-    <!-- Mobile navigation (for small screens) -->
-    <nav id="mobileNav" class="mobile-nav" aria-hidden="true">
-        <a href="/" {% if request.path == "/" %}aria-current="page"{% endif %}>Home</a>
-        <a href="/#products" class="mobile-products-link">Products</a>
-        <button type="button" id="mobileDropdownToggle" class="mobile-dropdown-toggle" aria-expanded="false" aria-haspopup="true" aria-controls="mobileDropdown">
-            Product Categories
-            <svg class="icon" aria-hidden="true"><use href="#icon-chevron-down"></use></svg>
-        </button>
-        <div id="mobileDropdown" class="mobile-dropdown" aria-hidden="true">
-            <a href="/products_plastic">Plastic</a>
-            <a href="/products_styro">Styrofoam</a>
-        </div>
-        <a href="/#about-us">About</a>
-        <a href="/#jobs">Careers</a>
-        <a href="/#contact-us">Contact</a>
-        <!-- <a href="https://erp.qcstyro.com/login" class="mobile-login">Login</a> -->
-         <a href="{{ API_BASE_URL }}" class="mobile-login">Login</a>
-    </nav>
+    {% include "sections/header.html" %}
 
     <!-- Page Sections -->
     {% include "sections/intro.html" %}

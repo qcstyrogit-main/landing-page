@@ -47,62 +47,6 @@ if not app.config["SECRET_KEY"]:
 ASSET_VERSION = os.getenv("ASSET_VERSION", "1")
 EVENTS_DATA_PATH = os.path.join(app.root_path, "static", "data", "events.json")
 
-DEFAULT_EVENTS = [
-    {
-        "title": "INVENTORY MANAGEMENT TRAINING SEPT 13, 2025",
-        "url": "/events/event1",
-        "thumbnail": "images/events/event1.png",
-        "alt": "Event 1"
-    },
-    {
-        "title": "CART COURIER TRANSPORT SYSTEM TRAINING",
-        "url": "/events/event2",
-        "thumbnail": "images/events/event2.png",
-        "alt": "Event 2"
-    },
-    {
-        "title": "AM OPERATIONAL PROCEDURE TRAINING",
-        "url": "/events/event3",
-        "thumbnail": "images/events/event3.png",
-        "alt": "Event 3"
-    },
-    {
-        "title": "1ST FRIDAY MASS",
-        "url": "https://www.facebook.com/share/p/1GKkdiM3Ke/",
-        "thumbnail": "images/events/event4.png",
-        "alt": "Event 4"
-    },
-    {
-        "title": "Manufacturing Convention",
-        "url": "/events/event5",
-        "thumbnail": "images/events/event5.png",
-        "alt": "Event 5"
-    },
-    {
-        "title": "Valentines Day",
-        "url": "/events/event6",
-        "thumbnail": "images/events/event6.png",
-        "alt": "Event 6"
-    },
-    {
-        "title": "Management Review",
-        "url": "/events/event7",
-        "thumbnail": "images/events/event7.png",
-        "alt": "Event 7"
-    },
-    {
-        "title": "2025 Manufacturing Convention",
-        "url": "/events/event8",
-        "thumbnail": "images/events/event8.png",
-        "alt": "Event 8"
-    },
-    {
-        "title": "2025 Annual Physical Exam",
-        "url": "/events/event9",
-        "thumbnail": "images/events/event9.png",
-        "alt": "Event 9"
-    }
-]
 
 OG_IMAGE_REGEX = re.compile(
     r'<meta[^>]+property=["\']og:image["\'][^>]+content=["\']([^"\']+)["\']',

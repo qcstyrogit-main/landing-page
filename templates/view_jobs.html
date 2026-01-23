@@ -15,6 +15,11 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/view_jobs.css') }}">
 {% endblock %}
 
+{% block structured_data %}
+  {{ super() }}
+  <script type="application/ld+json" id="jobPostingSchema" nonce="{{ csp_nonce }}"></script>
+{% endblock %}
+
 {% block page_content %}
 
   <!-- Same header as home -->

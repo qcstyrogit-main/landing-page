@@ -156,6 +156,71 @@ function sanitizeHtml(value) {
   return template.innerHTML.trim();
 }
 
+function stripTags(value) {
+  if (!value || typeof value !== 'string') return '';
+  return value.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+}
+
+function toDateISO(value) {
+  if (!value) return '';
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return '';
+  return date.toISOString().split('T')[0];
+}
+
+function buildJobPostingSchema(list) {
+  const origin = window.location.origin || '';
+  const path = window.location.pathname || '';
+  const baseUrl = `${origin}${path}`;
+
+  const postings = list.map(job => {
+    const title = job.title || job.job_title || 'Job Opening';
+    const company = job.company || 'QC & MC';
+    const identifierValue = job.name || job.id || title;
+    const description = stripTags(job.description || job.job_description || '') || `${title} role at ${company}.`;
+    const datePosted = toDateISO(job.posting_date || job.posted_on || job.date_posted);
+    const location = job.location || 'Philippines';
+    const employmentType = job.employment_type || 'Full-time';
+
+    const schema = {
+      "@type": "JobPosting",
+      "title": title,
+      "description": description,
+      "employmentType": employmentType,
+      "hiringOrganization": {
+        "@type": "Organization",
+        "name": company,
+        "sameAs": origin
+      },
+      "jobLocation": {
+        "@type": "Place",
+        "address": location
+      },
+      "identifier": {
+        "@type": "PropertyValue",
+        "name": "Job Opening",
+        "value": identifierValue
+      },
+      "url": identifierValue ? `${baseUrl}#job-${encodeURIComponent(identifierValue)}` : baseUrl
+    };
+
+    if (datePosted) schema.datePosted = datePosted;
+    return schema;
+  });
+
+  return {
+    "@context": "https://schema.org",
+    "@graph": postings
+  };
+}
+
+function updateJobPostingSchema(list) {
+  const script = document.getElementById('jobPostingSchema');
+  if (!script) return;
+  const schema = buildJobPostingSchema(list || []);
+  script.textContent = JSON.stringify(schema);
+}
+
 // ------------------- Render Options (Dynamic Filters with Counts) -------------------
 function renderOptions() {
   const comps = unique(jobsData, 'company');
@@ -384,6 +449,7 @@ async function fetchJobs() {
 
     renderOptions();
     renderList(jobsData);
+    updateJobPostingSchema(jobsData);
 
     handleRouting();
 

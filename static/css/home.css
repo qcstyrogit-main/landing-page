@@ -315,6 +315,16 @@ html, body {
     padding: 0 2rem; /* Ensure content doesn't touch edges on small screens */
 }
 
+/* Prevent anchor targets from being hidden under the fixed header */
+#products,
+#about-us,
+#jobs,
+#contact-us,
+#sustainability,
+#iso-certified {
+    scroll-margin-top: calc(var(--nav-height) + 20px);
+}
+
 /* ------------------------------------------------ */
 /* 5. FULL DISPLAY MODERN MOBILE MENU               */
 /* ------------------------------------------------ */

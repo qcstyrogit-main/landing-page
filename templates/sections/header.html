@@ -6,7 +6,7 @@
 
     <nav class="home-nav">
         <ul>
-            <li><a href="/">Home</a></li>
+            <li><a href="/" {% if request.path == "/" %}aria-current="page"{% endif %}>Home</a></li>
             <li class="has-dropdown">
                 <a href="/#products" aria-haspopup="true">Products</a>
                 <ul class="dropdown-menu">
@@ -28,15 +28,14 @@
 
 <!-- Mobile navigation (for small screens) -->
 <nav id="mobileNav" class="mobile-nav" aria-hidden="true">
-    <a href="/">Home</a>
-    <a href="/#products" class="mobile-products-link">Products</a>
+    <a href="/" {% if request.path == "/" %}aria-current="page"{% endif %}>Home</a>
     <button type="button" id="mobileDropdownToggle" class="mobile-dropdown-toggle" aria-expanded="false" aria-haspopup="true" aria-controls="mobileDropdown">
-        Product Categories
+        Products
         <svg class="icon" aria-hidden="true"><use href="#icon-chevron-down"></use></svg>
     </button>
     <div id="mobileDropdown" class="mobile-dropdown" aria-hidden="true">
-        <a href="/products_plastic">Plastic</a>
-        <a href="/products_styro">Styrofoam</a>
+        <a href="/products_plastic">Plasticware</a>
+        <a href="/products_styro">Styroware</a>
     </div>
     <a href="/#about-us">About</a>
     <a href="/#jobs">Careers</a>

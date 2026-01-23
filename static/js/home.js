@@ -135,31 +135,48 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
 
-    // Smooth scroll for anchor links (skip mobile dropdown toggle)
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        if (anchor.id === "mobileDropdownToggle") return; // skip dropdown toggle
+    // Smooth scroll for hash links and close mobile nav
+    document.querySelectorAll('a[href^="#"], a[href^="/#"]').forEach(anchor => {
         anchor.addEventListener("click", function(e) {
-            const href = this.getAttribute("href");
+            const href = this.getAttribute("href") || "";
+            const isRootHash = href.startsWith("/#");
+            const isHash = href.startsWith("#");
+            const isMobileLink = mobileNav && mobileNav.contains(this);
 
-            if (href === "#" || href === "/#") {
-                e.preventDefault();
-                window.scrollTo({ top: 0, behavior: "smooth" });
-            } else {
-                const targetId = href.substring(1);
-                const targetElement = document.getElementById(targetId);
-                if(targetElement) {
+            if (isRootHash && window.location.pathname !== "/") {
+                if (isMobileLink) closeMobileNav();
+                return;
+            }
+
+            if (isHash || isRootHash) {
+                const targetId = href.replace(/^\/?#/, "");
+                if (targetId === "") {
                     e.preventDefault();
-                    const headerOffset = 60;
-                    const elementPosition = targetElement.getBoundingClientRect().top;
-                    const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
-                    window.scrollTo({ top: offsetPosition, behavior: "smooth" });
+                    window.scrollTo({ top: 0, behavior: "smooth" });
+                } else {
+                    const targetElement = document.getElementById(targetId);
+                    if (targetElement) {
+                        e.preventDefault();
+                        const headerOffset = 60;
+                        const elementPosition = targetElement.getBoundingClientRect().top;
+                        const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+                        window.scrollTo({ top: offsetPosition, behavior: "smooth" });
+                    }
                 }
             }
 
-            // Close mobile menu after click
-            closeMobileNav();
+            if (isMobileLink) closeMobileNav();
         });
     });
+
+    // Close mobile menu on any mobile nav link click
+    if (mobileNav) {
+        mobileNav.querySelectorAll("a").forEach(link => {
+            link.addEventListener("click", () => {
+                closeMobileNav();
+            });
+        });
+    }
 
     // Close dropdown if clicking outside
     document.addEventListener("click", function(e) {
