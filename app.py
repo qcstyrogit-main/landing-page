@@ -259,6 +259,8 @@ def security_before_request():
     g.csp_nonce = secrets.token_urlsafe(16)
 
     if request.method in ("POST", "PUT", "PATCH", "DELETE") and request.path.startswith("/api/"):
+        if request.path == "/api/cache/events/refresh":
+            return None
         limit_cfg = RATE_LIMITS.get(request.path)
         if limit_cfg:
             ip = request.headers.get("X-Forwarded-For", request.remote_addr) or "unknown"
