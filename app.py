@@ -8,6 +8,7 @@ from collections import deque
 from html import unescape
 from flask import Flask, render_template, request, jsonify, Response, url_for as flask_url_for, session as flask_session, g
 import requests
+from urllib.parse import urlparse
 from flask_caching import Cache
 
 def load_env():
@@ -156,12 +157,14 @@ def load_event_posts():
             thumbnail = (item.get("thumbnail") or "").strip()
             if not (title and url):
                 continue
-            if ("facebook.com" in url) and (not thumbnail or not title):
+            if ("facebook.com" in url) and (not thumbnail):
                 meta = fetch_og_meta(url)
                 if not thumbnail:
                     thumbnail = meta.get("image", "")
                 if not title:
                     title = meta.get("title", "").strip()
+            if thumbnail.startswith("/files/"):
+                thumbnail = f"{API_BASE_URL.rstrip('/')}{thumbnail}"
             if not thumbnail:
                 continue
             cleaned.append({
@@ -556,6 +559,20 @@ def add_headers(response):
                 nonce = match.group(1)
         except Exception:
             pass
+    api_origin = ""
+    try:
+        parsed_api = urlparse(API_BASE_URL)
+        if parsed_api.scheme and parsed_api.netloc:
+            api_origin = f"{parsed_api.scheme}://{parsed_api.netloc}"
+    except Exception:
+        api_origin = ""
+
+    img_src = "img-src 'self' data: https:"
+    if api_origin and api_origin.startswith("http://"):
+        img_src += f" {api_origin}"
+    elif api_origin and api_origin.startswith("https://"):
+        img_src += f" {api_origin}"
+
     csp = [
         "default-src 'self'",
         "base-uri 'self'",
@@ -564,7 +581,7 @@ def add_headers(response):
         "object-src 'none'",
         f"script-src 'self' 'nonce-{nonce}' 'sha256-j9UDKlBdU2OvJLCxxVGF011MFoS+SFn/EamE8+cU4VQ=' https://cdnjs.cloudflare.com https://img1.wsimg.com",
         "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com",
-        "img-src 'self' data: https:",
+        img_src,
         "font-src 'self' https://fonts.gstatic.com",
         "connect-src 'self' https://psgc.gitlab.io https://open.er-api.com https://csp.secureserver.net",
         "frame-src https://www.google.com https://maps.google.com",
