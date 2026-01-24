@@ -30,7 +30,10 @@
 
     <div class="header-tools">
         <button class="menu-toggle" id="menuToggle" aria-label="Open menu" aria-controls="mobileNav" aria-expanded="false">&#9776;</button>
-        <a href="{{ API_BASE_URL }}" class="btn-login">Login</a>
+        <a href="/announcements" class="btn-announcement" data-erp-announcement aria-hidden="true" aria-label="Announcements">
+            <svg class="icon" aria-hidden="true"><use href="#icon-bell"></use></svg>
+        </a>
+        <a href="{{ API_BASE_URL }}" class="btn-login" data-erp-login="desktop">Login</a>
     </div>
 </header>
 
@@ -48,5 +51,9 @@
     <a href="/#about-us">About</a>
     <a href="/#jobs">Careers</a>
     <a href="/#contact-us">Contact</a>
-    <a href="{{ API_BASE_URL }}" class="mobile-login">Login</a>
+    <a href="/announcements" class="mobile-announcement" data-erp-announcement aria-hidden="true" aria-label="Announcements">
+        <svg class="icon" aria-hidden="true"><use href="#icon-bell"></use></svg>
+        <span>Announcement</span>
+    </a>
+    <a href="{{ API_BASE_URL }}" class="mobile-login" data-erp-login="mobile">Login</a>
 </nav>

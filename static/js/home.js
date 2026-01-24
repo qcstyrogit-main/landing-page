@@ -227,3 +227,8 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 });
+
+// ----------------------
+// ERP Login Status (Welcome + Name)
+// ----------------------
+// Login UI is handled globally in auth_ui.js

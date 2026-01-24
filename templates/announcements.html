@@ -1,0 +1,59 @@
+{% extends "web.html" %}
+
+{% block title %}Announcements | QC & MC{% endblock %}
+{% block meta_description %}Announcements, birthdays, and anniversaries for logged-in users.{% endblock %}
+
+{% block head %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/announcements.css') }}">
+{% endblock %}
+
+{% block body_class %}announcements-page{% endblock %}
+
+{% block page_content %}
+<div class="announcements-wrap" data-auth-required="1">
+    {% include "sections/header.html" %}
+
+    <section class="announcements-hero">
+        <div class="announcements-hero-inner">
+            <h1>Announcements</h1>
+            <p>Company updates, birthdays, and anniversaries for logged-in team members.</p>
+        </div>
+    </section>
+
+    <section class="announcements-content">
+        <div class="announcements-tabs" role="tablist" aria-label="Announcements tabs">
+            <button type="button" class="announcements-tab is-active" role="tab" aria-selected="true" aria-controls="announce-panel" id="announce-tab">
+                Announcement
+            </button>
+            <button type="button" class="announcements-tab" role="tab" aria-selected="false" aria-controls="birthday-panel" id="birthday-tab">
+                Birthday
+            </button>
+            <button type="button" class="announcements-tab" role="tab" aria-selected="false" aria-controls="anniversary-panel" id="anniversary-tab">
+                Anniversary
+            </button>
+        </div>
+
+        <div class="announcements-panels">
+            <div id="announce-panel" class="announcements-panel is-active" role="tabpanel" aria-labelledby="announce-tab">
+                <h2>Latest Announcements</h2>
+                <p>No announcements right now. Check back soon for updates.</p>
+            </div>
+            <div id="birthday-panel" class="announcements-panel" role="tabpanel" aria-labelledby="birthday-tab">
+                <h2>Birthdays</h2>
+                <p>No birthdays to celebrate today.</p>
+            </div>
+            <div id="anniversary-panel" class="announcements-panel" role="tabpanel" aria-labelledby="anniversary-tab">
+                <h2>Work Anniversaries</h2>
+                <p>No work anniversaries today.</p>
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock %}
+
+{% block footer %}
+{% include "sections/footer.html" %}
+<script defer src="{{ url_for('static', filename='js/announcements.js') }}"></script>
+{% endblock %}

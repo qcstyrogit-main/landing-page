@@ -85,6 +85,29 @@ html, body {
     background: var(--primary-hover);
 }
 
+.home-header .btn-announcement {
+    margin-left: 0.6rem;
+    background: #0f1a2a;
+    color: #fff;
+    width: 40px;
+    height: 40px;
+    border-radius: 999px;
+    text-decoration: none;
+    font-weight: 600;
+    display: none;
+    align-items: center;
+    gap: 0.4rem;
+    justify-content: center;
+}
+
+.home-header .btn-announcement:hover {
+    background: #162642;
+}
+
+.btn-announcement.is-visible {
+    display: inline-flex;
+}
+
 .home-header .brand-logo {
     height: 45px; /* Slightly smaller for elegance */
     width: auto;
@@ -104,6 +127,11 @@ html, body {
 .btn-login {
     white-space: nowrap; /* prevent wrapping */
     box-shadow: 0 4px 14px rgba(19,56,128,0.12);
+}
+
+.btn-announcement {
+    white-space: nowrap;
+    box-shadow: 0 4px 14px rgba(15,26,42,0.12);
 }
 
 @media (max-width: 1200px) {
@@ -2820,4 +2848,16 @@ Modernized UI - Alternating Layouts with Glassmorphism
 
 .contact_list[open] .contact_grid {
     margin-top: 0.5rem;
+}
+
+.mobile-announcement {
+    display: none;
+}
+
+.mobile-announcement.is-visible {
+    display: block;
+}
+
+.mobile-announcement .icon {
+    margin-right: 8px;
 }

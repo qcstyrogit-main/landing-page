@@ -361,6 +361,11 @@ def view_jobs():
 def apply_now():
     return render_template("apply_now.html")
 
+@app.route("/announcements")
+@cache.cached(timeout=300)
+def announcements():
+    return render_template("announcements.html")
+
 @app.route("/sitemap.xml")
 def sitemap():
     base_url = get_base_url()
@@ -518,6 +523,27 @@ def get_job_applicant_counts():
         )
         res.raise_for_status()
         return jsonify(res.json())
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+# ------------------ POST (NO CACHE) ----------------
+@app.route("/api/erp/whoami", methods=["GET"])
+def erp_whoami():
+    try:
+        headers = {}
+        cookie = request.headers.get("Cookie")
+        if cookie:
+            headers["Cookie"] = cookie
+        auth = request.headers.get("Authorization")
+        if auth:
+            headers["Authorization"] = auth
+        res = http_session.get(
+            f"{API_BASE_URL}/api/method/qcmc_logic.api.auth.check_log_user",
+            headers=headers,
+            timeout=8
+        )
+        return Response(res.content, status=res.status_code, mimetype=res.headers.get("Content-Type", "application/json"))
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
