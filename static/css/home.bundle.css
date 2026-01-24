@@ -312,9 +312,9 @@ html, body {
 }
 
 .intro-content, .standard-content, .contact_us-content, .innovation-banner-content {
-    max-width: 1440px;
+    max-width: 1240px;
     margin: auto;
-    padding: 0 2rem; /* Ensure content doesn't touch edges on small screens */
+    padding: 2rem;
 }
 
 /* Prevent anchor targets from being hidden under the fixed header */
@@ -773,11 +773,12 @@ Modernized Full-Width UI - Optimized for Mobile
 }
 
 .standard-content {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: stretch;
+    gap: 2.5rem;
     width: 100%;
-    max-width: 1100px;
+    max-width: 1240px;
     margin: 0 auto;
     padding: 2rem;
     z-index: 10;
@@ -789,8 +790,8 @@ Modernized Full-Width UI - Optimized for Mobile
     width: 100%;
     display: flex;
     flex-direction: column;
-    gap: 2rem;
-    padding: 4rem; 
+    gap: 1rem;
+    padding: 2.9rem 3rem; 
 
     background: var(--glass-bg);
     backdrop-filter: blur(20px);
@@ -801,26 +802,50 @@ Modernized Full-Width UI - Optimized for Mobile
     box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.6);
     text-align: center;
     animation: fadeInUp 1s ease-out forwards;
+    height: 100%;
+    aspect-ratio: 16 / 9;
+}
+
+.standard-media {
+    width: 100%;
+    border-radius: 28px;
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    box-shadow: 0 26px 50px rgba(0, 0, 0, 0.45);
+    height: 100%;
+    display: flex;
+    align-items: center;
+    aspect-ratio: 16 / 9;
+}
+
+.standard-media #history-video {
+    width: 100%;
+    border-radius: 22px;
+    display: block;
+    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.35);
+    height: 100%;
+    object-fit: contain;
 }
 
 .standard-text .standard-title {
-    font-size: clamp(1.8rem, 5vw, 3.8rem);
+    font-size: clamp(1.2rem, 2.2vw, 2rem);
     color: #ffffff;
     font-weight: 800;
-    line-height: 1.1;
+    line-height: 1.2;
     margin: 0 auto;
     text-shadow: var(--text-shadow);
     letter-spacing: -0.02em;
-    max-width: 900px;
+    max-width: 520px;
 }
 
 .standard-text p {
-    font-size: clamp(1rem, 2vw, 1.3rem);
-    line-height: 1.8;
+    font-size: clamp(1.3rem, 1.55vw, 1.24rem);
+    line-height: 1.7;
     margin: 0 auto;
     color: rgba(255, 255, 255, 0.95);
     text-shadow: var(--text-shadow);
-    max-width: 800px;
+    max-width: 520px;
 }
 
 /* --- MOBILE VIEW FIXES --- */
@@ -834,13 +859,22 @@ Modernized Full-Width UI - Optimized for Mobile
     }
 
     .standard-content {
+        grid-template-columns: 1fr;
         padding: 1.5rem;
+        gap: 2rem;
     }
 
     .standard-text {
         padding: 3rem 2rem;
         border-radius: 24px;
         gap: 1.5rem;
+        aspect-ratio: auto;
+    }
+
+    .standard-media {
+        border-radius: 22px;
+        padding: 8px;
+        aspect-ratio: auto;
     }
 }
 
@@ -1342,6 +1376,7 @@ Modernized UI - Alternating Layouts with Glassmorphism
     padding-bottom: 12px;
     -ms-overflow-style: none;
     scrollbar-width: none;
+    align-items: stretch;
 }
 
 .events-cards::-webkit-scrollbar {
@@ -1422,6 +1457,180 @@ Modernized UI - Alternating Layouts with Glassmorphism
 }
 
 /* =========================================
+   ABOUT + EVENT CARDS (IMAGE, PILL, CTA)
+========================================= */
+.about-us-cards .about-card,
+.event-card.about-card {
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    text-align: center;
+    border-radius: 16px;
+    overflow: hidden;
+    background: #ffffff;
+    background-image: none;
+    border: 1px solid rgba(12, 27, 42, 0.12);
+    box-shadow: 0 14px 26px rgba(12, 27, 42, 0.1);
+    height: 420px;
+    min-height: 420px;
+    cursor: default;
+}
+
+/* About card variants for independent styling */
+.about-us-cards .vision-card {}
+.about-us-cards .mission-card {}
+.about-us-cards .values-card {}
+
+/* About cards only: give extra space so CTA is always visible */
+.about-us-cards .about-card {
+    height: 440px;
+    min-height: 440px;
+}
+
+.about-us-cards .about-card .card-media,
+.event-card.about-card .card-media {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    min-height: 190px;
+    overflow: hidden;
+    background: #eef2f7;
+}
+
+.about-us-cards .about-card .card-media {
+    min-height: 170px;
+}
+
+.about-us-cards .about-card .card-media img,
+.event-card.about-card .card-media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.about-us-cards .about-card .card-body,
+.event-card.about-card .card-body {
+    padding: 22px 24px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+    flex: 1;
+    justify-content: flex-start;
+}
+
+/* About cards only: keep Read more visible */
+.about-us-cards .about-card .card-body {
+    justify-content: space-between;
+}
+
+.about-us-cards .about-card .card-pill,
+.event-card.about-card .card-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #1d4ed8;
+    background: #eef2ff;
+    border: 1px solid rgba(29, 78, 216, 0.2);
+}
+
+.about-us-cards .about-card .card-pill::before,
+.event-card.about-card .card-pill::before {
+    content: "";
+    width: 7px;
+    height: 7px;
+    border-radius: 999px;
+    background: #2563eb;
+    display: inline-block;
+}
+
+.about-us-cards .about-card h3,
+.event-card.about-card h4 {
+    margin: 0 0 4px;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #1f2937;
+}
+
+.about-us-cards .about-card p {
+    margin: 0;
+    font-size: 0.98rem;
+    line-height: 1.55;
+    color: var(--about-ink-soft);
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.about-us-cards .about-card .card-cta,
+.event-card.about-card .card-cta {
+    margin-top: auto;
+    border: none;
+    background: #1d4ed8;
+    color: #fff;
+    font-weight: 700;
+    padding: 10px 18px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    text-decoration: none;
+}
+
+.about-us-cards .about-card .card-cta {
+    margin-top: 12px;
+}
+
+/* Expanded about cards */
+.about-us-cards .about-card.expanded {
+    height: auto;
+    min-height: unset;
+}
+
+.about-us-cards .about-card.expanded .card-body {
+    justify-content: flex-start;
+}
+
+.about-us-cards .about-card.expanded p {
+    -webkit-line-clamp: unset;
+    max-height: none;
+}
+
+.about-us-cards .about-card .card-cta:hover,
+.event-card.about-card .card-cta:hover {
+    background: #1e40af;
+    box-shadow: 0 10px 22px rgba(29, 78, 216, 0.35);
+    transform: translateY(-1px);
+}
+
+.event-card.about-card {
+    padding: 0;
+    height: 420px;
+    justify-content: space-between;
+    flex: 0 0 320px;
+}
+
+.event-card.about-card .card-body {
+    background: linear-gradient(180deg, rgba(223, 230, 242, 0.92), rgba(197, 205, 220, 0.96));
+    min-height: 170px;
+}
+
+.event-card.about-card h4 {
+    color: #2a3342;
+}
+
+.event-card.about-card .card-cta {
+    color: #ffffff;
+}
+
+/* =========================================
    EVENTS DESCRIPTION
 ========================================= */
 .our-events-description {
@@ -1451,64 +1660,11 @@ Modernized UI - Alternating Layouts with Glassmorphism
    EVENT CARD IMAGE
 ========================================= */
 .event-card {
-    display: block;
-    color: inherit;
-    text-decoration: none;
     position: relative;
     min-height: 300px;
     padding: 16px;
-}
-
-.event-card img {
-    width: 100%;
-    height: 220px;
-    min-height: 0;
-    object-fit: cover;
-    border-radius: 18px;
-    display: block;
-    transition: transform 0.3s ease;
-}
-
-.event-card:hover img {
-    transform: scale(1.04);
-}
-
-.event-card::before {
-    content: "";
-    position: absolute;
-    inset: 16px;
-    border-radius: 18px;
-    background: linear-gradient(180deg, rgba(13, 24, 48, 0.05) 0%, rgba(13, 24, 48, 0.7) 100%);
-    z-index: 1;
-    transition: opacity 0.3s ease;
-}
-
-.event-card .event-text {
-    position: absolute;
-    left: 24px;
-    right: 24px;
-    bottom: 26px;
-    z-index: 2;
-    background: rgba(19, 56, 128, 0.88);
-    border: 1px solid rgba(255, 255, 255, 0.18);
-    color: #fff;
-    padding: 12px 14px;
-    border-radius: 14px;
-    font-weight: 700;
-    letter-spacing: 0.02em;
-    text-transform: uppercase;
-    box-shadow: 0 12px 22px rgba(13, 24, 48, 0.25);
-}
-
-.event-card .event-text p {
-    margin: 0;
-    font-size: 0.9rem;
-    line-height: 1.4;
-    color: #fff;
-}
-
-.event-card:hover .event-text {
-    background: rgba(237, 29, 38, 0.9);
+    color: inherit;
+    text-decoration: none;
 }
 
 /* =========================================
@@ -1637,6 +1793,11 @@ Modernized UI - Alternating Layouts with Glassmorphism
         max-width: unset;
         padding: 28px 24px;
         text-align: left;
+    }
+
+    .about-us-cards .about-card {
+        padding: 0;
+        text-align: center;
     }
 
     .about-us-cards .card h3,

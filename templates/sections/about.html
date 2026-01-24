@@ -7,41 +7,53 @@
             <p class="about-us-lede">Our teams deliver reliable products and services while staying true to our values.</p>
         </div>
 
-        <!-- History Video -->
-        <div class="about-us-media">
-            <video id="history-video" width="100%" height="auto" autoplay muted loop playsinline preload="metadata" poster="{{ url_for('static', filename='images/Intro.png') }}">
-                <source src="{{ url_for('static', filename='images/media/history.mp4') }}" type="video/mp4">
-                Your browser does not support the video tag.
-            </video>
-        </div>
-
         <!-- About Us Cards -->
         <div class="about-us-cards">
-            <div class="card">
-                <h3>Our Vision</h3>
-                <p>To be the leading provider of food and industrial packaging products.</p>
+            <div class="card about-card vision-card">
+                <div class="card-media">
+                    <picture>
+                        <source type="image/avif" srcset="{{ url_for('static', filename='images/Intro.avif') }}">
+                        <source type="image/webp" srcset="{{ url_for('static', filename='images/Intro.webp') }}">
+                        <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/Intro.png') }}" alt="Quality packaging in action">
+                    </picture>
+                </div>
+                <div class="card-body">
+                    <h3>Our Vision</h3>
+                    <p>To be the leading provider of food and industrial packaging products.</p>
+                    <button class="card-cta" type="button">Read more <span aria-hidden="true">&rarr;</span></button>
+                </div>
             </div>
-            <div class="card">
-                <h3>Our Mission</h3>
-                <p>
-                    We are committed to achieve our vision through<br>
-                    - CUSTOMERS - delivery of high quality and competitive products and services.<br>
-                    - FUNCTIONAL EXCELLENCE - continuous development and improvement of processes and resources.<br>
-                    - EMPLOYEES - maintaining high performance and high efficiency organization aligned with core values.
-                </p>
+            <div class="card about-card mission-card">
+                <div class="card-media">
+                    <picture>
+                        <source type="image/avif" srcset="{{ url_for('static', filename='images/Intro.avif') }}">
+                        <source type="image/webp" srcset="{{ url_for('static', filename='images/Intro.webp') }}">
+                        <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/Intro.png') }}" alt="Reliable production standards">
+                    </picture>
+                </div>
+                <div class="card-body">
+                    <h3>Our Mission</h3>
+                    <p>
+                        We are committed to achieve our vision through customers by delivering high quality and competitive products and services, through functional excellence by continuously developing and improving our processes and resources, and through employees by maintaining a high performance and high efficiency organization aligned with our core values.
+                    </p>
+                    <button class="card-cta" type="button">Read more <span aria-hidden="true">&rarr;</span></button>
+                </div>
             </div>
-            <div class="card">
-                <h3>Our Values</h3>
-                <p>
-                    - MALASAKIT<br>
-                    - CUSTOMER CENTRIC<br>
-                    - TEAMWORK<br>
-                    - EXCELLENCE<br>
-                    - COMMITMENT<br>
-                    - HONESTY & INTEGRITY<br>
-                    - DISCIPLINE<br>
-                    and principles guided by God.
-                </p>
+            <div class="card about-card values-card">
+                <div class="card-media">
+                    <picture>
+                        <source type="image/avif" srcset="{{ url_for('static', filename='images/Intro.avif') }}">
+                        <source type="image/webp" srcset="{{ url_for('static', filename='images/Intro.webp') }}">
+                        <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/Intro.png') }}" alt="Products shaped by our values">
+                    </picture>
+                </div>
+                <div class="card-body">
+                    <h3>Our Values</h3>
+                    <p>
+                        Our values are malasakit, being customer centric, teamwork, excellence, commitment, honesty and integrity, discipline, and principles guided by God.
+                    </p>
+                    <button class="card-cta" type="button">Read more <span aria-hidden="true">&rarr;</span></button>
+                </div>
             </div>
         </div>
 
@@ -61,10 +73,16 @@
                     {% if event.thumbnail and not event.thumbnail.startswith('http') and not event.thumbnail.startswith('/') %}
                         {% set image_src = url_for('static', filename=event.thumbnail) %}
                     {% endif %}
-                    <a href="{{ event.url }}" class="event-card"{% if is_external %} target="_blank" rel="noopener"{% endif %}>
-                        <img loading="lazy" decoding="async" src="{{ image_src }}" alt="{{ event.alt }}">
-                        <div class="event-text"><p>{{ event.title }}</p></div>
-                    </a>
+                    <div class="event-card about-card">
+                        <div class="card-media">
+                            <img loading="lazy" decoding="async" src="{{ image_src }}" alt="{{ event.alt }}">
+                        </div>
+                        <div class="card-body">
+                            <span class="card-pill">Trending</span>
+                            <h4>{{ event.title }}</h4>
+                            <a href="{{ event.url }}" class="card-cta"{% if is_external %} target="_blank" rel="noopener"{% endif %}>Read more <span aria-hidden="true">&rarr;</span></a>
+                        </div>
+                    </div>
                     {% endfor %}
                 </div>
 
@@ -81,8 +99,5 @@
 </section>
 
 <script defer src="{{ url_for('static', filename='js/about_us.js') }}"></script>
-
-
-
 
 

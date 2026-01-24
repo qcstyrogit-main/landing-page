@@ -1,9 +1,21 @@
 document.addEventListener("DOMContentLoaded", () => {
+    const aboutCards = Array.from(document.querySelectorAll('.about-us-cards .about-card'));
     const eventCardsContainer = document.querySelector('.events-cards');
     const eventWrapper = document.querySelector('.events-wrapper');
     const prevBtn = document.querySelector('.prev-btn');
     const nextBtn = document.querySelector('.next-btn');
     let eventCards = Array.from(document.querySelectorAll('.events-cards .event-card'));
+
+    if (aboutCards.length > 0) {
+        aboutCards.forEach((card) => {
+            const toggleBtn = card.querySelector('.card-cta');
+            if (!toggleBtn || toggleBtn.tagName !== 'BUTTON') return;
+            toggleBtn.addEventListener('click', () => {
+                const isExpanded = card.classList.toggle('expanded');
+                toggleBtn.textContent = isExpanded ? 'Read less' : 'Read more →';
+            });
+        });
+    }
 
     if (!eventCardsContainer || !eventWrapper || eventCards.length === 0) {
         return;
