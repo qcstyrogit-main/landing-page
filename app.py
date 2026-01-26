@@ -531,27 +531,21 @@ def get_job_applicant_counts():
 @app.route("/api/erp/whoami", methods=["GET"])
 def erp_whoami():
     try:
-        sid = request.cookies.get("sid")  # only take sid
         headers = {}
-
-        # IMPORTANT: if your ERP is multi-site or behind a proxy, set Host too
-        headers["Host"] = "erp.qcstyro.com"
-
-        res = requests.get(
+        cookie = request.headers.get("Cookie")
+        if cookie:
+            headers["Cookie"] = cookie
+        auth = request.headers.get("Authorization")
+        if auth:
+            headers["Authorization"] = auth
+        res = http_session.get(
             f"{API_BASE_URL}/api/method/qcmc_logic.api.auth.check_log_user",
             headers=headers,
-            cookies={"sid": sid} if sid else None,
             timeout=8
         )
-        return Response(res.content, status=res.status_code,
-                        mimetype=res.headers.get("Content-Type", "application/json"))
+        return Response(res.content, status=res.status_code, mimetype=res.headers.get("Content-Type", "application/json"))
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-
-
-@app.route("/api/debug/cookies")
-def debug_cookies():
-    return {"cookies": dict(request.cookies)}
 
 
 # ------------------ POST (NO CACHE) ----------------
