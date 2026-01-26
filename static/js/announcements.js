@@ -39,6 +39,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const department = item.department || "Department";
             const designation = item.designation || "Designation";
             const date = item.date || "";
+            const tenure = item.tenure || "";
             const card = document.createElement("div");
             card.className = "announcement-card";
             let titleHtml = `<h3>${name}</h3>`;
@@ -48,7 +49,7 @@ document.addEventListener("DOMContentLoaded", () => {
             card.innerHTML = `
                 ${titleHtml}
                 <p>${department} • ${designation}</p>
-                <div class="meta">${date}</div>
+                <div class="meta">${date}${tenure ? ` • ${tenure}` : ""}</div>
             `;
             container.appendChild(card);
         });
@@ -74,20 +75,16 @@ document.addEventListener("DOMContentLoaded", () => {
                     return `<span style="color:${color}">${ch}</span>`;
                 }).join("");
                 return `
-                    <div class="birthday-layout">
-                        <div class="birthday-left">
-                            <div class="birthday-name">${name}</div>
-                        </div>
-                        <div class="birthday-right">
-                            <h3 class="birthday-title">
-                                <svg class="birthday-icon" viewBox="0 0 24 24" aria-hidden="true">
-                                    <path d="M12 2c-1.4 0-2.5 1.3-2.5 2.9 0 1.2.7 2.2 1.8 2.7.7.3 1.5.3 2.2 0 1.1-.5 1.8-1.5 1.8-2.7C15.3 3.3 13.9 2 12 2z" fill="currentColor"/>
-                                    <path d="M5 10h14a2 2 0 0 1 2 2v1a3 3 0 0 1-3 3 3 3 0 0 1-3-3 3 3 0 0 1-6 0 3 3 0 0 1-3 3 3 3 0 0 1-3-3v-1a2 2 0 0 1 2-2z" fill="currentColor"/>
-                                    <path d="M6 16h12v6H6z" fill="currentColor"/>
-                                </svg>
-                                <span class="birthday-greeting">${greeting}</span>
-                            </h3>
-                        </div>
+                    <div class="birthday-stack">
+                        <h3 class="birthday-title">
+                            <svg class="birthday-icon" viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M12 2c-1.4 0-2.5 1.3-2.5 2.9 0 1.2.7 2.2 1.8 2.7.7.3 1.5.3 2.2 0 1.1-.5 1.8-1.5 1.8-2.7C15.3 3.3 13.9 2 12 2z" fill="currentColor"/>
+                                <path d="M5 10h14a2 2 0 0 1 2 2v1a3 3 0 0 1-3 3 3 3 0 0 1-3-3 3 3 0 0 1-6 0 3 3 0 0 1-3 3 3 3 0 0 1-3-3v-1a2 2 0 0 1 2-2z" fill="currentColor"/>
+                                <path d="M6 16h12v6H6z" fill="currentColor"/>
+                            </svg>
+                            <span class="birthday-greeting">${greeting}</span>
+                        </h3>
+                        <div class="birthday-name">${name}</div>
                     </div>
                 `;
             };
@@ -97,7 +94,22 @@ document.addEventListener("DOMContentLoaded", () => {
                 "No birthdays to celebrate this month.",
                 { titleHtml: birthdayTitle }
             );
-            renderCards(anniversaryList, data.anniversaries || [], "No work anniversaries this month.");
+            const anniversaries = (data.anniversaries || []).map((item) => {
+                const started = item.date ? new Date(item.date) : null;
+                let tenure = "";
+                if (started && !Number.isNaN(started.getTime())) {
+                    const now = new Date();
+                    let years = now.getFullYear() - started.getFullYear();
+                    const m = now.getMonth() - started.getMonth();
+                    if (m < 0 || (m === 0 && now.getDate() < started.getDate())) {
+                        years -= 1;
+                    }
+                    if (years < 0) years = 0;
+                    tenure = years === 1 ? "1 year" : `${years} years`;
+                }
+                return { ...item, tenure };
+            });
+            renderCards(anniversaryList, anniversaries, "No work anniversaries this month.");
         } catch (err) {
             renderCards(birthdayList, [], "No birthdays to celebrate this month.");
             renderCards(anniversaryList, [], "No work anniversaries this month.");
@@ -136,13 +148,28 @@ document.addEventListener("DOMContentLoaded", () => {
                 const body = item.announcement || "";
                 card.innerHTML = `
                     ${image}
-                    <div class="announcement-body">${body}</div>
+                    <div class="announcement-body is-collapsed">${body}</div>
+                    <button type="button" class="announcement-toggle">Read more</button>
                 `;
                 announcementList.appendChild(card);
             });
         } catch (err) {
             renderCards(announcementList, [], "No announcements right now.");
         }
+    }
+
+    if (announcementList) {
+        announcementList.addEventListener("click", (event) => {
+            const btn = event.target.closest(".announcement-toggle");
+            if (!btn) return;
+            const card = btn.closest(".announcement-card");
+            const body = card ? card.querySelector(".announcement-body") : null;
+            if (!body) return;
+            const isCollapsed = body.classList.contains("is-collapsed");
+            body.classList.toggle("is-collapsed", !isCollapsed);
+            card.classList.toggle("is-expanded", isCollapsed);
+            btn.textContent = isCollapsed ? "Show less" : "Read more";
+        });
     }
 
     loadAnnouncements();

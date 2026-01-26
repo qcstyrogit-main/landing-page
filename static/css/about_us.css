@@ -140,6 +140,7 @@
     padding-bottom: 12px;
     -ms-overflow-style: none;
     scrollbar-width: none;
+    cursor: grab;
 }
 
 .events-cards::-webkit-scrollbar {
@@ -183,6 +184,10 @@
     transform: translateY(-10px);
     box-shadow: 0 24px 44px rgba(10, 32, 52, 0.18);
     border-color: rgba(237, 29, 38, 0.45);
+}
+
+.event-card:hover {
+    cursor: grab;
 }
 
 /* =========================================

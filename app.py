@@ -619,6 +619,32 @@ def get_announcements():
 
 
 # ------------------ POST (NO CACHE) ----------------
+@app.route("/api/testimonials", methods=["GET"])
+def get_testimonials():
+    try:
+        headers = {}
+        cookie = request.headers.get("Cookie")
+        if cookie:
+            headers["Cookie"] = cookie
+        auth = request.headers.get("Authorization")
+        if auth:
+            headers["Authorization"] = auth
+
+        res = http_session.get(
+            f"{API_BASE_URL}/api/method/qcmc_logic.api.public_testimonials.list_active_testimonials",
+            headers=headers,
+            timeout=8
+        )
+        return Response(
+            res.content,
+            status=res.status_code,
+            mimetype=res.headers.get("Content-Type", "application/json")
+        )
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+# ------------------ POST (NO CACHE) ----------------
 @app.route("/api/submit-job-applicant", methods=["POST"])
 def submit_job_applicant():
     try:

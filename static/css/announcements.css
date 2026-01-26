@@ -85,6 +85,7 @@
 .announcements-list {
     display: grid;
     gap: 12px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 .announcement-card {
@@ -92,6 +93,17 @@
     border-radius: 12px;
     padding: 12px 14px;
     background: #f7f9fd;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.announcement-card:hover {
+    box-shadow: 0 18px 36px rgba(12, 20, 38, 0.12);
+    transform: translateY(-3px);
+}
+
+.announcement-card.is-expanded {
+    box-shadow: 0 18px 36px rgba(12, 20, 38, 0.12);
+    transform: translateY(-2px);
 }
 
 .announcement-image img {
@@ -99,10 +111,37 @@
     border-radius: 10px;
     display: block;
     margin-bottom: 10px;
+    height: 160px;
+    object-fit: cover;
 }
 
 .announcement-body p {
     margin: 0 0 8px;
+}
+
+.announcement-body {
+    max-height: none;
+    transition: max-height 0.35s ease;
+}
+
+.announcement-body.is-collapsed {
+    max-height: 120px;
+    overflow: hidden;
+}
+
+.announcement-toggle {
+    margin-top: 8px;
+    background: #1b2b4a;
+    color: #ffffff;
+    border: 0;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.announcement-toggle:hover {
+    background: #243a64;
 }
 
 .announcement-card h3 {
@@ -110,41 +149,34 @@
     font-size: 1rem;
 }
 
+.birthday-stack {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+}
+
 .birthday-title {
     display: flex;
     align-items: center;
     gap: 8px;
     margin: 0;
-    justify-content: flex-end;
-    text-align: right;
-}
-
-.birthday-layout {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-}
-
-.birthday-left {
-    flex: 1 1 auto;
-}
-
-.birthday-right {
-    flex: 0 0 auto;
-    display: flex;
-    align-items: center;
+    justify-content: center;
+    text-align: center;
+    flex-wrap: wrap;
 }
 
 .birthday-icon {
-    width: 20px;
-    height: 20px;
+    width: 18px;
+    height: 18px;
     color: #f2a93b;
 }
 
 .birthday-greeting {
     display: inline-block;
     font-weight: 700;
+    font-size: 0.9rem;
+    line-height: 1.2;
 }
 
 .birthday-name {
@@ -152,6 +184,10 @@
     font-weight: 700;
     margin-bottom: 4px;
     color: #1b2b4a;
+    text-align: center;
+    white-space: normal;
+    overflow: visible;
+    max-width: 100%;
 }
 
 .announcement-card p {
@@ -172,5 +208,17 @@
     }
     .announcements-tabs {
         flex-direction: column;
+    }
+}
+
+@media (max-width: 1024px) {
+    .announcements-list {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 640px) {
+    .announcements-list {
+        grid-template-columns: 1fr;
     }
 }
