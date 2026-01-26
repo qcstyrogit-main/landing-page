@@ -558,6 +558,10 @@ def erp_whoami():
         return jsonify({"error": str(e)}), 500
 
 
+@app.route("/api/debug/cookies")
+def debug_cookies():
+    return {"cookies": dict(request.cookies)}
+
 
 # ------------------ POST (NO CACHE) ----------------
 @app.route("/api/submit-job-applicant", methods=["POST"])
