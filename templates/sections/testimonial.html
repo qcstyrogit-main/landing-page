@@ -1,4 +1,4 @@
-<section id="testimonial" class="testimonial-section" aria-labelledby="testimonial-title">
+<section id="testimonial" class="testimonial-section" aria-labelledby="testimonial-title" data-api-base="{{ API_BASE_URL }}">
     <div class="testimonial-content">
         <div class="about-us-header">
             <p class="about-us-eyebrow">Testimonials</p>
@@ -7,27 +7,17 @@
         </div>
 
         <div class="testimonial-card" role="group" aria-live="polite">
-            <div class="testimonial-quote-mark" aria-hidden="true">“</div>
-            <p class="testimonial-quote" id="testimonialQuote"></p>
-            <div class="testimonial-footer">
-                <div class="testimonial-user">
-                    <div class="testimonial-avatar" id="testimonialAvatar" aria-hidden="true"></div>
-                    <div>
-                        <div class="testimonial-name" id="testimonialName"></div>
-                        <div class="testimonial-role" id="testimonialRole"></div>
-                    </div>
-                </div>
-                <div class="testimonial-rating" id="testimonialRating" aria-label="Rating"></div>
-            </div>
+            <div class="testimonial-quote" id="testimonialQuote"></div>
+            <button type="button" class="testimonial-fullscreen" id="testimonialFullscreen" aria-label="View full screen">
+                <svg class="icon" aria-hidden="true"><use href="#icon-fullscreen"></use></svg>
+            </button>
         </div>
 
-        <div class="testimonial-controls">
-            <button type="button" class="testimonial-btn" id="testimonialPrev" aria-label="Previous testimonial">
-                ‹
-            </button>
-            <button type="button" class="testimonial-btn" id="testimonialNext" aria-label="Next testimonial">
-                ›
-            </button>
+        <div class="testimonial-modal" id="testimonialModal" aria-hidden="true" inert>
+            <div class="testimonial-modal-card" role="dialog" aria-modal="true" aria-label="Testimonial image">
+                <button type="button" class="testimonial-modal-close" id="testimonialModalClose" aria-label="Close">×</button>
+                <img id="testimonialModalImage" alt="Testimonial image" loading="lazy">
+            </div>
         </div>
     </div>
 </section>
