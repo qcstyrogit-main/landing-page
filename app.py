@@ -532,20 +532,31 @@ def get_job_applicant_counts():
 def erp_whoami():
     try:
         headers = {}
+
         cookie = request.headers.get("Cookie")
         if cookie:
             headers["Cookie"] = cookie
+
         auth = request.headers.get("Authorization")
         if auth:
             headers["Authorization"] = auth
+
+        # IMPORTANT: avoid sticky session cookies from previous calls
+        http_session.cookies.clear()
+
         res = http_session.get(
             f"{API_BASE_URL}/api/method/qcmc_logic.api.auth.check_log_user",
             headers=headers,
             timeout=8
         )
-        return Response(res.content, status=res.status_code, mimetype=res.headers.get("Content-Type", "application/json"))
+        return Response(
+            res.content,
+            status=res.status_code,
+            mimetype=res.headers.get("Content-Type", "application/json")
+        )
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
 
 
 # ------------------ POST (NO CACHE) ----------------
