@@ -548,6 +548,76 @@ def erp_whoami():
         return jsonify({"error": str(e)}), 500
 
 
+# ------------------ PUBLIC PEOPLE ------------------
+@app.route("/api/employee-celebrations", methods=["GET"])
+def employee_celebrations():
+    try:
+        headers = {}
+        cookie = request.headers.get("Cookie")
+        if cookie:
+            headers["Cookie"] = cookie
+        auth = request.headers.get("Authorization")
+        if auth:
+            headers["Authorization"] = auth
+
+        params = {}
+        month = request.args.get("month")
+        day = request.args.get("day")
+        if month:
+            params["month"] = month
+        if day:
+            params["day"] = day
+
+        res = http_session.get(
+            f"{API_BASE_URL}/api/method/qcmc_logic.api.public_people.employee_celebrations",
+            params=params,
+            headers=headers,
+            timeout=8
+        )
+        return Response(
+            res.content,
+            status=res.status_code,
+            mimetype=res.headers.get("Content-Type", "application/json")
+        )
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+# ------------------ PUBLIC ANNOUNCEMENTS ------------------
+@app.route("/api/announcements", methods=["GET"])
+def get_announcements():
+    try:
+        headers = {}
+        cookie = request.headers.get("Cookie")
+        if cookie:
+            headers["Cookie"] = cookie
+        auth = request.headers.get("Authorization")
+        if auth:
+            headers["Authorization"] = auth
+
+        params = {}
+        limit = request.args.get("limit")
+        start = request.args.get("start")
+        if limit:
+            params["limit"] = limit
+        if start:
+            params["start"] = start
+
+        res = http_session.get(
+            f"{API_BASE_URL}/api/method/qcmc_logic.api.public_announcements.list_active_announcements",
+            params=params,
+            headers=headers,
+            timeout=8
+        )
+        return Response(
+            res.content,
+            status=res.status_code,
+            mimetype=res.headers.get("Content-Type", "application/json")
+        )
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
 # ------------------ POST (NO CACHE) ----------------
 @app.route("/api/submit-job-applicant", methods=["POST"])
 def submit_job_applicant():

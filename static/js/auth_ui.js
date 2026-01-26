@@ -1,6 +1,9 @@
 document.addEventListener("DOMContentLoaded", async () => {
     const currentPath = window.location.pathname;
     const isAnnouncementPage = currentPath === "/announcements";
+    const isHomePage = currentPath === "/" || currentPath === "/index.html";
+    const redirectKey = "announcements_redirected";
+    const userMenus = document.querySelectorAll("[data-erp-user-menu]");
     const loginButtons = document.querySelectorAll("[data-erp-login]");
     const announcementLinks = document.querySelectorAll("[data-erp-announcement]");
     const authRequired = document.querySelector("[data-auth-required]");
@@ -28,12 +31,40 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         if (displayName) {
             loginButtons.forEach((btn) => {
-                btn.textContent = `Welcome, ${displayName}`;
-                btn.setAttribute("aria-label", `Welcome, ${displayName}`);
+                btn.innerHTML = `<svg class="icon" aria-hidden="true"><use href="#icon-user"></use></svg>`;
+                btn.setAttribute("aria-label", `Account: ${displayName}`);
                 btn.classList.add("is-logged-in");
             });
             setAnnouncementVisibility(true);
-            if (!isAnnouncementPage) {
+            userMenus.forEach((menu) => {
+                const trigger = menu.querySelector("[data-erp-login]");
+                const dropdown = menu.querySelector(".user-menu-dropdown");
+                if (!trigger || !dropdown) return;
+
+                trigger.addEventListener("click", (event) => {
+                    event.preventDefault();
+                    dropdown.classList.toggle("show");
+                    dropdown.setAttribute(
+                        "aria-hidden",
+                        dropdown.classList.contains("show") ? "false" : "true"
+                    );
+                });
+            });
+
+            document.addEventListener("click", (event) => {
+                userMenus.forEach((menu) => {
+                    if (!menu.contains(event.target)) {
+                        const dropdown = menu.querySelector(".user-menu-dropdown");
+                        if (dropdown) {
+                            dropdown.classList.remove("show");
+                            dropdown.setAttribute("aria-hidden", "true");
+                        }
+                    }
+                });
+            });
+
+            if (isHomePage && !isAnnouncementPage && !sessionStorage.getItem(redirectKey)) {
+                sessionStorage.setItem(redirectKey, "1");
                 window.location.href = "/announcements";
             }
         } else {

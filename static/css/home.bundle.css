@@ -85,6 +85,53 @@ html, body {
     background: var(--primary-hover);
 }
 
+.user-menu {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+}
+
+.user-menu .btn-login.is-logged-in {
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.user-menu-dropdown {
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    min-width: 160px;
+    background: #ffffff;
+    border: 1px solid rgba(15, 26, 42, 0.12);
+    border-radius: 12px;
+    box-shadow: 0 16px 40px rgba(9, 16, 32, 0.18);
+    padding: 8px;
+    display: none;
+    z-index: 3000;
+}
+
+.user-menu-dropdown.show {
+    display: block;
+}
+
+.user-menu-item {
+    display: block;
+    padding: 10px 12px;
+    border-radius: 8px;
+    color: #1b2b4a;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.user-menu-item:hover {
+    background: #eef2f8;
+}
+
 .home-header .btn-announcement {
     margin-left: 0.6rem;
     background: #0f1a2a;
