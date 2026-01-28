@@ -7,17 +7,12 @@
         </div>
 
         <div class="testimonial-card" role="group" aria-live="polite">
-            <div class="testimonial-quote" id="testimonialQuote"></div>
-            <button type="button" class="testimonial-fullscreen" id="testimonialFullscreen" aria-label="View full screen">
-                <svg class="icon" aria-hidden="true"><use href="#icon-fullscreen"></use></svg>
-            </button>
-        </div>
-
-        <div class="testimonial-modal" id="testimonialModal" aria-hidden="true" inert>
-            <div class="testimonial-modal-card" role="dialog" aria-modal="true" aria-label="Testimonial image">
-                <button type="button" class="testimonial-modal-close" id="testimonialModalClose" aria-label="Close">×</button>
-                <img id="testimonialModalImage" alt="Testimonial image" loading="lazy">
+            <div class="testimonial-carousel">
+                <button type="button" class="testimonial-nav testimonial-prev" id="testimonialPrev" aria-label="Previous testimonial">&lsaquo;</button>
+                <div class="testimonial-track" id="testimonialTrack" role="list"></div>
+                <button type="button" class="testimonial-nav testimonial-next" id="testimonialNext" aria-label="Next testimonial">&rsaquo;</button>
             </div>
+            <div class="testimonial-indicators" id="testimonialIndicators" role="tablist" aria-label="Testimonial indicators"></div>
         </div>
     </div>
 </section>

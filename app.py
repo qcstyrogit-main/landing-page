@@ -284,6 +284,13 @@ def normalize_url(url, base_url):
         return f"{base_url}{url}"
     return url
 
+def get_erp_auth_headers():
+    api_key = os.getenv("ERP_API_KEY") or os.getenv("FRAPPE_API_KEY")
+    api_secret = os.getenv("ERP_API_SECRET") or os.getenv("FRAPPE_API_SECRET")
+    if api_key and api_secret:
+        return {"Authorization": f"token {api_key}:{api_secret}"}
+    return {}
+
 # --------------------------------------------------
 # SECURITY: RATE LIMITS + CSRF
 # --------------------------------------------------
@@ -642,6 +649,59 @@ def get_testimonials():
         )
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+
+# ------------------ PRIVATE FILE PROXY ------------------
+@app.route("/private/files/<path:filename>", methods=["GET"])
+def proxy_private_file(filename):
+    if ".." in filename or filename.startswith("/"):
+        return Response("invalid path", status=400)
+
+    headers = {}
+    cookie = request.headers.get("Cookie")
+    if cookie:
+        headers["Cookie"] = cookie
+    auth = request.headers.get("Authorization")
+    if auth:
+        headers["Authorization"] = auth
+    headers.update(get_erp_auth_headers())
+
+    if not headers:
+        return Response("missing ERP credentials", status=403)
+
+    try:
+        upstream_url = f"{API_BASE_URL.rstrip('/')}/private/files/{filename}"
+        res = http_session.get(upstream_url, headers=headers, timeout=15)
+        if not res.ok:
+            return Response(res.content, status=res.status_code, mimetype=res.headers.get("Content-Type", "text/plain"))
+        resp = Response(res.content, status=res.status_code, mimetype=res.headers.get("Content-Type", "application/octet-stream"))
+        resp.headers["Cache-Control"] = "private, max-age=600"
+        return resp
+    except Exception as e:
+        return Response(str(e), status=500)
+
+
+@app.route("/api/method/frappe.utils.file_manager.download_file", methods=["GET"])
+def proxy_download_file():
+    try:
+        headers = {}
+        cookie = request.headers.get("Cookie")
+        if cookie:
+            headers["Cookie"] = cookie
+        auth = request.headers.get("Authorization")
+        if auth:
+            headers["Authorization"] = auth
+        headers.update(get_erp_auth_headers())
+
+        upstream_url = f"{API_BASE_URL.rstrip('/')}/api/method/frappe.utils.file_manager.download_file"
+        res = http_session.get(upstream_url, headers=headers, params=request.args, timeout=15)
+        if not res.ok:
+            return Response(res.content, status=res.status_code, mimetype=res.headers.get("Content-Type", "text/plain"))
+        resp = Response(res.content, status=res.status_code, mimetype=res.headers.get("Content-Type", "application/octet-stream"))
+        resp.headers["Cache-Control"] = "private, max-age=600"
+        return resp
+    except Exception as e:
+        return Response(str(e), status=500)
 
 
 # ------------------ POST (NO CACHE) ----------------

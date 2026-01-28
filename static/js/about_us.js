@@ -1,132 +1,22 @@
 document.addEventListener("DOMContentLoaded", () => {
-    const aboutCards = Array.from(document.querySelectorAll('.about-us-cards .about-card'));
-    const eventCardsContainer = document.querySelector('.events-cards');
-    const eventWrapper = document.querySelector('.events-wrapper');
-    const prevBtn = document.querySelector('.prev-btn');
-    const nextBtn = document.querySelector('.next-btn');
-    let eventCards = Array.from(document.querySelectorAll('.events-cards .event-card'));
+    const slide = document.querySelector(".events-slide");
+    const nextBtn = document.querySelector(".events-btn.next");
+    const prevBtn = document.querySelector(".events-btn.prev");
 
-    if (aboutCards.length > 0) {
-        aboutCards.forEach((card) => {
-            const toggleBtn = card.querySelector('.card-cta');
-            if (!toggleBtn || toggleBtn.tagName !== 'BUTTON') return;
-            toggleBtn.addEventListener('click', () => {
-                const isExpanded = card.classList.toggle('expanded');
-                toggleBtn.textContent = isExpanded ? 'Read less' : 'Read more →';
-            });
-        });
+    if (!slide) return;
+
+    function rotateNext() {
+        const items = slide.querySelectorAll(".event-item");
+        if (items.length <= 1) return;
+        slide.appendChild(items[0]);
     }
 
-    if (!eventCardsContainer || !eventWrapper || eventCards.length === 0) {
-        return;
+    function rotatePrev() {
+        const items = slide.querySelectorAll(".event-item");
+        if (items.length <= 1) return;
+        slide.prepend(items[items.length - 1]);
     }
 
-    // Duplicate cards to enable seamless infinite looping
-    if (eventCards.length < 2) {
-        // Not enough items to loop smoothly
-        return;
-    }
-    const fragment = document.createDocumentFragment();
-    eventCards.forEach((card) => {
-        fragment.appendChild(card.cloneNode(true));
-    });
-    eventCardsContainer.appendChild(fragment);
-    eventCards = Array.from(eventCardsContainer.querySelectorAll('.event-card'));
-
-    let scrollSpeed = 0.7;
-    let scrollRemainder = 0;
-    let isDragging = false;
-    let isPaused = false;
-    let startX, scrollLeft;
-    let halfScroll;
-
-    // Calculate the reset point dynamically
-    const updateDimensions = () => {
-        halfScroll = eventCardsContainer.scrollWidth / 2;
-    };
-    updateDimensions();
-    window.addEventListener('resize', updateDimensions);
-    window.addEventListener('load', updateDimensions);
-
-    if (window.ResizeObserver) {
-        const observer = new ResizeObserver(() => updateDimensions());
-        observer.observe(eventCardsContainer);
-    }
-
-    // ===========================
-    // NORMALIZE SCROLL (KEY FIX)
-    // ===========================
-    const normalizeScroll = () => {
-        if (eventCardsContainer.scrollLeft < 0) {
-            eventCardsContainer.scrollLeft += halfScroll;
-        } else if (eventCardsContainer.scrollLeft >= halfScroll) {
-            eventCardsContainer.scrollLeft -= halfScroll;
-        }
-    };
-
-    // ===========================
-    // AUTO SCROLL (INFINITE)
-    // ===========================
-    const animate = () => {
-        if (!isDragging && !isPaused) {
-            scrollRemainder += scrollSpeed;
-            const step = Math.floor(scrollRemainder);
-            if (step > 0) {
-                eventCardsContainer.scrollLeft += step;
-                scrollRemainder -= step;
-                normalizeScroll();
-            }
-        }
-        requestAnimationFrame(animate);
-    };
-    animate();
-
-    // ===========================
-    // NAVIGATION BUTTONS
-    // ===========================
-    const moveSlider = (direction) => {
-        const cardWidth = eventCards[0].offsetWidth + 20; // width + gap
-        eventCardsContainer.scrollLeft += direction * cardWidth;
-        normalizeScroll();
-    };
-
-    prevBtn?.addEventListener('click', () => moveSlider(-1));
-    nextBtn?.addEventListener('click', () => moveSlider(1));
-
-    // ===========================
-    // DRAG & SWIPE SUPPORT
-    // ===========================
-    const startDrag = (e) => {
-        isDragging = true;
-        startX = (e.pageX || e.touches[0].pageX);
-        scrollLeft = eventCardsContainer.scrollLeft;
-        eventCardsContainer.classList.add('dragging');
-    };
-
-    const handleMove = (e) => {
-        if (!isDragging) return;
-        const x = (e.pageX || e.touches[0].pageX);
-        const walk = x - startX;
-        eventCardsContainer.scrollLeft = scrollLeft - walk;
-        normalizeScroll();
-    };
-
-    const stopDrag = () => {
-        isDragging = false;
-        eventCardsContainer.classList.remove('dragging');
-    };
-
-    eventCardsContainer.addEventListener('mousedown', startDrag);
-    window.addEventListener('mousemove', handleMove);
-    window.addEventListener('mouseup', stopDrag);
-
-    eventCardsContainer.addEventListener('touchstart', startDrag);
-    eventCardsContainer.addEventListener('touchmove', handleMove);
-    eventCardsContainer.addEventListener('touchend', stopDrag);
-
-    // ===========================
-    // HOVER PAUSE
-    // ===========================
-    eventWrapper.addEventListener('mouseenter', () => isPaused = true);
-    eventWrapper.addEventListener('mouseleave', () => isPaused = false);
+    nextBtn?.addEventListener("click", rotateNext);
+    prevBtn?.addEventListener("click", rotatePrev);
 });

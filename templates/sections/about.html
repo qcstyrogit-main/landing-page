@@ -65,25 +65,27 @@
                 From exciting celebrations to inspiring gatherings, each moment reflects our passion and dedication.
             </p>
 
-            <div class="events-wrapper">  
-                <div class="events-cards">
+            <div class="events-wrapper">
+                <div class="events-carousel" aria-label="Event highlights">
+                    <div class="events-slide">
                     {% for event in events %}
                     {% set is_external = event.url.startswith('http') %}
                     {% set image_src = event.thumbnail %}
                     {% if event.thumbnail and not event.thumbnail.startswith('http') and not event.thumbnail.startswith('/') %}
                         {% set image_src = url_for('static', filename=event.thumbnail) %}
                     {% endif %}
-                    <div class="event-card about-card">
-                        <div class="card-media">
-                            <img loading="lazy" decoding="async" src="{{ image_src }}" alt="{{ event.alt }}">
-                        </div>
-                        <div class="card-body">
-                            <span class="card-pill">Trending</span>
-                            <h4>{{ event.title }}</h4>
-                            <a href="{{ event.url }}" class="card-cta"{% if is_external %} target="_blank" rel="noopener"{% endif %}>Read more <span aria-hidden="true">&rarr;</span></a>
+                    <div class="event-item" style="background-image: url('{{ image_src }}');">
+                        <div class="event-content">
+                            <h4 class="event-title">{{ event.title }}</h4>
+                            <a href="{{ event.url }}" class="event-link"{% if is_external %} target="_blank" rel="noopener"{% endif %}>Read more</a>
                         </div>
                     </div>
                     {% endfor %}
+                    </div>
+                    <div class="events-controls">
+                        <button type="button" class="events-btn prev" aria-label="Previous event">&lsaquo;</button>
+                        <button type="button" class="events-btn next" aria-label="Next event">&rsaquo;</button>
+                    </div>
                 </div>
 
                 <!-- Optional Show More Button -->
@@ -99,5 +101,4 @@
 </section>
 
 <script defer src="{{ url_for('static', filename='js/about_us.js') }}"></script>
-
 
