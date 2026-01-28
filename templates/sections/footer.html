@@ -1,9 +1,60 @@
 <!-- Footer -->
 <footer class="custom-footer">
-    <div class="footer-content">
-        <span>© Copyright 2025</span>
+    <div class="footer-inner">
+        <div class="footer-brand">
+            <div class="footer-logos">
+                <img src="{{ url_for('static', filename='images/QC.png') }}" alt="QC Styropackaging" width="52" height="52" loading="lazy">
+                <img src="{{ url_for('static', filename='images/MC.png') }}" alt="Multiplast Corporation" width="52" height="52" loading="lazy">
+            </div>
+            <p>
+                Quality packaging solutions for food and industrial applications.
+                We build trust through reliable products, service, and innovation.
+            </p>
+            <div class="footer-social">
+                <a href="https://www.facebook.com/people/QC-Styropackaging-and-Multiplast-Corporation/100063668176290/" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
+                    <svg class="icon" aria-hidden="true"><use href="#icon-facebook"></use></svg>
+                </a>
+                <a href="/#contact-us" id="footerViberLink" aria-label="Chat with QC & MC on Viber">
+                    <svg class="icon" aria-hidden="true"><use href="#icon-chat"></use></svg>
+                </a>
+            </div>
+        </div>
+
+        <div class="footer-col">
+            <h3>Quick Links</h3>
+            <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="/#about-us">About</a></li>
+                <li><a href="/#jobs">Careers</a></li>
+                <li><a href="/#sustainability">Sustainability</a></li>
+            </ul>
+        </div>
+
+        <div class="footer-col">
+            <h3>Our Services</h3>
+            <ul>
+                <li><a href="/products_plastic">Plasticware</a></li>
+                <li><a href="/products_styro">Styroware</a></li>
+                <li><a href="/#testimonial">Testimonials</a></li>
+                <li><a href="/#contact-us">Contact Us</a></li>
+            </ul>
+        </div>
+
+        <div class="footer-col footer-contact">
+            <h3>Contact Us</h3>
+            <ul>
+                <li>QC Styropackaging &amp; Multiplast Corporation</li>
+                <li>Philippines</li>
+                <li><a href="/#contact-us">Get in touch</a></li>
+                <li>Mon - Fri: 8:00 AM - 5:00 PM</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="footer-bottom">
+        <span>© 2025 QC Styropackaging &amp; Multiplast Corporation. All rights reserved.</span>
         <span class="footer-links">
-            <button type="button" id="privacyLink" class="footer-link">Privacy Policy</button> |
+            <button type="button" id="privacyLink" class="footer-link">Privacy Policy</button>
             <button type="button" id="termofuseLink" class="footer-link">Terms of Use</button>
         </span>
     </div>
@@ -30,4 +81,3 @@
 </div>
 
 <script defer src="{{ url_for('static', filename='js/footer.js') }}"></script>
-

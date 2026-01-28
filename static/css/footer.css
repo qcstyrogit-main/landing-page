@@ -1,61 +1,142 @@
 /* =========================================
-   FIXED FOOTER (no layout weird scroll)
+   FOOTER (SECTION LAYOUT)
 ========================================= */
 
 :root{
-  --footer-h: 52px; /* adjust if you change footer padding/font */
+  --footer-h: 52px; /* retained for components using this var */
 }
 
-/* Make sure page can breathe under fixed footer */
-body{
-  padding-bottom: var(--footer-h);
-}
-
-/* Footer - compact horizontal layout */
 .custom-footer {
-  position: fixed;
-  bottom: 0;
-  left: 0;
+  position: relative;
   width: 100%;
-  background-color: #133880;
-  color: #fff;
-  padding: 8px 10px;
-  z-index: 9999;
-  font-size: 0.75rem;
-  box-shadow: 0 -2px 5px rgba(0,0,0,0.2);
-
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 15px;
+  background-color: #ffffff;
+  color: #133880;
+  padding: clamp(3rem, 6vw, 4.5rem) 2rem 2rem;
+  font-size: 0.95rem;
 }
 
-.custom-footer .footer-content {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 15px;
+.footer-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1.2fr 1fr 1fr 1fr;
+  gap: 2.5rem;
 }
 
-.custom-footer .footer-links a,
-.custom-footer .footer-links button {
-  color: #fff;
-  text-decoration: none;
-  font-size: 0.75rem;
-  margin: 0 3px;
-  background: transparent;
-  border: none;
-  padding: 6px 10px;
-  min-height: 44px;
-  min-width: 44px;
+.footer-brand p {
+  margin: 1rem 0 1.5rem;
+  line-height: 1.6;
+  color: rgba(19, 56, 128, 0.75);
+}
+
+.footer-logos {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.footer-social {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.footer-social a {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: rgba(19, 56, 128, 0.08);
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  color: #133880;
+  text-decoration: none;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.footer-social a:hover {
+  background: rgba(19, 56, 128, 0.16);
+  transform: translateY(-2px);
+}
+
+.footer-col h3 {
+  margin: 0 0 1rem;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.footer-col ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 0.6rem;
+}
+
+.footer-col a {
+  color: rgba(19, 56, 128, 0.8);
+  text-decoration: none;
+}
+
+.footer-col a:hover {
+  color: #133880;
+}
+
+.footer-contact li {
+  color: rgba(19, 56, 128, 0.8);
+}
+
+.footer-bottom {
+  max-width: 1200px;
+  margin: 2.5rem auto 0;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(19, 56, 128, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  color: rgba(19, 56, 128, 0.8);
+  font-size: 0.85rem;
+}
+
+.custom-footer .footer-links {
+  display: inline-flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.custom-footer .footer-links .footer-link {
+  color: #133880;
+  background: transparent;
+  border: none;
+  padding: 6px 10px;
   cursor: pointer;
+  font-size: 0.85rem;
 }
 .custom-footer .footer-links a:hover,
 .custom-footer .footer-links button:hover {
-  color: #40aeee;
+  color: #0045da;
+}
+
+@media (max-width: 1024px) {
+  .footer-inner {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .custom-footer {
+    padding: 2.5rem 1.5rem 2rem;
+  }
+
+  .footer-inner {
+    grid-template-columns: 1fr;
+  }
+
+  .footer-bottom {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 }
 
 /* =========================================

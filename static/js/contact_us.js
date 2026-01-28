@@ -350,27 +350,6 @@ document.addEventListener("DOMContentLoaded", function() {
 
 });
 
-
-/* ------------------------------
-   OPEN VIBER FUNCTION
---------------------------------*/
-function openViber() {
-    const viberURL = "viber://chat?number=+639178143250";
-    const fallbackURL = "https://www.viber.com/download";
-
-    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-
-    if (isMobile) {
-        window.location.href = viberURL;
-        setTimeout(() => {
-            window.location.href = fallbackURL;
-        }, 1500);
-    } else {
-        alert("Viber app cannot be opened directly on desktop. Please install Viber.");
-        window.open(fallbackURL, "_blank");
-    }
-}
-
 /* ------------------------------
     CONTACT FORM SUBMISSION
 --------------------------------*/
@@ -378,14 +357,6 @@ function openViber() {
 document.addEventListener("DOMContentLoaded", () => {
     const contactFormEl = document.getElementById("contactForm");
     if (!contactFormEl) return;
-
-    const viberLink = document.getElementById("viberLink");
-    if (viberLink) {
-        viberLink.addEventListener("click", (event) => {
-            event.preventDefault();
-            openViber();
-        });
-    }
 
     const submitBtn = contactFormEl.querySelector(".submit-btn");
     const successPopup = document.getElementById("contactSuccessPopup");

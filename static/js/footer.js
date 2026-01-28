@@ -85,3 +85,28 @@ window.addEventListener("click", (event) => {
   if (event.target === modalTerms) closeModal(modalTerms);
   if (event.target === modalPrivacy) closeModal(modalPrivacy);
 });
+
+function openViber() {
+  const viberURL = "viber://chat?number=+639178143250";
+  const fallbackURL = "https://www.viber.com/download";
+
+  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+  if (isMobile) {
+    window.location.href = viberURL;
+    setTimeout(() => {
+      window.location.href = fallbackURL;
+    }, 1500);
+  } else {
+    alert("Viber app cannot be opened directly on desktop. Please install Viber.");
+    window.open(fallbackURL, "_blank");
+  }
+}
+
+const footerViberLink = document.getElementById("footerViberLink");
+if (footerViberLink) {
+  footerViberLink.addEventListener("click", (event) => {
+    event.preventDefault();
+    openViber();
+  });
+}

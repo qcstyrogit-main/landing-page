@@ -5,63 +5,93 @@
         <p class="about-us-lede">We refine processes, reduce waste, and invest in practices that protect people and the planet.</p>
     </div>
 
-    <div class="sustainability-layer fade-in-layer">
-        <div class="sustainability-image">
-            <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/sustainability/01.png') }}" alt="Sustainable Sourcing">
-        </div>
-        <div class="sustainability-text">
-            <h2>Sustainable Sourcing and Production</h2>
-            <p>
-                We prioritize sourcing materials from suppliers who adhere to eco-friendly practices. 
-                Our production processes are continually refined to reduce energy consumption, minimize waste, 
-                and limit emissions. By integrating advanced technologies and efficient manufacturing techniques, 
-                we aim to create products that are both high-quality and environmentally conscious.
-            </p>
-        </div>
-    </div>
-
-    <div class="sustainability-layer reverse fade-in-layer">
-        <div class="sustainability-image">
-            <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/sustainability/02.png') }}" alt="Recycling Initiatives">
-        </div>
-        <div class="sustainability-text">
-            <h2>Recycling Initiatives</h2>
-            <p>
-                We have implemented robust recycling programs that encourage the reuse of styrofoam materials. 
-                We collaborate with local communities, businesses, and recycling centers to ensure that used products 
-                are collected and processed responsibly. Our goal is to divert as much waste as possible from landfills, 
-                giving new life to materials through innovative recycling solutions.
-            </p>
-        </div>
-    </div>
-
-    <div class="sustainability-layer fade-in-layer">
-        <div class="sustainability-image">
-            <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/sustainability/03.png') }}" alt="Eco-Friendly Product Innovations">
-        </div>
-        <div class="sustainability-text">
-            <h2>Eco-Friendly Product Innovations</h2>
-            <p>
-                Understanding the environmental concerns associated with traditional styrofoam, We are dedicated 
-                to developing alternative products that are biodegradable and recyclable. Our research and development 
-                team is constantly exploring new materials and designs that maintain the durability and functionality 
-                our customers expect, while being gentler on the planet.
-            </p>
-        </div>
-    </div>
-
-    <div class="sustainability-layer reverse fade-in-layer">
-        <div class="sustainability-image">
-            <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/sustainability/04.png') }}" alt="Community Engagement">
-        </div>
-        <div class="sustainability-text">
-            <h2>Community Engagement and Education</h2>
-            <p>
-                We believe that sustainability extends beyond our operations. We actively engages with local 
-                communities to raise awareness about environmental issues and promote sustainable living practices. 
-                Through educational programs, partnerships, and community events, we aim to inspire collective action 
-                toward a greener future.
-            </p>
+    <div class="sustainability-hero">
+        <div class="sustainability-gradient-box mobile-gradient-bg">
+            <svg xmlns="http://www.w3.org/2000/svg" class="sustainability-gradient-svg" viewBox="0 0 1200 540" fill="none">
+                <path clip-path="url(#sustainabilityPath)" d="M1200 0H0V540H1200V0Z" fill="url(#sustainabilityGradient)" />
+                <defs>
+                    <clipPath id="sustainabilityPath">
+                        <path d="M417.616 0C404.551 0 396.134 3.93474 389.697 10.2961L373.613 26.2278C371.249 28.575 366.793 30.0265 361.969 30.0265H21.5005C3.57885 30.0265 -5.38198 30.0265 -12.2272 33.5142C-18.2483 36.5822 -23.1437 41.4776 -26.2117 47.4988C-29.6995 54.3439 -29.6995 63.3048 -29.6995 81.2264V488.8C-29.6995 506.722 -29.6995 515.682 -26.2117 522.528C-23.1437 528.549 -18.2483 533.444 -12.2272 536.512C-5.38198 540 3.57886 540 21.5005 540H342.371C353.648 540 364.046 534.931 369.588 529.443L380.593 517.832C382.957 515.484 387.668 510.869 397.843 510.869H1148.44C1166.37 510.869 1175.33 510.869 1182.17 507.381C1188.19 504.314 1193.09 499.418 1196.16 493.397C1199.64 486.552 1199.64 477.591 1199.64 459.669V51.2C1199.64 33.2783 1199.64 24.3175 1196.16 17.4723C1193.09 11.4511 1188.19 6.55574 1182.17 3.48779C1175.33 0 1166.37 0 1148.44 0H417.616Z" fill="black" />
+                    </clipPath>
+                    <linearGradient id="sustainabilityGradient" x1="-1.8522" y1="269.875" x2="1198.15" y2="269.875" gradientUnits="userSpaceOnUse">
+                        <stop stop-color="#5F8AC7" />
+                        <stop offset="0.15" stop-color="#5F8AC7" />
+                        <stop offset="0.43" stop-color="#78A293" />
+                        <stop offset="0.82" stop-color="#99C152" />
+                        <stop offset="1" stop-color="#A6CE39" />
+                    </linearGradient>
+                </defs>
+            </svg>
+            <div class="sustainability-slider">
+                <div class="sustainability-slides">
+                    <div class="sustainability-slide">
+                        <div class="sustainability-slide-content">
+                            <div class="sustainability-slide-headline">
+                                <span class="material-symbols-outlined sustainability-slide-icon" aria-hidden="true">eco</span>
+                                <p>Sustainable sourcing and production</p>
+                            </div>
+                            <p class="sustainability-slide-body">
+                                We prioritize sourcing materials from suppliers who adhere to eco-friendly practices, while refining production to reduce energy use, waste, and emissions.
+                            </p>
+                        </div>
+                        <div class="sustainability-slide-media" style="background-image: url('{{ url_for('static', filename='images/sustainability/01.png') }}');"></div>
+                    </div>
+                    <div class="sustainability-slide">
+                        <div class="sustainability-slide-content">
+                            <div class="sustainability-slide-headline">
+                                <span class="material-symbols-outlined sustainability-slide-icon" aria-hidden="true">recycling</span>
+                                <p>Recycling initiatives and reuse</p>
+                            </div>
+                            <p class="sustainability-slide-body">
+                                We run recycling programs that encourage the reuse of styrofoam and partner with communities to keep materials out of landfills.
+                            </p>
+                        </div>
+                        <div class="sustainability-slide-media" style="background-image: url('{{ url_for('static', filename='images/sustainability/02.png') }}');"></div>
+                    </div>
+                    <div class="sustainability-slide">
+                        <div class="sustainability-slide-content">
+                            <div class="sustainability-slide-headline">
+                                <span class="material-symbols-outlined sustainability-slide-icon" aria-hidden="true">science</span>
+                                <p>Eco-friendly product innovations</p>
+                            </div>
+                            <p class="sustainability-slide-body">
+                                We develop alternative products that are biodegradable and recyclable while preserving the durability and functionality customers expect.
+                            </p>
+                        </div>
+                        <div class="sustainability-slide-media" style="background-image: url('{{ url_for('static', filename='images/sustainability/03.png') }}');"></div>
+                    </div>
+                    <div class="sustainability-slide">
+                        <div class="sustainability-slide-content">
+                            <div class="sustainability-slide-headline">
+                                <span class="material-symbols-outlined sustainability-slide-icon" aria-hidden="true">groups</span>
+                                <p>Community engagement and education</p>
+                            </div>
+                            <p class="sustainability-slide-body">
+                                We engage with local communities to raise awareness about environmental issues and inspire collective action toward a greener future.
+                            </p>
+                        </div>
+                        <div class="sustainability-slide-media" style="background-image: url('{{ url_for('static', filename='images/sustainability/04.png') }}');"></div>
+                    </div>
+                </div>
+                <div class="sustainability-pagination">
+                    <button class="sustainability-pagination-tab" type="button" aria-label="Slide 1">
+                        <span></span>
+                        <span>01</span>
+                    </button>
+                    <button class="sustainability-pagination-tab" type="button" aria-label="Slide 2">
+                        <span></span>
+                        <span>02</span>
+                    </button>
+                    <button class="sustainability-pagination-tab" type="button" aria-label="Slide 3">
+                        <span></span>
+                        <span>03</span>
+                    </button>
+                    <button class="sustainability-pagination-tab" type="button" aria-label="Slide 4">
+                        <span></span>
+                        <span>04</span>
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 

@@ -7,27 +7,41 @@
             Explore exciting opportunities and become part of a team that's passionate, driven, and ready to make a difference.
         </p>
     </div>
-    <div class="jobs-container">
-        <!-- Left Text Column -->
-        <div class="jobs-text">
-            <p class="jobs-eyebrow">In Careers</p>
-            <p>
-                Explore open roles and grow with us.
-            </p>
-            
-            <a href="{{ url_for('view_jobs') }}" class="view-jobs-btn">
-                View Jobs
-            </a>
 
-        </div>
-
-        <!-- Right Image Column -->
-        <div class="jobs-image">
-            <picture>
-                <source type="image/avif" srcset="{{ url_for('static', filename='images/careers/team.avif') }}">
-                <source type="image/webp" srcset="{{ url_for('static', filename='images/careers/team.webp') }}">
-                <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/careers/team.png') }}" width="800" height="800" alt="QC & MC team">
-            </picture>
+    <div class="jobs-hero">
+        <div class="jobs-gradient-box mobile-gradient-bg">
+            <svg xmlns="http://www.w3.org/2000/svg" class="jobs-gradient-svg" viewBox="0 0 1200 540" fill="none">
+                <path clip-path="url(#jobsPath)" d="M1200 0H0V540H1200V0Z" fill="url(#jobsGradient)" />
+                <defs>
+                    <clipPath id="jobsPath">
+                        <path d="M417.616 0C404.551 0 396.134 3.93474 389.697 10.2961L373.613 26.2278C371.249 28.575 366.793 30.0265 361.969 30.0265H21.5005C3.57885 30.0265 -5.38198 30.0265 -12.2272 33.5142C-18.2483 36.5822 -23.1437 41.4776 -26.2117 47.4988C-29.6995 54.3439 -29.6995 63.3048 -29.6995 81.2264V488.8C-29.6995 506.722 -29.6995 515.682 -26.2117 522.528C-23.1437 528.549 -18.2483 533.444 -12.2272 536.512C-5.38198 540 3.57886 540 21.5005 540H342.371C353.648 540 364.046 534.931 369.588 529.443L380.593 517.832C382.957 515.484 387.668 510.869 397.843 510.869H1148.44C1166.37 510.869 1175.33 510.869 1182.17 507.381C1188.19 504.314 1193.09 499.418 1196.16 493.397C1199.64 486.552 1199.64 477.591 1199.64 459.669V51.2C1199.64 33.2783 1199.64 24.3175 1196.16 17.4723C1193.09 11.4511 1188.19 6.55574 1182.17 3.48779C1175.33 0 1166.37 0 1148.44 0H417.616Z" fill="black" />
+                    </clipPath>
+                    <linearGradient id="jobsGradient" x1="-1.8522" y1="269.875" x2="1198.15" y2="269.875" gradientUnits="userSpaceOnUse">
+                        <stop stop-color="#5F8AC7" />
+                        <stop offset="0.15" stop-color="#5F8AC7" />
+                        <stop offset="0.43" stop-color="#78A293" />
+                        <stop offset="0.82" stop-color="#99C152" />
+                        <stop offset="1" stop-color="#A6CE39" />
+                    </linearGradient>
+                </defs>
+            </svg>
+            <div class="jobs-hero-content">
+                <div class="jobs-hero-media">
+                    <picture>
+                        <source type="image/avif" srcset="{{ url_for('static', filename='images/careers/team.avif') }}">
+                        <source type="image/webp" srcset="{{ url_for('static', filename='images/careers/team.webp') }}">
+                        <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/careers/team.png') }}" width="800" height="800" alt="QC & MC team">
+                    </picture>
+                </div>
+                <div class="jobs-hero-card">
+                    <p class="jobs-card-eyebrow">In Careers</p>
+                    <p class="jobs-card-text">
+                        Explore open roles across operations, engineering, sales, and support. Build your career with
+                        mentorship, continuous learning, and a team that values growth and collaboration.
+                    </p>
+                    <a href="{{ url_for('view_jobs') }}" class="view-jobs-btn">View Jobs</a>
+                </div>
+            </div>
         </div>
     </div>
 </section>

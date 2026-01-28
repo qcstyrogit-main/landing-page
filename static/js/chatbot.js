@@ -78,10 +78,11 @@
   let dynamicGreeting = '';
   const verifyKey = 'chatbot_verified_math';
   let verifyAnswer = null;
+  let idlePromptReady = false;
 
   hydrateIdentity();
   loadHistory();
-  initIdlePrompt();
+  if (isVerified()) initIdlePrompt();
   if (chatState.room) {
     fetchMessages();
     startPolling();
@@ -224,6 +225,7 @@
       if (verifyStatus) verifyStatus.textContent = 'Verified! You can now chat.';
       updateVerificationUI();
       input.focus();
+      initIdlePrompt();
     } else {
       if (verifyStatus) verifyStatus.textContent = 'Incorrect. Try another question.';
       generateQuestion();
@@ -818,6 +820,9 @@
   }
 
   function initIdlePrompt() {
+    if (idlePromptReady) return;
+    if (!isVerified()) return;
+    idlePromptReady = true;
     const idleMs = 2 * 60 * 1000;
     let idleTimer = null;
     let promptShown = false;
