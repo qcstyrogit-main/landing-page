@@ -2,6 +2,7 @@
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+    overflow: visible;
 }
 
 .announcements-hero {
@@ -31,6 +32,7 @@
     margin: 0 auto;
     width: 100%;
     padding: 12px 20px 80px;
+    overflow: visible;
 }
 
 .announcements-tabs {
@@ -38,9 +40,10 @@
     flex-wrap: wrap;
     gap: 10px;
     margin-bottom: 0;
+    position: -webkit-sticky;
     position: sticky;
-    top: 70px;
-    z-index: 5;
+    top: var(--nav-height, 70px);
+    z-index: 1500;
     background: #f0f4f8;
     padding: 10px 0 8px;
     border-bottom: 1px solid #e4e9f3;

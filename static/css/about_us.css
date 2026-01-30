@@ -9,8 +9,8 @@
     --about-card: rgba(255, 255, 255, 0.92);
 
     width: 100%;
-    padding-top: calc(var(--nav-height) + 24px);
-    padding-bottom: 4rem;
+    padding-top: calc(var(--nav-height) + 16px);
+    padding-bottom: 2.5rem;
     box-sizing: border-box;
     background:
         radial-gradient(820px 420px at 12% 10%, rgba(237, 29, 38, 0.14), transparent 65%),
@@ -21,6 +21,20 @@
     margin: 0;
     position: relative;
     overflow: hidden;
+}
+
+#about-us::after {
+    content: "";
+    position: absolute;
+    border-radius: 50%;
+    z-index: 0;
+    opacity: 0.5;
+    pointer-events: none;
+    width: 620px;
+    height: 620px;
+    left: -260px;
+    bottom: -260px;
+    background: radial-gradient(circle, rgba(33, 150, 243, 0.16), rgba(33, 150, 243, 0));
 }
 
 .about-us-section {
@@ -37,25 +51,28 @@
 #about-us::before {
     content: "";
     position: absolute;
-    inset: 0;
-    background-image:
-        radial-gradient(circle at 20% 25%, rgba(237, 29, 38, 0.1), transparent 36%),
-        radial-gradient(circle at 80% 15%, rgba(20, 78, 121, 0.12), transparent 40%);
-    opacity: 0.8;
+    border-radius: 50%;
+    z-index: 0;
+    opacity: 0.5;
     pointer-events: none;
+    width: 520px;
+    height: 520px;
+    right: -180px;
+    top: -220px;
+    background: radial-gradient(circle, rgba(19, 56, 128, 0.18), rgba(19, 56, 128, 0));
 }
 
 .about-us-content {
     max-width: 1280px;
     margin: 0 auto;
-    padding: 2.5rem 2rem;
+    padding: 2rem 2rem;
     position: relative;
     z-index: 1;
 }
 
 .about-us-header {
     text-align: center;
-    margin-bottom: 2.6rem;
+    margin-bottom: 1.8rem;
     animation: about-fade-up 0.8s ease both;
 }
 
@@ -67,24 +84,27 @@
     border-radius: 999px;
     background: rgba(237, 29, 38, 0.12);
     color: #133880;
-    font-weight: 700;
-    letter-spacing: 0.14em;
+    font-weight: 800;
+    letter-spacing: 0.2em;
     text-transform: uppercase;
-    font-size: 0.72rem;
+    font-size: 0.85rem;
     margin: 0 0 0.85rem 0;
 }
 
 .about-us-header h2 {
     font-family: inherit;
-    font-size: clamp(2rem, 3.6vw, 3.1rem);
+    font-size: clamp(2rem, 4vw, 3rem);
     margin: 0 0 0.75rem 0;
-    letter-spacing: 0.02em;
+    letter-spacing: -0.02em;
+    font-weight: 800;
+    line-height: 1.1;
+    color: #133880;
 }
 
 .about-us-lede {
     max-width: 720px;
     margin: 0 auto;
-    color: var(--about-ink-soft);
+    color: #2d3748;
     font-weight: 500;
     font-size: 1.05rem;
     line-height: 1.7;
@@ -92,7 +112,7 @@
 
 .about-us-media {
     position: relative;
-    margin-bottom: 3rem;
+    margin-bottom: 2rem;
     border-radius: 24px;
     padding: 12px;
     background: linear-gradient(135deg, rgba(237, 29, 38, 0.12), rgba(19, 56, 128, 0.12));
@@ -230,7 +250,7 @@
 .our-events-description {
     text-align: center;
     max-width: 900px;
-    margin: 60px auto 0;
+    margin: 36px auto 0;
     animation: about-fade-up 0.95s ease both;
 }
 
@@ -416,11 +436,11 @@
 
 @media (max-width: 768px) {
     #about-us {
-        padding: 2.5rem 1rem;
+        padding: 2rem 1rem;
     }
 
     .about-us-content {
-        padding: 2rem 1.2rem;
+        padding: 1.5rem 1.2rem;
     }
 
     #history-video {

@@ -17,7 +17,7 @@ Modernized UI with Glassmorphism, Responsive Scaling, and Header Offset
 
 .intro-section {
     position: relative;
-    min-height: 100vh;
+    min-height: auto;
     width: 100%;
     display: flex;
     align-items: center;
@@ -25,7 +25,8 @@ Modernized UI with Glassmorphism, Responsive Scaling, and Header Offset
     overflow: hidden;
     
     /* FIX: This creates space for your header so content isn't covered */
-    padding-top: var(--header-height);
+    padding-top: var(--nav-height, 70px);
+    padding-bottom: 2rem;
 
     /* Background with dark overlay for readability */
     background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
@@ -49,7 +50,7 @@ Modernized UI with Glassmorphism, Responsive Scaling, and Header Offset
     width: 100%;
     max-width: 1280px;
     margin: 0 auto;
-    padding: 2rem;
+    padding: 2rem 2rem 1.5rem;
     gap: 4rem;
     z-index: 10;
 }
@@ -60,7 +61,7 @@ Modernized UI with Glassmorphism, Responsive Scaling, and Header Offset
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
-    padding: 3rem;
+    padding: 2.2rem;
     background: var(--glass-bg);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);

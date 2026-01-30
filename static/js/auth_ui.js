@@ -31,8 +31,14 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         if (displayName) {
             loginButtons.forEach((btn) => {
-                btn.innerHTML = `<svg class="icon" aria-hidden="true"><use href="#icon-user"></use></svg>`;
-                btn.setAttribute("aria-label", `Account: ${displayName}`);
+                const isMobile = btn.dataset.erpLogin === "mobile";
+                if (isMobile) {
+                    btn.innerHTML = `<svg class="icon" aria-hidden="true"><use href="#icon-user"></use></svg><span>Go to ERP</span>`;
+                    btn.setAttribute("aria-label", "Go to ERP");
+                } else {
+                    btn.innerHTML = `<svg class="icon" aria-hidden="true"><use href="#icon-user"></use></svg>`;
+                    btn.setAttribute("aria-label", `Account: ${displayName}`);
+                }
                 btn.classList.add("is-logged-in");
             });
             setAnnouncementVisibility(true);

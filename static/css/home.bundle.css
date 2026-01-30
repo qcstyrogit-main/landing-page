@@ -483,6 +483,9 @@ html, body {
     border: none;
     text-align: left;
     cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
 }
 
 .mobile-nav a:hover,
@@ -506,10 +509,11 @@ html, body {
 }
 
 .mobile-dropdown.show {
-    max-height: 500px;
+    max-height: 999px;
     opacity: 1;
     margin-top: 0.3rem;
     margin-bottom: 0.5rem;
+    overflow: visible;
 }
 
 /* DROPDOWN LINKS */
@@ -517,6 +521,31 @@ html, body {
     font-size: 1rem;
     padding: 0.8rem 1rem;
     color: var(--text-dark);
+}
+
+.mobile-nav .material-symbols-outlined,
+.mobile-nav .icon {
+    width: 1.25rem;
+    height: 1.25rem;
+    font-size: 1.25rem;
+    line-height: 1;
+    color: var(--primary-color);
+    flex: 0 0 1.25rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mobile-announcement,
+.mobile-login {
+    align-items: center;
+}
+
+/* Ensure mobile nav icons align with text */
+.mobile-nav .icon {
+    margin-left: 0;
+    margin-right: 0.6rem;
+    vertical-align: middle;
 }
 
 
@@ -531,15 +560,22 @@ html, body {
         display: block;
     }
     .home-header {
-        padding: 0 1.5rem;
+        padding: 0 1rem;
     }
     .home-hero {
         padding-top: 100px !important;
     }
 
-    /* Show login inside header area as a compact button */
-    .home-header .btn-login {
-        display: none; /* hide desktop login on small screens (mobile login available in mobile menu) */
+    /* Hide announcement bell + login icon in mobile header */
+    .home-header .btn-login,
+    .home-header .btn-announcement {
+        display: none !important;
+        visibility: hidden;
+        opacity: 0;
+    }
+
+    .header-tools {
+        margin-right: 0;
     }
 }
 
@@ -581,6 +617,17 @@ html, body {
     display: flex;
 }
 
+#back-to-top,
+#chat-bubble {
+    transition: opacity 0.2s ease;
+}
+
+/* Hide floating buttons when mobile menu is open */
+.mobile-nav-open #back-to-top,
+.mobile-nav-open #chat-bubble {
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
 #back-to-top.show {
     opacity: 1;
     pointer-events: auto;
@@ -611,12 +658,38 @@ html, body {
 .testimonial-section {
     position: relative;
     width: 100%;
-    padding: 80px 2rem 48px;
+    padding: 60px 2rem 36px;
     background: #f0f4f8;
     background-image: radial-gradient(#d1d9e6 1px, transparent 1px);
     background-size: 40px 40px;
     overflow: hidden;
     box-sizing: border-box;
+}
+
+.testimonial-section::before,
+.testimonial-section::after {
+    content: "";
+    position: absolute;
+    border-radius: 50%;
+    z-index: 0;
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+.testimonial-section::before {
+    width: 520px;
+    height: 520px;
+    right: -180px;
+    top: -220px;
+    background: radial-gradient(circle, rgba(19, 56, 128, 0.18), rgba(19, 56, 128, 0));
+}
+
+.testimonial-section::after {
+    width: 620px;
+    height: 620px;
+    left: -240px;
+    bottom: -260px;
+    background: radial-gradient(circle, rgba(33, 150, 243, 0.16), rgba(33, 150, 243, 0));
 }
 
 .testimonial-content {
@@ -874,14 +947,14 @@ html, body {
 /* ------------------------------------------------ */
 @media (min-width: 992px) {
     .intro-section {
-        min-height: 80vh;
-        padding-top: calc(var(--header-height) + 30px);
+        min-height: 70vh;
+        padding-top: calc(var(--nav-height, 70px) + 20px);
         padding-bottom: 2rem;
     }
 
     .standard-section {
-        min-height: 70vh;
-        padding-top: calc(var(--header-height) + 20px);
+        min-height: 60vh;
+        padding-top: calc(var(--nav-height, 70px) + 16px);
         padding-bottom: 1.5rem;
     }
 
@@ -894,7 +967,7 @@ html, body {
     }
 
     .jobs-section {
-        padding: 60px 2rem 32px;
+        padding: 50px 2rem 24px;
     }
 
     .jobs-hero {
@@ -919,12 +992,12 @@ html, body {
     }
 
     #iso-certified {
-        min-height: 65vh;
-        padding: 3rem 1.5rem;
+        min-height: auto;
+        padding: 1.25rem 1.5rem 0;
     }
 
     .contact_us-section {
-        padding: 3.5rem 2.5rem 4rem;
+        padding: 0 2.5rem 3rem;
     }
 }
 /*
@@ -946,7 +1019,7 @@ Modernized UI with Glassmorphism, Responsive Scaling, and Header Offset
 
 .intro-section {
     position: relative;
-    min-height: 100vh;
+    min-height: auto;
     width: 100%;
     display: flex;
     align-items: center;
@@ -954,7 +1027,8 @@ Modernized UI with Glassmorphism, Responsive Scaling, and Header Offset
     overflow: hidden;
     
     /* FIX: This creates space for your header so content isn't covered */
-    padding-top: var(--header-height);
+    padding-top: var(--nav-height, 70px);
+    padding-bottom: 2rem;
 
     /* Background with dark overlay for readability */
     background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
@@ -978,7 +1052,7 @@ Modernized UI with Glassmorphism, Responsive Scaling, and Header Offset
     width: 100%;
     max-width: 1280px;
     margin: 0 auto;
-    padding: 2rem;
+    padding: 2rem 2rem 1.5rem;
     gap: 4rem;
     z-index: 10;
 }
@@ -989,7 +1063,7 @@ Modernized UI with Glassmorphism, Responsive Scaling, and Header Offset
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
-    padding: 3rem;
+    padding: 2.2rem;
     background: var(--glass-bg);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
@@ -1134,7 +1208,7 @@ Modernized Full-Width UI - Optimized for Mobile
     position: relative;
 
     /* Changed: flexible height instead of hard 100vh */
-    min-height: clamp(70vh, 85vh, 100vh);
+    min-height: auto;
 
     width: 100%;
     display: flex;
@@ -1143,8 +1217,8 @@ Modernized Full-Width UI - Optimized for Mobile
     overflow-x: hidden;
 
     /* Keep header offset, but avoid excess */
-    padding-top: var(--header-height);
-    padding-bottom: 2rem;
+    padding-top: var(--nav-height, 70px);
+    padding-bottom: 1.5rem;
 
       background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
                         url('../images/standard.png'); /* fallback */
@@ -1168,7 +1242,7 @@ Modernized Full-Width UI - Optimized for Mobile
     width: 100%;
     max-width: 1240px;
     margin: 0 auto;
-    padding: 2rem;
+    padding: 1.5rem;
     z-index: 10;
 }
 
@@ -1179,7 +1253,7 @@ Modernized Full-Width UI - Optimized for Mobile
     display: flex;
     flex-direction: column;
     gap: 1rem;
-    padding: 2.9rem 3rem; 
+    padding: 2.2rem 2.5rem; 
 
     background: var(--glass-bg);
     backdrop-filter: blur(20px);
@@ -1243,7 +1317,7 @@ Modernized Full-Width UI - Optimized for Mobile
     .standard-section {
         /* Let content define height */
         min-height: unset;
-        padding-top: calc(var(--header-height) + 2rem);
+        padding-top: calc(var(--nav-height, 70px) + 1.5rem);
         padding-bottom: 3rem;
     }
 
@@ -1270,7 +1344,7 @@ Modernized Full-Width UI - Optimized for Mobile
 @media (max-width: 480px) {
     .standard-section {
         /* Removed display:block (keeps centering intact) */
-        padding-top: calc(var(--header-height) + 1.5rem);
+        padding-top: calc(var(--nav-height, 70px) + 1.25rem);
         padding-bottom: 2.5rem;
         height: auto;
     }
@@ -1318,13 +1392,39 @@ Modernized UI - Glassmorphism & Consistency Sync
 .jobs-section {
     position: relative;
     width: 100%;
-    padding: 90px 2rem 48px;
+    padding: 70px 2rem 36px;
     background: #f0f4f8; /* Soft neutral background */
     /* Subtle background pattern to match the tech/modern feel */
     background-image: radial-gradient(#d1d9e6 1px, transparent 1px);
     background-size: 40px 40px;
     overflow: hidden;
     display: block;
+}
+
+.jobs-section::before,
+.jobs-section::after {
+    content: "";
+    position: absolute;
+    border-radius: 50%;
+    z-index: 0;
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+.jobs-section::before {
+    width: 520px;
+    height: 520px;
+    right: -180px;
+    top: -220px;
+    background: radial-gradient(circle, rgba(19, 56, 128, 0.18), rgba(19, 56, 128, 0));
+}
+
+.jobs-section::after {
+    width: 620px;
+    height: 620px;
+    left: -240px;
+    bottom: -260px;
+    background: radial-gradient(circle, rgba(33, 150, 243, 0.16), rgba(33, 150, 243, 0));
 }
 
 /* Prevent horizontal overflow from transforms or large children */
@@ -1337,12 +1437,12 @@ Modernized UI - Glassmorphism & Consistency Sync
 
 .jobs-hero {
     width: 100%;
-    margin: 2rem auto clamp(60px, 10vw, 120px);
+    margin: 1.5rem auto clamp(40px, 6vw, 80px);
 }
 
 .jobs-gradient-box {
     position: relative;
-    padding: clamp(2.5rem, 6vw, 4.5rem) clamp(1.5rem, 4vw, 2.5rem);
+    padding: clamp(2rem, 5vw, 3.5rem) clamp(1.25rem, 3.5vw, 2.25rem);
     min-height: 520px;
     border-radius: 34px;
     overflow: hidden;
@@ -1367,6 +1467,7 @@ Modernized UI - Glassmorphism & Consistency Sync
     width: min(1200px, 100%);
     margin: 0 auto;
     min-height: 520px;
+    padding-top: 40px;
 }
 
 .jobs-hero-media {
@@ -1375,6 +1476,8 @@ Modernized UI - Glassmorphism & Consistency Sync
     border-radius: 28px;
     overflow: hidden;
     box-shadow: 0 28px 55px rgba(0, 0, 0, 0.25);
+    max-width: 520px;
+    margin: 0 auto;
 }
 
 .jobs-hero-media img {
@@ -1395,6 +1498,8 @@ Modernized UI - Glassmorphism & Consistency Sync
     gap: 1.2rem;
     align-items: center;
     text-align: center;
+    max-width: 520px;
+    margin: 0 auto;
 }
 
 .jobs-card-eyebrow {
@@ -1501,7 +1606,7 @@ Modernized UI - Glassmorphism & Consistency Sync
 
 @media (max-width: 600px) {
     .jobs-section {
-        padding: 50px 1rem;
+        padding: 36px 1rem;
     }
 
     .jobs-hero-card {
@@ -1525,29 +1630,56 @@ Modernized UI - Alternating Layouts with Glassmorphism
 
 #sustainability {
     width: 100%;
-    max-width: 1440px;
-    margin: auto;
+    max-width: none;
+    margin: 0;
     box-sizing: border-box;
     overflow: hidden;
 
     /* 🔧 Responsive vertical spacing */
-    padding: 32px 2rem 48px;
+    padding: 24px 2rem 36px;
 
     background: #f0f4f8;
     background-image: radial-gradient(#d1d9e6 1px, transparent 1px);
     background-size: 40px 40px;
+    position: relative;
+}
+
+#sustainability::before,
+#sustainability::after {
+    content: "";
+    position: absolute;
+    border-radius: 50%;
+    z-index: 0;
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+#sustainability::before {
+    width: 520px;
+    height: 520px;
+    right: -180px;
+    top: -220px;
+    background: radial-gradient(circle, rgba(19, 56, 128, 0.18), rgba(19, 56, 128, 0));
+}
+
+#sustainability::after {
+    width: 620px;
+    height: 620px;
+    left: -240px;
+    bottom: -260px;
+    background: radial-gradient(circle, rgba(33, 150, 243, 0.16), rgba(33, 150, 243, 0));
 }
 
 /* --- Sustainability Hero Slider --- */
 
 .sustainability-hero {
     width: 100%;
-    margin: 2rem auto clamp(60px, 10vw, 120px);
+    margin: 1.5rem auto clamp(40px, 6vw, 80px);
 }
 
 .sustainability-gradient-box {
     position: relative;
-    padding: clamp(2.5rem, 6vw, 4.5rem) clamp(1.5rem, 4vw, 2.5rem);
+    padding: clamp(2rem, 5vw, 3.5rem) clamp(1.25rem, 3.5vw, 2.25rem);
     min-height: 520px;
     border-radius: 34px;
     overflow: hidden;
@@ -1570,7 +1702,7 @@ Modernized UI - Alternating Layouts with Glassmorphism
     min-height: 520px;
     display: flex;
     align-items: center;
-    padding-top: 50px;
+    padding-top: 40px;
 }
 
 .sustainability-slides {
@@ -1871,11 +2003,11 @@ Modernized UI - Alternating Layouts with Glassmorphism
     .sustainability-layer.reverse {
         flex-direction: column !important;
         gap: 30px;
-        margin-bottom: 70px;
+        margin-bottom: 50px;
     }
 
     .sustainability-text {
-        padding: 2.25rem 1.5rem;
+        padding: 2rem 1.5rem;
         text-align: center;
         width: 100%;
         box-sizing: border-box;
@@ -1888,12 +2020,12 @@ Modernized UI - Alternating Layouts with Glassmorphism
 
 @media (max-width: 600px) {
     #sustainability {
-        padding: 50px 1.25rem;
+        padding: 36px 1.25rem;
     }
 
     .sustainability-text {
         border-radius: 20px;
-        padding: 1.5rem;
+        padding: 1.25rem;
     }
 
     .sustainability-text h2 {
@@ -1916,8 +2048,8 @@ Modernized UI - Alternating Layouts with Glassmorphism
     --about-card: rgba(255, 255, 255, 0.92);
 
     width: 100%;
-    padding-top: calc(var(--nav-height) + 24px);
-    padding-bottom: 4rem;
+    padding-top: calc(var(--nav-height) + 16px);
+    padding-bottom: 2.5rem;
     box-sizing: border-box;
     background: #f0f4f8;
     background-image: radial-gradient(#d1d9e6 1px, transparent 1px);
@@ -1941,20 +2073,30 @@ Modernized UI - Alternating Layouts with Glassmorphism
 }
 
 #about-us::before {
-    content: none;
+    content: "";
+    position: absolute;
+    border-radius: 50%;
+    z-index: 0;
+    opacity: 0.5;
+    pointer-events: none;
+    width: 520px;
+    height: 520px;
+    right: -180px;
+    top: -220px;
+    background: radial-gradient(circle, rgba(19, 56, 128, 0.18), rgba(19, 56, 128, 0));
 }
 
 .about-us-content {
     max-width: 1280px;
     margin: 0 auto;
-    padding: 2.5rem 2rem;
+    padding: 2rem 2rem;
     position: relative;
     z-index: 1;
 }
 
 .about-us-header {
     text-align: center;
-    margin-bottom: 2.6rem;
+    margin-bottom: 1.8rem;
     animation: about-fade-up 0.8s ease both;
 }
 
@@ -1966,24 +2108,27 @@ Modernized UI - Alternating Layouts with Glassmorphism
     border-radius: 999px;
     background: rgba(237, 29, 38, 0.12);
     color: #133880;
-    font-weight: 700;
-    letter-spacing: 0.14em;
+    font-weight: 800;
+    letter-spacing: 0.2em;
     text-transform: uppercase;
-    font-size: 0.72rem;
+    font-size: 0.85rem;
     margin: 0 0 0.85rem 0;
 }
 
 .about-us-header h2 {
     font-family: inherit;
-    font-size: clamp(2rem, 3.6vw, 3.1rem);
+    font-size: clamp(2rem, 4vw, 3rem);
     margin: 0 0 0.75rem 0;
-    letter-spacing: 0.02em;
+    letter-spacing: -0.02em;
+    font-weight: 800;
+    line-height: 1.1;
+    color: #133880;
 }
 
 .about-us-lede {
     max-width: 720px;
     margin: 0 auto;
-    color: var(--about-ink-soft);
+    color: #2d3748;
     font-weight: 500;
     font-size: 1.05rem;
     line-height: 1.7;
@@ -1991,7 +2136,7 @@ Modernized UI - Alternating Layouts with Glassmorphism
 
 .about-us-media {
     position: relative;
-    margin-bottom: 3rem;
+    margin-bottom: 2rem;
     border-radius: 24px;
     padding: 12px;
     background: linear-gradient(135deg, rgba(237, 29, 38, 0.12), rgba(19, 56, 128, 0.12));
@@ -2304,7 +2449,7 @@ Modernized UI - Alternating Layouts with Glassmorphism
 .our-events-description {
     text-align: center;
     max-width: 900px;
-    margin: 60px auto 0;
+    margin: 36px auto 0;
     animation: about-fade-up 0.95s ease both;
 }
 
@@ -2437,11 +2582,11 @@ Modernized UI - Alternating Layouts with Glassmorphism
 
 @media (max-width: 768px) {
     #about-us {
-        padding: 2.5rem 1rem;
+        padding: 2rem 1rem;
     }
 
     .about-us-content {
-        padding: 2rem 1.2rem;
+        padding: 1.5rem 1.2rem;
     }
 
     #history-video {
@@ -2692,12 +2837,29 @@ Modernized UI - Alternating Layouts with Glassmorphism
     align-items: center;
     justify-content: center;
     text-align: center;
-    min-height: clamp(65vh, 80vh, 100vh);
-    background: linear-gradient(120deg, #f4f7fa 0%, #eef3ff 55%, #f8fbff 100%);
-    padding: clamp(3rem, 6vw, 6rem) 1.5rem;
+    min-height: auto;
+    background: #f0f4f8;
+    background-image: radial-gradient(#d1d9e6 1px, transparent 1px);
+    background-size: 40px 40px;
+    padding: 1.25rem 1.5rem 0;
+    margin-bottom: 0;
     box-sizing: border-box;
     position: relative;
     overflow: hidden;
+}
+
+#about-us::after {
+    content: "";
+    position: absolute;
+    border-radius: 50%;
+    z-index: 0;
+    opacity: 0.5;
+    pointer-events: none;
+    width: 620px;
+    height: 620px;
+    left: -260px;
+    bottom: -260px;
+    background: radial-gradient(circle, rgba(33, 150, 243, 0.16), rgba(33, 150, 243, 0));
 }
 
 #iso-certified::before,
@@ -2731,11 +2893,11 @@ Modernized UI - Alternating Layouts with Glassmorphism
 
 .iso-card {
     width: min(980px, 100%);
-    padding: clamp(2rem, 4vw, 3.5rem);
+    padding: clamp(1.25rem, 2.5vw, 2rem);
     border-radius: 28px;
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(248, 251, 255, 0.96));
-    border: 1px solid rgba(19, 56, 128, 0.12);
-    box-shadow: 0 25px 60px rgba(15, 47, 107, 0.12);
+    background: transparent;
+    border: none;
+    box-shadow: none;
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
     position: relative;
@@ -2799,10 +2961,10 @@ Modernized UI - Alternating Layouts with Glassmorphism
     flex-wrap: wrap;
     gap: clamp(1.25rem, 3vw, 3rem);
     width: 100%;
-    padding: clamp(1rem, 2.5vw, 1.75rem);
-    border-radius: 22px;
-    background: rgba(255, 255, 255, 0.7);
-    border: 1px solid rgba(19, 56, 128, 0.12);
+    padding: 0;
+    border-radius: 0;
+    background: transparent;
+    border: none;
     animation: fadeInUp 0.8s ease-out forwards;
 }
 
@@ -2810,17 +2972,16 @@ Modernized UI - Alternating Layouts with Glassmorphism
     height: clamp(70px, 11vw, 130px);
     width: auto;
     object-fit: contain;
-    padding: 0.5rem 0.9rem;
-    background: #ffffff;
-    border-radius: 16px;
-    border: 1px solid rgba(19, 56, 128, 0.08);
-    filter: drop-shadow(0 12px 18px rgba(15, 47, 107, 0.12));
+    padding: 0;
+    background: transparent;
+    border-radius: 0;
+    border: none;
+    filter: none;
     transition: transform 0.35s ease, filter 0.35s ease;
 }
 
 .iso-logo:hover {
     transform: translateY(-4px) scale(1.04);
-    filter: drop-shadow(0 18px 28px rgba(19, 56, 128, 0.2));
 }
 
 @keyframes fadeInUp {
@@ -2863,17 +3024,44 @@ Modernized UI - Alternating Layouts with Glassmorphism
 
 /* --- Default Desktop / Large Screen Styles --- */
 .contact_us-section {
-    background-color: #0b1c3a;
-    background-image:
-        radial-gradient(900px 500px at 12% -10%, rgba(70, 140, 255, 0.28), transparent 60%),
-        radial-gradient(700px 550px at 90% 5%, rgba(0, 204, 170, 0.22), transparent 58%),
-        linear-gradient(180deg, #0b1c3a 0%, #122852 55%, #0b1c3a 100%);
+    background-color: #f0f4f8;
+    background-image: radial-gradient(#d1d9e6 1px, transparent 1px);
+    background-size: 40px 40px;
     background-position: center;
-    background-repeat: no-repeat;
-    padding: 4.5rem 2.5rem 5rem;
-    color: #f4f6ff;
+    background-repeat: repeat;
+    padding: 0 2.5rem 3rem;
+    margin-top: 0;
+    color: #133880;
     font-family: 'Roboto', -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
     letter-spacing: 0.02em;
+    position: relative;
+    overflow: hidden;
+}
+
+.contact_us-section::before,
+.contact_us-section::after {
+    content: "";
+    position: absolute;
+    border-radius: 50%;
+    z-index: 0;
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+.contact_us-section::before {
+    width: 520px;
+    height: 520px;
+    right: -180px;
+    top: -220px;
+    background: radial-gradient(circle, rgba(19, 56, 128, 0.18), rgba(19, 56, 128, 0));
+}
+
+.contact_us-section::after {
+    width: 620px;
+    height: 620px;
+    left: -240px;
+    bottom: -260px;
+    background: radial-gradient(circle, rgba(33, 150, 243, 0.16), rgba(33, 150, 243, 0));
 }
 
 .contact_us-content {
@@ -2881,19 +3069,27 @@ Modernized UI - Alternating Layouts with Glassmorphism
     margin: 0 auto;
     display: flex;
     flex-direction: column;
-    gap: 2.5rem;
+    gap: 1.2rem;
 }
 
 /* Header */
 .contact-header {
-    font-size: 2.6rem;
+    font-size: clamp(2rem, 4vw, 3rem);
     font-weight: 800;
     text-align: center;
-    margin: 0 0 1.5rem 0;
-    color: #f0f4ff;
-    text-shadow: 2px 2px 6px rgba(0,0,0,0.75);
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
+    margin: 0 0 0.75rem 0;
+    color: #133880;
+    text-shadow: none;
+    letter-spacing: -0.02em;
+    text-transform: none;
+}
+
+#contact-us .about-us-eyebrow {
+    color: #133880;
+}
+
+#contact-us .about-us-lede {
+    color: #2d3748;
 }
 
 /* Area Filter */
@@ -2903,14 +3099,14 @@ Modernized UI - Alternating Layouts with Glassmorphism
     align-items: center;
     gap: 0.75rem;
     flex-wrap: wrap;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.25rem;
 }
 
 .area-filter label {
     font-size: 1.1rem;
     font-weight: 700;
-    color: #f0f4ff;
-    text-shadow: 1.5px 1.5px 3px rgba(0,0,0,0.85);
+    color: #133880;
+    text-shadow: none;
 }
 
 .area-filter select {
@@ -2952,8 +3148,8 @@ Modernized UI - Alternating Layouts with Glassmorphism
     position: relative;
     border-radius: 20px;
     overflow: hidden;
-    background: rgba(8, 20, 44, 0.6);
-    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: #151e34;
+    border: 1px solid rgba(255, 255, 255, 0.18);
     box-shadow: 0 18px 34px rgba(4, 12, 28, 0.35);
     padding: 1.2rem;
 }
@@ -3029,7 +3225,7 @@ Modernized UI - Alternating Layouts with Glassmorphism
 }
 
 .map_panel {
-    background: rgba(12, 26, 54, 0.85);
+    background: #151e34;
     border-radius: 18px;
     padding: 1.5rem 1.6rem;
     border: 1px solid rgba(255, 255, 255, 0.12);
@@ -3476,20 +3672,18 @@ Modernized UI - Alternating Layouts with Glassmorphism
 /* --- Mobile / Responsive Styles --- */
 @media (max-width: 768px) {
     .contact_us-section {
-        background-image:
-            radial-gradient(900px 500px at 12% -10%, rgba(70, 140, 255, 0.28), transparent 60%),
-            radial-gradient(700px 550px at 90% 5%, rgba(0, 204, 170, 0.22), transparent 58%),
-            linear-gradient(180deg, #0b1c3a 0%, #122852 55%, #0b1c3a 100%);
-        background-size: cover;
+        background-color: #f0f4f8;
+        background-image: radial-gradient(#d1d9e6 1px, transparent 1px);
+        background-size: 40px 40px;
         background-position: center;
-        background-repeat: no-repeat;
-        color: #f0f4ff;
-        padding: 3rem 1.5rem 4rem 1.5rem;
+        background-repeat: repeat;
+        color: #133880;
+        padding: 1.5rem 1.5rem 3rem 1.5rem;
         box-sizing: border-box;
     }
 
     .contact_us-content {
-        gap: 2rem;
+        gap: 1.2rem;
         max-width: 100%;
         margin: 0 auto;
         padding: 0 0.5rem;
@@ -3498,7 +3692,7 @@ Modernized UI - Alternating Layouts with Glassmorphism
     .contact-header {
         font-size: 2.1rem;
         text-align: center;
-        margin: 0 0 1.4rem 0;
+        margin: 0 0 0.6rem 0;
     }
 
     .area-filter {
@@ -3668,11 +3862,11 @@ Modernized UI - Alternating Layouts with Glassmorphism
 }
 
 .mobile-announcement {
-    display: none;
+    display: none !important;
 }
 
 .mobile-announcement.is-visible {
-    display: block;
+    display: flex !important;
 }
 
 .mobile-announcement .icon {

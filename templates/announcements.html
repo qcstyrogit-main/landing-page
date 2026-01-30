@@ -55,5 +55,6 @@
 
 {% block footer %}
 {% include "sections/footer.html" %}
+<script defer src="{{ url_for('static', filename='js/home.js') }}"></script>
 <script defer src="{{ url_for('static', filename='js/announcements.js') }}"></script>
 {% endblock %}

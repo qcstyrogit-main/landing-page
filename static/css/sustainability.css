@@ -14,13 +14,41 @@ Modernized UI - Alternating Layouts with Glassmorphism
 
 #sustainability {
     width: 100%;
-    max-width: 1440px;
-    margin: auto;
+    max-width: none;
+    margin: 0;
     box-sizing: border-box;
     overflow: hidden;
 
     /* 🔧 Responsive vertical spacing */
-    padding: clamp(60px, 8vw, 100px) 2rem;
+    padding: clamp(40px, 6vw, 70px) 2rem;
+
+    position: relative;
+}
+
+#sustainability::before,
+#sustainability::after {
+    content: "";
+    position: absolute;
+    border-radius: 50%;
+    z-index: 0;
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+#sustainability::before {
+    width: 520px;
+    height: 520px;
+    right: -180px;
+    top: -220px;
+    background: radial-gradient(circle, rgba(19, 56, 128, 0.18), rgba(19, 56, 128, 0));
+}
+
+#sustainability::after {
+    width: 620px;
+    height: 620px;
+    left: -240px;
+    bottom: -260px;
+    background: radial-gradient(circle, rgba(33, 150, 243, 0.16), rgba(33, 150, 243, 0));
 }
 
 /* --- Layer Layout --- */
@@ -31,7 +59,7 @@ Modernized UI - Alternating Layouts with Glassmorphism
     gap: clamp(30px, 5vw, 60px);
 
     /* 🔧 Controlled spacing between blocks */
-    margin-bottom: clamp(60px, 10vw, 120px);
+    margin-bottom: clamp(40px, 6vw, 80px);
 
     opacity: 0;
     transform: translateY(30px);
@@ -47,7 +75,7 @@ Modernized UI - Alternating Layouts with Glassmorphism
 
 .sustainability-text {
     flex: 1;
-    padding: 3rem;
+    padding: 2rem;
     background: var(--glass-white);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
@@ -128,12 +156,12 @@ Modernized UI - Alternating Layouts with Glassmorphism
 
 @media (max-width: 600px) {
     #sustainability {
-        padding: 50px 1.25rem;
+        padding: 36px 1.25rem;
     }
 
     .sustainability-text {
         border-radius: 20px;
-        padding: 1.5rem;
+        padding: 1.25rem;
     }
 
     .sustainability-text h2 {

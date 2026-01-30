@@ -487,6 +487,9 @@ html, body {
     border: none;
     text-align: left;
     cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
 }
 
 .mobile-nav a:hover,
@@ -510,10 +513,11 @@ html, body {
 }
 
 .mobile-dropdown.show {
-    max-height: 500px;
+    max-height: 999px;
     opacity: 1;
     margin-top: 0.3rem;
     margin-bottom: 0.5rem;
+    overflow: visible;
 }
 
 /* DROPDOWN LINKS */
@@ -521,6 +525,31 @@ html, body {
     font-size: 1rem;
     padding: 0.8rem 1rem;
     color: var(--text-dark);
+}
+
+.mobile-nav .material-symbols-outlined,
+.mobile-nav .icon {
+    width: 1.25rem;
+    height: 1.25rem;
+    font-size: 1.25rem;
+    line-height: 1;
+    color: var(--primary-color);
+    flex: 0 0 1.25rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mobile-announcement,
+.mobile-login {
+    align-items: center;
+}
+
+/* Ensure mobile nav icons align with text */
+.mobile-nav .icon {
+    margin-left: 0;
+    margin-right: 0.6rem;
+    vertical-align: middle;
 }
 
 
@@ -535,15 +564,22 @@ html, body {
         display: block;
     }
     .home-header {
-        padding: 0 1.5rem;
+        padding: 0 1rem;
     }
     .home-hero {
         padding-top: 100px !important;
     }
 
-    /* Show login inside header area as a compact button */
-    .home-header .btn-login {
-        display: none; /* hide desktop login on small screens (mobile login available in mobile menu) */
+    /* Hide announcement bell + login icon in mobile header */
+    .home-header .btn-login,
+    .home-header .btn-announcement {
+        display: none !important;
+        visibility: hidden;
+        opacity: 0;
+    }
+
+    .header-tools {
+        margin-right: 0;
     }
 }
 
@@ -585,6 +621,17 @@ html, body {
     display: flex;
 }
 
+#back-to-top,
+#chat-bubble {
+    transition: opacity 0.2s ease;
+}
+
+/* Hide floating buttons when mobile menu is open */
+.mobile-nav-open #back-to-top,
+.mobile-nav-open #chat-bubble {
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
 #back-to-top.show {
     opacity: 1;
     pointer-events: auto;
@@ -613,10 +660,38 @@ html, body {
    TESTIMONIAL SECTION
 ----------------------- */
 .testimonial-section {
-    padding: 100px 2rem;
+    padding: 60px 2rem;
     background: #f0f4f8;
     background-image: radial-gradient(#d1d9e6 1px, transparent 1px);
     background-size: 40px 40px;
+    position: relative;
+    overflow: hidden;
+}
+
+.testimonial-section::before,
+.testimonial-section::after {
+    content: "";
+    position: absolute;
+    border-radius: 50%;
+    z-index: 0;
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+.testimonial-section::before {
+    width: 520px;
+    height: 520px;
+    right: -180px;
+    top: -220px;
+    background: radial-gradient(circle, rgba(19, 56, 128, 0.18), rgba(19, 56, 128, 0));
+}
+
+.testimonial-section::after {
+    width: 620px;
+    height: 620px;
+    left: -240px;
+    bottom: -260px;
+    background: radial-gradient(circle, rgba(33, 150, 243, 0.16), rgba(33, 150, 243, 0));
 }
 
 .testimonial-content {
@@ -868,11 +943,11 @@ html, body {
 }
 
 .mobile-announcement {
-    display: none;
+    display: none !important;
 }
 
 .mobile-announcement.is-visible {
-    display: block;
+    display: flex !important;
 }
 
 .mobile-announcement .icon {

@@ -328,26 +328,6 @@ document.addEventListener("DOMContentLoaded", function() {
     filterOffices();
 
 
-    /* ------------------------------
-       AUTO TEXT COLOR BASED ON BG
-    --------------------------------*/
-    const textElements = document.querySelectorAll(
-        '.contact_us-section, .contact_text, .contact-header, .area-filter label'
-    );
-
-    textElements.forEach(el => {
-        const bg = window.getComputedStyle(el).backgroundColor;
-        if (bg) {
-            const rgb = bg.match(/\d+/g);
-            if (rgb) {
-                const brightness = Math.round(((parseInt(rgb[0]) * 299) +
-                                               (parseInt(rgb[1]) * 587) +
-                                               (parseInt(rgb[2]) * 114)) / 1000);
-                el.style.color = (brightness > 150) ? '#000' : '#fff';
-            }
-        }
-    });
-
 });
 
 /* ------------------------------

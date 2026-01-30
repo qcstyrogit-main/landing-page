@@ -14,7 +14,7 @@ Modernized UI - Glassmorphism & Consistency Sync
 .jobs-section {
     position: relative;
     width: 100%;
-    padding: 100px 2rem;
+    padding: 70px 2rem;
     background: #f0f4f8; /* Soft neutral background */
     /* Subtle background pattern to match the tech/modern feel */
     background-image: radial-gradient(#d1d9e6 1px, transparent 1px);
@@ -22,6 +22,32 @@ Modernized UI - Glassmorphism & Consistency Sync
     overflow: hidden;
     display: flex;
     justify-content: center;
+}
+
+.jobs-section::before,
+.jobs-section::after {
+    content: "";
+    position: absolute;
+    border-radius: 50%;
+    z-index: 0;
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+.jobs-section::before {
+    width: 520px;
+    height: 520px;
+    right: -180px;
+    top: -220px;
+    background: radial-gradient(circle, rgba(19, 56, 128, 0.18), rgba(19, 56, 128, 0));
+}
+
+.jobs-section::after {
+    width: 620px;
+    height: 620px;
+    left: -240px;
+    bottom: -260px;
+    background: radial-gradient(circle, rgba(33, 150, 243, 0.16), rgba(33, 150, 243, 0));
 }
 
 /* Prevent horizontal overflow from transforms or large children */
@@ -46,7 +72,7 @@ Modernized UI - Glassmorphism & Consistency Sync
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
-    padding: 3rem;
+    padding: 2.2rem;
     background: var(--glass-white);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
@@ -160,7 +186,7 @@ Modernized UI - Glassmorphism & Consistency Sync
 
 @media (max-width: 600px) {
     .jobs-section {
-        padding: 50px 1rem;
+        padding: 36px 1rem;
     }
 
     .jobs-text {

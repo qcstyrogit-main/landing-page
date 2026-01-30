@@ -46,23 +46,45 @@
 
 <!-- Mobile navigation (for small screens) -->
 <nav id="mobileNav" class="mobile-nav" aria-hidden="true" inert>
-    <a href="/" {% if request.path == "/" %}aria-current="page"{% endif %}>Home</a>
+    <a href="/" {% if request.path == "/" %}aria-current="page"{% endif %}>
+        <span class="material-symbols-outlined" aria-hidden="true">home</span>
+        <span>Home</span>
+    </a>
     <button type="button" id="mobileDropdownToggle" class="mobile-dropdown-toggle" aria-expanded="false" aria-haspopup="true" aria-controls="mobileDropdown">
-        Products
+        <span class="material-symbols-outlined" aria-hidden="true">inventory_2</span>
+        <span>Products</span>
         <svg class="icon" aria-hidden="true"><use href="#icon-chevron-down"></use></svg>
     </button>
     <div id="mobileDropdown" class="mobile-dropdown" aria-hidden="true" inert>
         <a href="/products_plastic">Plasticware</a>
         <a href="/products_styro">Styroware</a>
     </div>
-    <a href="/#about-us">About</a>
-    <a href="/#jobs">Careers</a>
-    <a href="/#sustainability">Sustainability</a>
-    <a href="/#testimonial">Testimonial</a>
-    <a href="/#contact-us">Contact</a>
+    <a href="/#about-us">
+        <span class="material-symbols-outlined" aria-hidden="true">info</span>
+        <span>About</span>
+    </a>
+    <a href="/#jobs">
+        <span class="material-symbols-outlined" aria-hidden="true">work</span>
+        <span>Careers</span>
+    </a>
+    <a href="/#sustainability">
+        <span class="material-symbols-outlined" aria-hidden="true">eco</span>
+        <span>Sustainability</span>
+    </a>
+    <a href="/#testimonial">
+        <span class="material-symbols-outlined" aria-hidden="true">forum</span>
+        <span>Testimonial</span>
+    </a>
+    <a href="/#contact-us">
+        <span class="material-symbols-outlined" aria-hidden="true">contact_mail</span>
+        <span>Contact</span>
+    </a>
     <a href="/announcements" class="mobile-announcement" data-erp-announcement aria-hidden="true" aria-label="Announcements">
         <svg class="icon" aria-hidden="true"><use href="#icon-bell"></use></svg>
         <span>Announcement</span>
     </a>
-    <a href="{{ API_BASE_URL }}" class="mobile-login" data-erp-login="mobile">Login</a>
+    <a href="{{ API_BASE_URL }}" class="mobile-login" data-erp-login="mobile">
+        <svg class="icon" aria-hidden="true"><use href="#icon-user"></use></svg>
+        <span>Login</span>
+    </a>
 </nav>

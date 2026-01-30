@@ -16,8 +16,8 @@ Modernized Full-Width UI - Optimized for Mobile
 .standard-section {
     position: relative;
 
-    /* Changed: flexible height instead of hard 100vh */
-    min-height: clamp(70vh, 85vh, 100vh);
+    /* Fit to content */
+    min-height: auto;
 
     width: 100%;
     display: flex;
@@ -26,8 +26,8 @@ Modernized Full-Width UI - Optimized for Mobile
     overflow-x: hidden;
 
     /* Keep header offset, but avoid excess */
-    padding-top: var(--header-height);
-    padding-bottom: 2rem;
+    padding-top: var(--nav-height, 70px);
+    padding-bottom: 1.5rem;
 
       background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
                         url('../images/standard.png'); /* fallback */
@@ -50,7 +50,7 @@ Modernized Full-Width UI - Optimized for Mobile
     width: 100%;
     max-width: 1100px;
     margin: 0 auto;
-    padding: 2rem;
+    padding: 1.5rem;
     z-index: 10;
 }
 
@@ -61,7 +61,7 @@ Modernized Full-Width UI - Optimized for Mobile
     display: flex;
     flex-direction: column;
     gap: 2rem;
-    padding: 4rem; 
+    padding: 2.5rem; 
 
     background: var(--glass-bg);
     backdrop-filter: blur(20px);
@@ -100,7 +100,7 @@ Modernized Full-Width UI - Optimized for Mobile
     .standard-section {
         /* Let content define height */
         min-height: unset;
-        padding-top: calc(var(--header-height) + 2rem);
+        padding-top: calc(var(--nav-height, 70px) + 2rem);
         padding-bottom: 3rem;
     }
 
@@ -118,7 +118,7 @@ Modernized Full-Width UI - Optimized for Mobile
 @media (max-width: 480px) {
     .standard-section {
         /* Removed display:block (keeps centering intact) */
-        padding-top: calc(var(--header-height) + 1.5rem);
+        padding-top: calc(var(--nav-height, 70px) + 1.5rem);
         padding-bottom: 2.5rem;
         height: auto;
     }
