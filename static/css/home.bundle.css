@@ -20,7 +20,7 @@
 }
 
 html, body {
-    font-family: 'Roboto', -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    font-family: "Manrope", "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
     font-weight: 400;
     color: var(--text-dark);
     margin: 0;
@@ -50,9 +50,9 @@ html, body {
     height: var(--nav-height);
     
     /* Modern Glass Style */
-    background-color: #ffffffcc; /* Semi-transparent white */
-    backdrop-filter: var(--backdrop-blur);
-    -webkit-backdrop-filter: var(--backdrop-blur);
+    background-color: #ffffff; /* Solid white like view_jobs */
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
     border-bottom: 1px solid rgba(0,0,0,0.05);
     box-shadow: 0 4px 20px rgba(0,0,0,0.03); /* Very subtle shadow */
     transition: all 0.3s ease;
