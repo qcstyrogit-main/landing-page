@@ -77,7 +77,7 @@
                     <div class="event-item" style="background-image: url('{{ image_src }}');">
                         <div class="event-content">
                             <h4 class="event-title">{{ event.title }}</h4>
-                            <a href="{{ event.url }}" class="event-link"{% if is_external %} target="_blank" rel="noopener"{% endif %}>Read more</a>
+                            <a href="{{ event.url }}" class="event-link"{% if is_external %} target="_blank" rel="noopener"{% endif %} aria-label="Read more about {{ event.title }}">Read more</a>
                         </div>
                     </div>
                     {% endfor %}
