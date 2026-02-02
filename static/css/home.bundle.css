@@ -349,7 +349,7 @@ html, body {
 .home-nav ul li .dropdown-menu li a {
     padding: 0.8rem 1rem;
     display: block;
-    color: var(--text-dark);
+    color: var(--primary-color);
     font-weight: 400;
     border-radius: 8px; /* Rounded items */
 }
@@ -520,7 +520,7 @@ html, body {
 .mobile-dropdown a {
     font-size: 1rem;
     padding: 0.8rem 1rem;
-    color: var(--text-dark);
+    color: var(--primary-color);
 }
 
 .mobile-nav .material-symbols-outlined,
@@ -2806,6 +2806,20 @@ Modernized UI - Alternating Layouts with Glassmorphism
     .events-slide .event-item {
         width: 100%;
         height: 100%;
+        transform: translate3d(0, -50%, 0);
+        transition: opacity 0.35s ease;
+        will-change: opacity;
+        backface-visibility: hidden;
+    }
+
+    .events-slide .event-item:nth-child(1) {
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    .events-slide .event-item:nth-child(1),
+    .events-slide .event-item:nth-child(2) {
+        transform: translate3d(0, 0, 0);
     }
 
     .events-slide .event-item:nth-child(3),

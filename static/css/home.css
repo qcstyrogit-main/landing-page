@@ -353,7 +353,7 @@ html, body {
 .home-nav ul li .dropdown-menu li a {
     padding: 0.8rem 1rem;
     display: block;
-    color: var(--text-dark);
+    color: var(--primary-color);
     font-weight: 400;
     border-radius: 8px; /* Rounded items */
 }
@@ -524,7 +524,7 @@ html, body {
 .mobile-dropdown a {
     font-size: 1rem;
     padding: 0.8rem 1rem;
-    color: var(--text-dark);
+    color: var(--primary-color);
 }
 
 .mobile-nav .material-symbols-outlined,

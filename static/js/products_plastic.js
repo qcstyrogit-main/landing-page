@@ -4,8 +4,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const productsGrid = document.getElementById("productsGrid");
     const products = Array.from(productsGrid.querySelectorAll(".product-card"));
     const header = document.querySelector(".plastic-header");
+    const resultsCount = document.getElementById("resultsCount");
+    const activeFilters = document.getElementById("activeFilters");
 
-    const itemsPerPage = 15;
+    const itemsPerPage = 16;
     let currentPage = 1;
     let filteredProducts = products;
 
@@ -93,6 +95,19 @@ document.addEventListener("DOMContentLoaded", () => {
             const matchesSearch = keywords.every(kw => name.includes(kw) || code.includes(kw));
             return matchesCategory && matchesSearch;
         });
+
+        if (resultsCount && activeFilters) {
+            const filters = [];
+            if (category !== "all") {
+                const selectedCategory = categoryFilter.options[categoryFilter.selectedIndex]?.text || category;
+                filters.push(selectedCategory);
+            }
+            if (searchText) {
+                filters.push(`"${searchInput.value.trim()}"`);
+            }
+            activeFilters.textContent = filters.length ? `Filters: ${filters.join(" • ")}` : "Filters: All";
+            resultsCount.textContent = `Showing ${filteredProducts.length} product${filteredProducts.length === 1 ? "" : "s"}`;
+        }
 
         currentPage = 1;
         displayProducts();

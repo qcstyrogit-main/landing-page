@@ -15,47 +15,65 @@
   {% include "sections/header.html" %}
 
   <section id="plastic-products" class="plastic-products-section">
-    <!-- Header with Logos -->
-    <header class="plastic-header">
-      <div class="logos-title">
-        <div class="logos">
-          <picture>
-            <source type="image/avif" srcset="{{ url_for('static', filename='images/QC.avif') }}">
-            <source type="image/webp" srcset="{{ url_for('static', filename='images/QC.webp') }}">
-            <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/QC.png') }}" alt="QC Logo" class="logo" width="45" height="45">
-          </picture>
-          <picture>
-            <source type="image/avif" srcset="{{ url_for('static', filename='images/MC.avif') }}">
-            <source type="image/webp" srcset="{{ url_for('static', filename='images/MC.webp') }}">
-            <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/MC.png') }}" alt="MC Logo" class="logo" width="45" height="45">
-          </picture>
+    <div class="container products-container">
+      <header class="page-hero plastic-header">
+        <div class="hero-copy">
+          <div class="hero-brand">
+            <div class="logos">
+              <picture>
+                <source type="image/avif" srcset="{{ url_for('static', filename='images/QC.avif') }}">
+                <source type="image/webp" srcset="{{ url_for('static', filename='images/QC.webp') }}">
+                <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/QC.png') }}" alt="QC Logo" class="logo" width="42" height="42">
+              </picture>
+              <picture>
+                <source type="image/avif" srcset="{{ url_for('static', filename='images/MC.avif') }}">
+                <source type="image/webp" srcset="{{ url_for('static', filename='images/MC.webp') }}">
+                <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/MC.png') }}" alt="MC Logo" class="logo" width="42" height="42">
+              </picture>
+            </div>
+            <p class="eyebrow">QC &amp; MC Products</p>
+          </div>
+          <h1 class="title">Plastic Products</h1>
+          <p class="subtitle">Explore PET, PP, and traditional plastic lines with fast category filtering.</p>
         </div>
-        <h1 class="page-title">Plastic Products</h1>
+
+        <div class="hero-actions">
+          <div class="search">
+            <span class="search-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+            </span>
+            <input id="searchInput" type="search" placeholder="Search product or code">
+          </div>
+
+          <div class="filter-select">
+            <label for="categoryFilter">Category</label>
+            <select id="categoryFilter">
+              <option value="all">All</option>
+              <option value="egg-tray">Egg Tray</option>
+              <option value="ice-cream-cups">Ice Cream Cups</option>
+              <option value="kubyertos">Kubyertos</option>
+              <option value="lids">Lids</option>
+              <option value="microwavable-tray">Microwavable Tray</option>
+              <option value="pet-cups">Pet Cups</option>
+              <option value="plastic-tray">Plastic Tray</option>
+              <option value="pp-bowl">PP Bowl</option>
+              <option value="salad-trays-cover">Salad Trays & Cover</option>
+              <option value="sauce-cups">Sauce Cups</option>
+              <option value="traditional-cups">Traditional Cups</option>
+            </select>
+          </div>
+        </div>
+      </header>
+
+      <div class="toolbar product-toolbar">
+        <div id="activeFilters" class="active-filters">Filters: All</div>
+        <div id="resultsCount" class="results-count">Showing 0 products</div>
       </div>
 
-      <!-- Filters -->
-      <div class="filters">
-        <label for="categoryFilter">Category:</label>
-        <select id="categoryFilter">
-          <option value="all">All</option>
-          <option value="egg-tray">Egg Tray</option>
-          <option value="ice-cream-cups">Ice Cream Cups</option>
-          <option value="kubyertos">Kubyertos</option>
-          <option value="lids">Lids</option>
-          <option value="microwavable-tray">Microwavable Tray</option>
-          <option value="pet-cups">Pet Cups</option>
-          <option value="plastic-tray">Plastic Tray</option>
-          <option value="pp-bowl">PP Bowl</option>
-          <option value="salad-trays-cover">Salad Trays & Cover</option>
-          <option value="sauce-cups">Sauce Cups</option>
-          <option value="traditional-cups">Traditional Cups</option>
-        </select>
-
-        <input type="text" id="searchInput" placeholder="Search product...">
-      </div>
-    </header>
-
-    <div class="products-main">
+      <div class="products-main">
       <div class="products-grid" id="productsGrid">
         <!-- Example Product Card -->
         <div class="product-card" data-category="egg-tray" data-name="Egg Tray x12 Regular" data-code="ETx12">
@@ -567,6 +585,7 @@
 </picture>
           </div>
         </div>
+      </div>
       </div>
     </div>
   </section>
