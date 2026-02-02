@@ -88,6 +88,13 @@
                     <!-- Honeypot -->
                     <input type="text" id="contactHp" name="hp" style="display:none">
 
+                    <div class="contact-altcha">
+                        <altcha-widget
+                            challengeurl="{{ altcha_challenge_url }}"
+                            floating="false"
+                        ></altcha-widget>
+                    </div>
+
                     <button type="submit" class="submit-btn">
                         Send Message
                     </button>

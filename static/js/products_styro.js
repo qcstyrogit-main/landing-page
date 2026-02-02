@@ -201,7 +201,7 @@ document.addEventListener("DOMContentLoaded", () => {
    inquiryFormEl.addEventListener("submit", (e) => {
     e.preventDefault();
 
-    submitBtn.disabled = true;
+   submitBtn.disabled = true;
     submitBtn.textContent = "Sending...";
 
     const inqName = document.getElementById("inqName");
@@ -209,26 +209,56 @@ document.addEventListener("DOMContentLoaded", () => {
     const inqContact = document.getElementById("inqContact");
     const inqMessage = document.getElementById("inqMessage");
     const inqHp = document.getElementById("inqHp");
+    const csrfToken = inquiryFormEl.querySelector('input[name="csrf_token"]')?.value || "";
+    const altchaToken = inquiryFormEl.querySelector('input[name="altcha"]')?.value?.trim() || "";
 
+    if (!altchaToken) {
+        alert("Please complete the human verification before sending.");
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Send Inquiry";
+        return;
+    }
 
-    const headers = window.withCsrf
+    const verifyHeaders = window.withCsrf
+        ? window.withCsrf({ "Content-Type": "application/json" })
+        : { "Content-Type": "application/json" };
+    if (csrfToken && !verifyHeaders["X-CSRF-Token"]) {
+        verifyHeaders["X-CSRF-Token"] = csrfToken;
+    }
+
+    const formHeaders = window.withCsrf
         ? window.withCsrf({ "Content-Type": "application/x-www-form-urlencoded" })
         : { "Content-Type": "application/x-www-form-urlencoded" };
+    if (csrfToken && !formHeaders["X-CSRF-Token"]) {
+        formHeaders["X-CSRF-Token"] = csrfToken;
+    }
 
-    fetch("/api/send-inquiry-qc", {
+    fetch("/api/altcha/verify", {
         method: "POST",
-        headers,
-        body: new URLSearchParams({
-            name: inqName.value.trim(),
-            email: inqEmail.value.trim(),
-            contact: inqContact.value.trim(),
-            product: inqProduct.value.trim(),
-            message: inqMessage.value.trim(),
-            hp: inqHp.value
+        headers: verifyHeaders,
+        body: JSON.stringify({
+            altcha: altchaToken,
+            csrf_token: csrfToken
         })
     })
-
-
+    .then(res => res.json())
+    .then(result => {
+        if (!result?.verified) {
+            throw new Error("ALTCHA verification failed.");
+        }
+        return fetch("/api/send-inquiry-qc", {
+            method: "POST",
+            headers: formHeaders,
+            body: new URLSearchParams({
+                name: inqName.value.trim(),
+                email: inqEmail.value.trim(),
+                contact: inqContact.value.trim(),
+                product: inqProduct.value.trim(),
+                message: inqMessage.value.trim(),
+                hp: inqHp.value
+            })
+        });
+    })
     .then(res => res.json())
     .then(data => {
         const successMessage = data?.message?.message || data?.message || "Inquiry submitted successfully!";
@@ -239,7 +269,7 @@ document.addEventListener("DOMContentLoaded", () => {
     })
     .catch(err => {
         console.error(err);
-        alert("Failed to submit inquiry. Please try again.");
+        alert("Failed to submit inquiry. Please verify and try again.");
     })
     .finally(() => {
         submitBtn.disabled = false;

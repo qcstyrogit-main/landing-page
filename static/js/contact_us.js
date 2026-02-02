@@ -386,22 +386,56 @@ document.addEventListener("DOMContentLoaded", () => {
         const inquiry = document.getElementById("contactInquiry");
         const hp = document.getElementById("contactHp");
 
-        const headers = window.withCsrf
+        const csrfToken = contactFormEl.querySelector('input[name="csrf_token"]')?.value || "";
+        const altchaToken = contactFormEl.querySelector('input[name="altcha"]')?.value?.trim() || "";
+
+        if (!altchaToken) {
+            alert("Please complete the human verification before sending.");
+            submitBtn.disabled = false;
+            submitBtn.textContent = "Send Message";
+            return;
+        }
+
+        const verifyHeaders = window.withCsrf
+            ? window.withCsrf({ "Content-Type": "application/json" })
+            : { "Content-Type": "application/json" };
+        if (csrfToken && !verifyHeaders["X-CSRF-Token"]) {
+            verifyHeaders["X-CSRF-Token"] = csrfToken;
+        }
+
+        const formHeaders = window.withCsrf
             ? window.withCsrf({ "Content-Type": "application/x-www-form-urlencoded" })
             : { "Content-Type": "application/x-www-form-urlencoded" };
+        if (csrfToken && !formHeaders["X-CSRF-Token"]) {
+            formHeaders["X-CSRF-Token"] = csrfToken;
+        }
 
-        fetch("/api/contact-us", {
+        fetch("/api/altcha/verify", {
             method: "POST",
-            headers,
-            body: new URLSearchParams({
-                name: name.value.trim(),
-                company: company.value.trim(),
-                contact_no: contactNo.value.trim(),
-                email: email.value.trim(),
-                topic: topic.value.trim(),
-                inquiry: inquiry.value.trim(),
-                hp: hp.value
+            headers: verifyHeaders,
+            body: JSON.stringify({
+                altcha: altchaToken,
+                csrf_token: csrfToken
             })
+        })
+        .then(res => res.json())
+        .then(result => {
+            if (!result?.verified) {
+                throw new Error("ALTCHA verification failed.");
+            }
+            return fetch("/api/contact-us", {
+                method: "POST",
+                headers: formHeaders,
+                body: new URLSearchParams({
+                    name: name.value.trim(),
+                    company: company.value.trim(),
+                    contact_no: contactNo.value.trim(),
+                    email: email.value.trim(),
+                    topic: topic.value.trim(),
+                    inquiry: inquiry.value.trim(),
+                    hp: hp.value
+                })
+            });
         })
         .then(res => res.json())
         .then(data => {
@@ -410,12 +444,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 data?.message ||
                 "Your inquiry has been sent successfully!";
             openSuccessPopup(successMessage);
-
             contactFormEl.reset();
         })
         .catch(err => {
             console.error("Contact inquiry error:", err);
-            alert("Failed to send inquiry. Please try again.");
+            alert("Failed to send inquiry. Please verify and try again.");
         })
         .finally(() => {
             submitBtn.disabled = false;
@@ -502,6 +535,5 @@ document.addEventListener("DOMContentLoaded", () => {
     if (closeBtn) closeBtn.addEventListener("click", closePopup);
     if (overlay) overlay.addEventListener("click", closePopup);
 });
-
 
 

@@ -818,6 +818,13 @@
 
           <textarea id="inqMessage" placeholder="Message" required></textarea>
 
+          <div class="inquiry-altcha">
+            <altcha-widget
+              challengeurl="{{ altcha_challenge_url }}"
+              floating="false"
+            ></altcha-widget>
+          </div>
+
           <button type="submit" class="submit-btn">Send Inquiry</button>
         </form>
       </div>

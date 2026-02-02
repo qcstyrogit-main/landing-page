@@ -218,6 +218,12 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
+        const altchaToken = form.querySelector('input[name="altcha"]')?.value?.trim() || "";
+        if (!altchaToken) {
+            alert("Please complete the human verification before saving.");
+            return;
+        }
+
         const formData = {
             job_opening: jobId,
             applicant_name: document.getElementById('applicantName').value,
@@ -235,9 +241,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
         try {
+            const csrfToken = form.querySelector('input[name="csrf_token"]')?.value || "";
             const headers = window.withCsrf
                 ? window.withCsrf({ "Content-Type": "application/json" })
                 : { "Content-Type": "application/json" };
+            if (csrfToken && !headers["X-CSRF-Token"]) {
+                headers["X-CSRF-Token"] = csrfToken;
+            }
+
+            const verifyResponse = await fetch("/api/altcha/verify", {
+                method: "POST",
+                headers,
+                body: JSON.stringify({
+                    altcha: altchaToken,
+                    csrf_token: csrfToken
+                })
+            });
+            const verifyResult = await verifyResponse.json();
+            if (!verifyResult?.verified) {
+                alert("Human verification failed. Please try again.");
+                return;
+            }
 
             const response = await fetch("/api/submit-job-applicant", {
                 method: "POST",
