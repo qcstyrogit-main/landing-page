@@ -1,0 +1,312 @@
+.products-section {
+    padding: 72px 0 88px;
+    background: #f0f4f8;
+    background-image: radial-gradient(#d1d9e6 1px, transparent 1px);
+    background-size: 40px 40px;
+    position: relative;
+    overflow: hidden;
+}
+
+.products-section::before,
+.products-section::after {
+    content: "";
+    position: absolute;
+    width: 520px;
+    height: 520px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(19, 56, 128, 0.18), rgba(19, 56, 128, 0));
+    opacity: 0.5;
+    z-index: 0;
+}
+
+.products-section::before {
+    top: -220px;
+    right: -180px;
+}
+
+.products-section::after {
+    width: 620px;
+    height: 620px;
+    bottom: -260px;
+    left: -240px;
+    background: radial-gradient(circle, rgba(33, 150, 243, 0.16), rgba(33, 150, 243, 0));
+}
+
+.products-section-content {
+    position: relative;
+    z-index: 1;
+    max-width: none;
+    margin: 0 auto;
+    padding: 0 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 36px;
+}
+
+.products-hero {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    margin: 1.5rem auto clamp(40px, 6vw, 80px);
+}
+
+.products-gradient-box {
+    position: relative;
+    width: 100%;
+    border-radius: 34px;
+    padding: clamp(2rem, 5vw, 3.5rem) clamp(1.25rem, 3.5vw, 2.25rem);
+    min-height: 520px;
+    background: transparent;
+    box-shadow: none;
+    position: relative;
+    overflow: hidden;
+}
+
+.products-gradient-svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    z-index: 0;
+}
+
+.products-slider {
+    position: relative;
+    z-index: 2;
+    width: min(1200px, 100%);
+    margin: 0 auto;
+    min-height: 520px;
+    display: flex;
+    align-items: center;
+    padding-top: 40px;
+}
+
+.products-slides {
+    position: relative;
+    width: 100%;
+    min-height: 520px;
+}
+
+.products-slide {
+    display: grid;
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(2rem, 5vw, 3.5rem);
+    align-items: center;
+    color: #ffffff;
+    transition: opacity 0.9s ease-in-out;
+}
+
+.products-slide.active {
+    opacity: 1;
+    position: relative;
+    visibility: visible;
+    pointer-events: auto;
+}
+
+.products-slide-content {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    font-family: "Manrope", "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+}
+
+.products-slide-headline {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+}
+
+.products-slide-icon {
+    flex-shrink: 0;
+    margin-top: 0.2rem;
+    width: 44px;
+    height: 44px;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.18);
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    font-size: 22px;
+    line-height: 1;
+    color: #ffffff;
+    font-variation-settings: "wght" 400;
+}
+
+.products-slide-headline p {
+    margin: 0;
+    font-size: clamp(1.8rem, 3.2vw, 2.6rem);
+    font-weight: 800;
+    line-height: 1.2;
+}
+
+.products-slide-body {
+    margin: 0;
+    font-size: clamp(1rem, 1.5vw, 1.15rem);
+    line-height: 1.7;
+    max-width: 520px;
+}
+
+.products-slide-button {
+    align-self: flex-start;
+    text-decoration: none;
+    font-weight: 700;
+    background: rgba(15, 26, 42, 0.55);
+    color: #ffffff;
+    padding: 10px 22px;
+    border-radius: 999px;
+    box-shadow: 0 12px 24px rgba(15, 26, 42, 0.15);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.products-slide-button:hover,
+.products-slide-button:focus-visible {
+    transform: translateY(-2px);
+    background: rgba(15, 26, 42, 0.92);
+    box-shadow: 0 16px 30px rgba(15, 26, 42, 0.35);
+}
+
+.products-slide-media {
+    width: 100%;
+    height: clamp(280px, 35vw, 460px);
+    border-radius: 28px;
+    background-size: cover;
+    background-position: center;
+    box-shadow: 0 28px 55px rgba(0, 0, 0, 0.25);
+    margin: 0 auto;
+    max-width: 520px;
+}
+
+.products-pagination {
+    position: absolute;
+    left: 0;
+    bottom: clamp(20px, 6vw, 50px);
+    display: flex;
+    gap: 1.25rem;
+}
+
+.products-pagination-tab {
+    background: transparent;
+    border: none;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.65rem;
+    color: #ffffff;
+    opacity: 0.55;
+    cursor: pointer;
+    width: 70px;
+    transition: 0.6s ease-out all;
+    padding: 0;
+    font: inherit;
+}
+
+.products-pagination-tab span:first-child {
+    display: block;
+    height: 3px;
+    width: 100%;
+    background: #ffffff;
+}
+
+.products-pagination-tab span:last-child {
+    font-size: 0.85rem;
+    letter-spacing: 0.18em;
+}
+
+.products-pagination-tab.active {
+    width: 180px;
+    opacity: 1;
+}
+
+@media (max-width: 992px) {
+    .products-slider,
+    .products-slides {
+        min-height: unset;
+    }
+
+    .products-slide {
+        grid-template-columns: 1fr;
+        gap: 1.75rem;
+    }
+
+    .products-slide-media {
+        height: 320px;
+    }
+
+    .products-pagination {
+        position: static;
+        margin-top: 1.5rem;
+    }
+}
+
+@media (max-width: 760px) {
+    .mobile-gradient-bg {
+        background: linear-gradient(
+            90deg,
+            #5f8ac7 -0.15%,
+            #5f8ac7 14.85%,
+            #78a293 42.85%,
+            #99c152 81.85%,
+            #a6ce39 99.85%
+        );
+    }
+
+    .products-section {
+        padding: 60px 0 72px;
+    }
+
+    .products-section-content {
+        padding: 0 1.5rem;
+    }
+
+    .products-gradient-svg {
+        display: none;
+    }
+
+    .products-gradient-box {
+        padding: 2.5rem 1.5rem;
+        border-radius: 26px;
+    }
+
+    .products-slide-headline p {
+        font-size: 1.5rem;
+    }
+
+    .products-slider {
+        align-items: flex-start;
+        display: flex;
+        flex-direction: column;
+        min-height: unset;
+        padding-top: 0;
+    }
+
+    .products-slide {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .products-pagination {
+        order: 3;
+        margin-top: auto;
+        padding-top: 1rem;
+        align-self: stretch;
+    }
+
+    .products-slide-media {
+        order: 2;
+    }
+
+    .products-slide-content {
+        order: 1;
+    }
+}

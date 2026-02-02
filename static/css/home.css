@@ -771,25 +771,27 @@ html, body {
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    width: 44px;
-    height: 44px;
-    border-radius: 999px;
+    width: auto;
+    height: auto;
     border: none;
-    background: #3b4254;
-    color: #fff;
-    font-size: 26px;
+    background: transparent;
+    color: #1f2937;
+    font-size: 42px;
     line-height: 1;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.2);
+    box-shadow: none;
+    padding: 6px;
     transition: transform 0.2s ease, background 0.2s ease;
+    z-index: 2;
+    pointer-events: auto;
 }
 
 .testimonial-nav:hover {
     transform: translateY(-50%) scale(1.06);
-    background: #1f2937;
+    color: #0f172a;
 }
 
 .testimonial-prev {
@@ -910,9 +912,7 @@ html, body {
 
 
     .testimonial-nav {
-        width: 36px;
-        height: 36px;
-        font-size: 18px;
+        font-size: 32px;
     }
 
     .testimonial-indicator {

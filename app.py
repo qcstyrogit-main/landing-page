@@ -353,6 +353,11 @@ def home():
 def products_plastic():
     return render_template("products_plastic.html")
 
+@app.route("/products")
+@cache.cached(timeout=600)
+def products():
+    return render_template("products.html")
+
 @app.route("/products_styro")
 @cache.cached(timeout=600)
 def products_styro():
@@ -379,6 +384,7 @@ def sitemap():
     today = date.today().isoformat()
     pages = [
         ("home", "weekly", "1.0"),
+        ("products", "weekly", "0.9"),
         ("products_plastic", "weekly", "0.9"),
         ("products_styro", "weekly", "0.9"),
         ("view_jobs", "daily", "0.7"),

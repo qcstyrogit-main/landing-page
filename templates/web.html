@@ -65,12 +65,14 @@
           "@type": "SiteNavigationElement",
           "name": [
             "Home",
+            "Products",
             "Plastic Products",
             "Styrofoam Products",
             "Careers"
           ],
           "url": [
             "{{ url_for('home', _external=True) }}",
+            "{{ url_for('products', _external=True) }}",
             "{{ url_for('products_plastic', _external=True) }}",
             "{{ url_for('products_styro', _external=True) }}",
             "{{ url_for('view_jobs', _external=True) }}"

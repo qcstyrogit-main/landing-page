@@ -10,6 +10,7 @@
 
 <!-- CSS -->
 <link rel="stylesheet" href="{{ url_for('static', filename='css/home.bundle.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/products_section.css') }}">
 <link rel="preload" as="image" href="{{ url_for('static', filename='images/products/Tray.avif') }}" type="image/avif">
 {% endblock %}
 
@@ -56,13 +57,27 @@
     {% include "sections/header.html" %}
 
     <!-- Page Sections -->
+      <!-- Home Sections -->
     {% include "sections/intro.html" %}
     {% include "sections/standard.html" %}
-    {% include "sections/jobs.html" %}
+
+      <!-- Products Sections -->
+    {% include "sections/products.html" %}
+      
+      <!-- Sustainability Sections -->
     {% include "sections/sustainability.html" %}
+
+      <!-- Testimonial Sections -->
     {% include "sections/testimonial.html" %}
+
+      <!-- Careers Sections -->
+    {% include "sections/jobs.html" %}
+    
+      <!-- About Us Sections -->
     {% include "sections/about.html" %}
     {% include "sections/iso_certified.html" %}
+
+      <!-- Contact Us Sections -->
     {% include "sections/contact_us.html" %}
 
     <!-- Back to top button -->
