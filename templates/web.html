@@ -44,6 +44,7 @@
     <link rel="preload" href="{{ url_for('static', filename='css/term_of_use.css') }}" as="style">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/term_of_use.css') }}" media="print" data-media="all">
     <link rel="shortcut icon" href="{{ url_for('static', filename='images/favicon.ico') }}" type="image/x-icon">
+    <script defer type="module" src="https://cdn.jsdelivr.net/gh/altcha-org/altcha@main/dist/altcha.min.js"></script>
 
     {% block structured_data %}
     <script type="application/ld+json" nonce="{{ csp_nonce }}">
@@ -125,17 +126,12 @@
         </div>
         <div id="chatbot-verify" class="chatbot-verify" aria-live="polite">
             <p class="chatbot-verify-title">Human verification</p>
-            <p id="chatbot-verify-question" class="chatbot-verify-question">Please solve the math question.</p>
-            <div class="chatbot-verify-row">
-                <input
-                    id="chatbot-verify-input"
-                    type="text"
-                    inputmode="numeric"
-                    autocomplete="off"
-                    placeholder="Your answer"
-                    aria-label="Answer the math question"
-                >
-                <button type="button" id="chatbot-verify-btn">Verify</button>
+            <div class="chatbot-verify-row chatbot-verify-widget">
+                <altcha-widget
+                    id="chatbot-altcha"
+                    challengeurl="{{ altcha_challenge_url }}"
+                    floating="false"
+                ></altcha-widget>
             </div>
             <p id="chatbot-verify-status" class="chatbot-verify-status" aria-live="polite"></p>
         </div>

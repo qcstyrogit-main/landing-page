@@ -1,10 +1,11 @@
 from dotenv import load_dotenv
 import os
+import base64
 import json
 import re
 import secrets
 from time import time
-from datetime import date
+from datetime import date, datetime, timedelta
 from urllib.parse import urlparse
 from collections import deque
 from html import unescape
@@ -37,6 +38,18 @@ load_env()
 API_BASE_URL = os.environ.get("API_BASE_URL")
 if not API_BASE_URL:
     raise RuntimeError("API_BASE_URL is not set")
+ALTCHA_CHALLENGE_URL = (os.environ.get("ALTCHA_CHALLENGE_URL") or "").strip()
+ALTCHA_HMAC_KEY = (os.environ.get("ALTCHA_HMAC_KEY") or "").strip()
+
+try:
+    from altcha import ChallengeOptions, create_challenge, verify_solution
+except Exception:
+    ChallengeOptions = None
+    create_challenge = None
+    verify_solution = None
+
+if not ALTCHA_CHALLENGE_URL:
+    ALTCHA_CHALLENGE_URL = "/api/altcha/challenge"
 
 # --------------------------------------------------
 # APP INIT
@@ -260,7 +273,8 @@ def inject_globals():
         API_BASE_URL=API_BASE_URL,
         csrf_token=get_csrf_token,
         csp_nonce=getattr(g, "csp_nonce", ""),
-        canonical_base_url=CANONICAL_BASE_URL
+        canonical_base_url=CANONICAL_BASE_URL,
+        altcha_challenge_url=ALTCHA_CHALLENGE_URL
     )
 
 def get_base_url():
@@ -283,6 +297,33 @@ def normalize_url(url, base_url):
     if url.startswith("/"):
         return f"{base_url}{url}"
     return url
+
+def serialize_altcha_challenge(challenge):
+    if isinstance(challenge, dict):
+        payload = dict(challenge)
+    elif hasattr(challenge, "__dict__"):
+        payload = dict(challenge.__dict__)
+    else:
+        payload = {}
+        for key in ("algorithm", "challenge", "salt", "signature", "max_number", "maxnumber", "maxNumber"):
+            if hasattr(challenge, key):
+                payload[key] = getattr(challenge, key)
+    if "max_number" in payload and "maxnumber" not in payload:
+        payload["maxnumber"] = payload["max_number"]
+    return payload
+
+def decode_altcha_payload(raw_value):
+    if not raw_value:
+        return None
+    if isinstance(raw_value, dict):
+        return raw_value
+    if isinstance(raw_value, str):
+        try:
+            decoded = base64.b64decode(raw_value + "==", validate=False)
+            return json.loads(decoded.decode("utf-8"))
+        except Exception:
+            return None
+    return None
 
 def get_erp_auth_headers():
     api_key = os.getenv("ERP_API_KEY") or os.getenv("FRAPPE_API_KEY")
@@ -829,6 +870,47 @@ def clefincode_bot_topics():
         return jsonify({"error": str(e)}), 500
 
 
+# ------------------ ALTCHA ------------------
+@app.route("/api/altcha/challenge", methods=["GET"])
+def altcha_challenge():
+    if create_challenge is None or ChallengeOptions is None:
+        return jsonify({"error": "altcha_not_installed"}), 503
+    if not ALTCHA_HMAC_KEY:
+        return jsonify({"error": "altcha_not_configured"}), 503
+    try:
+        options = ChallengeOptions(
+            hmac_key=ALTCHA_HMAC_KEY,
+            expires=datetime.utcnow() + timedelta(minutes=10)
+        )
+        challenge = create_challenge(options)
+        payload = serialize_altcha_challenge(challenge)
+        if not payload:
+            return jsonify({"error": "altcha_challenge_failed"}), 500
+        return jsonify(payload)
+    except Exception as exc:
+        return jsonify({"error": "altcha_challenge_failed", "detail": str(exc)}), 500
+
+
+@app.route("/api/altcha/verify", methods=["POST"])
+def altcha_verify():
+    if verify_solution is None:
+        return jsonify({"error": "altcha_not_installed"}), 503
+    if not ALTCHA_HMAC_KEY:
+        return jsonify({"error": "altcha_not_configured"}), 503
+    payload = request.get_json(silent=True)
+    if not payload:
+        payload = request.form.to_dict()
+    raw_token = (payload or {}).get("altcha") or (payload or {}).get("token") or ""
+    decoded = decode_altcha_payload(raw_token)
+    if not decoded:
+        return jsonify({"verified": False, "error": "invalid_payload"}), 400
+    try:
+        verified = bool(verify_solution(decoded, ALTCHA_HMAC_KEY))
+        return jsonify({"verified": verified})
+    except Exception as exc:
+        return jsonify({"verified": False, "error": str(exc)}), 400
+
+
 # ------------------ CACHE BUST (WEBHOOK) ----------------
 @app.route("/api/cache/events/refresh", methods=["POST"])
 def refresh_events_cache():
@@ -867,11 +949,23 @@ def add_headers(response):
     except Exception:
         api_origin = ""
 
+    altcha_origin = ""
+    try:
+        parsed_altcha = urlparse(ALTCHA_CHALLENGE_URL)
+        if parsed_altcha.scheme and parsed_altcha.netloc:
+            altcha_origin = f"{parsed_altcha.scheme}://{parsed_altcha.netloc}"
+    except Exception:
+        altcha_origin = ""
+
     img_src = "img-src 'self' data: https:"
     if api_origin and api_origin.startswith("http://"):
         img_src += f" {api_origin}"
     elif api_origin and api_origin.startswith("https://"):
         img_src += f" {api_origin}"
+
+    connect_src = "connect-src 'self' https://psgc.gitlab.io https://open.er-api.com https://csp.secureserver.net https://cdn.jsdelivr.net"
+    if altcha_origin:
+        connect_src = f"{connect_src} {altcha_origin}"
 
     csp = [
         "default-src 'self'",
@@ -879,11 +973,12 @@ def add_headers(response):
         "form-action 'self'",
         "frame-ancestors 'none'",
         "object-src 'none'",
-        f"script-src 'self' 'nonce-{nonce}' 'sha256-j9UDKlBdU2OvJLCxxVGF011MFoS+SFn/EamE8+cU4VQ=' https://cdnjs.cloudflare.com https://img1.wsimg.com",
+        f"script-src 'self' 'nonce-{nonce}' 'sha256-j9UDKlBdU2OvJLCxxVGF011MFoS+SFn/EamE8+cU4VQ=' https://cdnjs.cloudflare.com https://img1.wsimg.com https://cdn.jsdelivr.net",
         "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com",
         img_src,
         "font-src 'self' https://fonts.gstatic.com",
-        "connect-src 'self' https://psgc.gitlab.io https://open.er-api.com https://csp.secureserver.net",
+        connect_src,
+        "worker-src 'self' blob:",
         "frame-src https://www.google.com https://maps.google.com",
         "media-src 'self'",
     ]

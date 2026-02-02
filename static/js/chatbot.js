@@ -12,9 +12,7 @@
   const typingIndicator = document.getElementById('chat-typing');
   const typingText = document.getElementById('chat-typing-text');
   const verifyPanel = document.getElementById('chatbot-verify');
-  const verifyInput = document.getElementById('chatbot-verify-input');
-  const verifyBtn = document.getElementById('chatbot-verify-btn');
-  const verifyQuestion = document.getElementById('chatbot-verify-question');
+  const altchaWidget = document.getElementById('chatbot-altcha');
   const verifyStatus = document.getElementById('chatbot-verify-status');
 
   if (!bubble || !panel || !form || !input || !messagesEl) return;
@@ -76,8 +74,7 @@
   ];
   let topics = defaultTopics.slice();
   let dynamicGreeting = '';
-  const verifyKey = 'chatbot_verified_math';
-  let verifyAnswer = null;
+  const verifyKey = 'chatbot_verified_altcha';
   let idlePromptReady = false;
 
   hydrateIdentity();
@@ -163,8 +160,6 @@
       updateVerificationUI();
       if (isVerified()) {
         input.focus();
-      } else if (verifyInput) {
-        verifyInput.focus();
       }
       clearUnread();
       startPolling();
@@ -192,56 +187,31 @@
     }
   }
 
-  function generateQuestion() {
-    const a = Math.floor(Math.random() * 8) + 2;
-    const b = Math.floor(Math.random() * 8) + 2;
-    verifyAnswer = a + b;
-    if (verifyQuestion) {
-      verifyQuestion.textContent = `What is ${a} + ${b}?`;
-    }
-    if (verifyInput) verifyInput.value = '';
-    if (verifyStatus) verifyStatus.textContent = '';
-  }
-
   function updateVerificationUI() {
     if (!verifyPanel || !form) return;
     const verified = isVerified();
     verifyPanel.style.display = verified ? 'none' : 'block';
     form.style.display = verified ? 'flex' : 'none';
-    if (!verified) {
-      generateQuestion();
-    }
   }
 
-  function handleVerificationAttempt() {
-    if (!verifyInput) return;
-    const value = parseInt(verifyInput.value.trim(), 10);
-    if (!Number.isFinite(value)) {
-      if (verifyStatus) verifyStatus.textContent = 'Please enter a number.';
-      return;
-    }
-    if (value === verifyAnswer) {
+  if (altchaWidget) {
+    altchaWidget.addEventListener('statechange', (event) => {
+      const state = event?.detail?.state;
+      if (!verifyStatus) return;
+      if (state === 'verifying') {
+        verifyStatus.textContent = 'Verifying...';
+      } else if (state === 'verified') {
+        verifyStatus.textContent = 'Verified! You can now chat.';
+      } else if (state === 'error') {
+        verifyStatus.textContent = 'Verification failed. Try again.';
+      }
+    });
+
+    altchaWidget.addEventListener('verified', () => {
       setVerified(true);
-      if (verifyStatus) verifyStatus.textContent = 'Verified! You can now chat.';
       updateVerificationUI();
       input.focus();
       initIdlePrompt();
-    } else {
-      if (verifyStatus) verifyStatus.textContent = 'Incorrect. Try another question.';
-      generateQuestion();
-      verifyInput.focus();
-    }
-  }
-
-  if (verifyBtn) {
-    verifyBtn.addEventListener('click', handleVerificationAttempt);
-  }
-  if (verifyInput) {
-    verifyInput.addEventListener('keydown', (event) => {
-      if (event.key === 'Enter') {
-        event.preventDefault();
-        handleVerificationAttempt();
-      }
     });
   }
 
