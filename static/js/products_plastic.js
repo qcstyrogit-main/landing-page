@@ -246,7 +246,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!result?.verified) {
             throw new Error("ALTCHA verification failed.");
         }
-        return fetch("/api/send-inquiry-mc", {
+        return fetch("/api/send-inquiry-qc", {
             method: "POST",
             headers: formHeaders,
             body: new URLSearchParams({
