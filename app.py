@@ -776,6 +776,7 @@ def submit_job_applicant():
                 or form_data.get("privacy_check")
                 or 1
             ),
+            "custom_current_job_position": form_data.get("custom_current_job_position") or "",
         }
 
         res = http_session.post(

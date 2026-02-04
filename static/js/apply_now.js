@@ -236,7 +236,8 @@ document.addEventListener('DOMContentLoaded', () => {
             currency: document.getElementById('salaryCurrency').value,
             lower_range: document.getElementById('salaryLower').value,
             upper_range: document.getElementById('salaryUpper').value,
-            custom_i_agree_to_the_data_privacy_statement: document.getElementById('privacy-check').checked ? 1 : 0
+            custom_i_agree_to_the_data_privacy_statement: document.getElementById('privacy-check').checked ? 1 : 0,
+            custom_current_job_position: document.getElementById('currentJobPosition').value,
         };
 
 
