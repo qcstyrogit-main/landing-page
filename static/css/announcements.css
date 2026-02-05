@@ -125,6 +125,19 @@
 .announcement-body {
     max-height: none;
     transition: max-height 0.35s ease;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}
+
+.announcement-body * {
+    max-width: 100%;
+}
+
+.announcement-body p,
+.announcement-body div,
+.announcement-body span,
+.announcement-body li {
+    white-space: normal !important;
 }
 
 .announcement-body.is-collapsed {

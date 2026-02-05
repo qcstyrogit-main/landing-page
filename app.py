@@ -224,7 +224,16 @@ def load_event_posts():
 
 def cache_busted_url_for(endpoint, **values):
     if endpoint == "static":
-        values.setdefault("v", ASSET_VERSION)
+        filename = values.get("filename", "")
+        version = ASSET_VERSION
+        if filename:
+            static_path = os.path.join(app.static_folder or "", filename.replace("/", os.sep))
+            try:
+                mtime = int(os.path.getmtime(static_path))
+                version = f"{ASSET_VERSION}.{mtime}" if ASSET_VERSION else str(mtime)
+            except OSError:
+                pass
+        values.setdefault("v", version)
     return flask_url_for(endpoint, **values)
 
 app.jinja_env.globals["url_for"] = cache_busted_url_for
