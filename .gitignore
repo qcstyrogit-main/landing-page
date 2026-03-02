@@ -28,7 +28,6 @@ env.bak/
 # ===============================
 # Keep .env in Git (production-safe)
 # Ignore local overrides
-.env
 .env.local
 instance/
 
