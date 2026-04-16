@@ -1,6 +1,6 @@
 {% extends "web.html" %}
 
-{% block title %}Job Openings | QC & MC{% endblock %}
+{% block title %}Job Openings | QC &amp; MC{% endblock %}
 {% block meta_description %}Explore current job openings at QC and MC. Filter by department, location, and type to find the right role.{% endblock %}
 {% block og_image %}{{ (canonical_base_url or request.url_root.rstrip('/')) }}{{ url_for('static', filename='images/careers/team.png') }}{% endblock %}
 {% block twitter_image %}{{ (canonical_base_url or request.url_root.rstrip('/')) }}{{ url_for('static', filename='images/careers/team.png') }}{% endblock %}
@@ -98,6 +98,8 @@
     .oa-remove-btn { background: none; border: none; cursor: pointer; color: #9ca3af; display: flex; align-items: center; padding: 2px; transition: color .2s; }
     .oa-remove-btn:hover { color: #ef4444; }
 
+    .oa-altcha { margin-bottom: 8px; }
+
     .oa-modal-actions { display: flex; gap: 12px; margin-top: 20px; }
     .oa-cancel-btn {
       flex: 1; padding: 11px; background: #f3f4f6; color: #374151;
@@ -122,6 +124,23 @@
     }
     .oa-success h3 { font-size: 1.15rem; font-weight: 700; color: #133880; margin: 0 0 10px; }
     .oa-success p { color: #6b7280; font-size: .875rem; margin: 0; line-height: 1.6; }
+
+    /* ── Address Autocomplete (inside modal) ── */
+    .oa-address-wrap { position: relative; }
+    .oa-address-suggestions {
+      position: absolute; top: calc(100% + 4px); left: 0; right: 0;
+      background: #fff; border: 1px solid #e5e7eb; border-radius: 8px;
+      box-shadow: 0 8px 24px rgba(15,23,42,.1);
+      max-height: 200px; overflow-y: auto; display: none; z-index: 10000;
+    }
+    .oa-address-suggestions button {
+      width: 100%; text-align: left; padding: 9px 12px;
+      background: transparent; border: none; font-size: .85rem;
+      color: #111827; cursor: pointer;
+    }
+    .oa-address-suggestions button:hover { background: #f3f4f6; }
+    .oa-address-status { padding: 9px 12px; font-size: .82rem; color: #6b7280; }
+    .oa-address-hint { display: block; margin-top: 5px; font-size: .75rem; color: #9ca3af; }
   </style>
 {% endblock %}
 
@@ -140,7 +159,7 @@
     <div id="listViewContainer" style="display: none;">
       <header class="page-hero">
         <div class="hero-copy">
-          <p class="eyebrow">QC & MC Careers</p>
+          <p class="eyebrow">QC &amp; MC Careers</p>
           <h1 class="title">Job Openings</h1>
           <p class="subtitle">Search by role, department, or location. Updated daily.</p>
         </div>
@@ -370,9 +389,11 @@
             <input type="email" id="oaEmail" required placeholder="you@email.com">
           </div>
 
-          <div class="oa-form-group">
+          <div class="oa-form-group oa-address-wrap">
             <label for="oaAddress">Address <span class="req">*</span></label>
-            <input type="text" id="oaAddress" required placeholder="City, Province">
+            <input type="text" id="oaAddress" required placeholder="City, Province" autocomplete="off" aria-autocomplete="list" aria-expanded="false" aria-controls="oaAddressSuggestions">
+            <div id="oaAddressSuggestions" class="oa-address-suggestions" role="listbox" aria-label="Address suggestions"></div>
+            <small class="oa-address-hint">Suggestions powered by PSGC (regions, provinces, cities, barangays).</small>
           </div>
 
           <div class="oa-form-group">
@@ -404,6 +425,13 @@
             </div>
           </div>
 
+          <div class="oa-altcha">
+            <altcha-widget
+              challengeurl="{{ altcha_challenge_url }}"
+              floating="false"
+            ></altcha-widget>
+          </div>
+
           <div class="oa-modal-actions">
             <button type="button" id="oaCancelBtn" class="oa-cancel-btn">Cancel</button>
             <button type="submit" id="oaSubmitBtn" class="oa-submit-btn">Submit Application</button>
@@ -431,4 +459,3 @@
   <script defer src="{{ url_for('static', filename='js/view_jobs.js') }}"></script>
   <script defer src="{{ url_for('static', filename='js/open_application_modal.js') }}"></script>
 {% endblock %}
-

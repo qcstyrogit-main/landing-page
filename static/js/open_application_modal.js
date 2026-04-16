@@ -103,6 +103,140 @@ document.addEventListener('DOMContentLoaded', () => {
         dzContent.style.display   = 'flex';
     });
 
+    // ── Address Autocomplete (PSGC) ────────────────────────────
+    const oaAddressInput       = document.getElementById('oaAddress');
+    const oaAddressSuggestions = document.getElementById('oaAddressSuggestions');
+
+    if (oaAddressInput && oaAddressSuggestions) {
+        let oaDebounce    = null;
+        let oaPsgcCache   = null;
+        let oaBrgyCache   = null;
+
+        const oaClose = () => {
+            oaAddressSuggestions.innerHTML = '';
+            oaAddressSuggestions.style.display = 'none';
+            oaAddressInput.setAttribute('aria-expanded', 'false');
+        };
+
+        const oaStatus = (msg) => {
+            oaAddressSuggestions.innerHTML = `<div class="oa-address-status">${msg}</div>`;
+            oaAddressSuggestions.style.display = 'block';
+            oaAddressInput.setAttribute('aria-expanded', 'true');
+        };
+
+        const oaLoadPsgc = async () => {
+            if (oaPsgcCache) return oaPsgcCache;
+            const [rRes, pRes, cRes] = await Promise.all([
+                fetch('https://psgc.gitlab.io/api/regions/'),
+                fetch('https://psgc.gitlab.io/api/provinces/'),
+                fetch('https://psgc.gitlab.io/api/cities-municipalities/')
+            ]);
+            const regions   = await rRes.json();
+            const provinces = await pRes.json();
+            const cities    = await cRes.json();
+            oaPsgcCache = {
+                regions, provinces, cities,
+                regionMap:   new Map(regions.map(r   => [r.code, r.name || r.regionName])),
+                provinceMap: new Map(provinces.map(p => [p.code, p.name])),
+                cityMap:     new Map(cities.map(c    => [c.code, { name: c.name, provinceCode: c.provinceCode, regionCode: c.regionCode }]))
+            };
+            return oaPsgcCache;
+        };
+
+        const oaLoadBrgy = async () => {
+            if (oaBrgyCache) return oaBrgyCache;
+            const r = await fetch('https://psgc.gitlab.io/api/barangays/');
+            const d = await r.json();
+            oaBrgyCache = Array.isArray(d) ? d : [];
+            return oaBrgyCache;
+        };
+
+        const oaRender = (items) => {
+            oaAddressSuggestions.innerHTML = '';
+            if (!items.length) { oaStatus('No matches found.'); return; }
+            items.slice(0, 8).forEach(item => {
+                if (!item.label) return;
+                const btn = document.createElement('button');
+                btn.type        = 'button';
+                btn.textContent = item.label;
+                btn.addEventListener('click', () => {
+                    oaAddressInput.value = item.label;
+                    oaClose();
+                });
+                oaAddressSuggestions.appendChild(btn);
+            });
+            if (oaAddressSuggestions.children.length) {
+                oaAddressSuggestions.style.display = 'block';
+                oaAddressInput.setAttribute('aria-expanded', 'true');
+            } else {
+                oaStatus('No matches found.');
+            }
+        };
+
+        const oaFetch = async (query) => {
+            try {
+                oaStatus('Loading suggestions…');
+                const data = await oaLoadPsgc();
+                const q    = query.toLowerCase();
+
+                const cityMatches = data.cities
+                    .filter(c => (c.name || '').toLowerCase().includes(q))
+                    .map(c => {
+                        const prov = data.provinceMap.get(c.provinceCode);
+                        const reg  = data.regionMap.get(c.regionCode);
+                        const sfx  = [prov, reg].filter(Boolean).join(', ');
+                        return { label: sfx ? `${c.name} (${sfx})` : c.name };
+                    });
+
+                const provMatches = data.provinces
+                    .filter(p => (p.name || '').toLowerCase().includes(q))
+                    .map(p => {
+                        const reg = data.regionMap.get(p.regionCode);
+                        return { label: reg ? `${p.name} (${reg})` : p.name };
+                    });
+
+                const regMatches = data.regions
+                    .filter(r => ((r.name || r.regionName || '')).toLowerCase().includes(q))
+                    .map(r => ({ label: r.name || r.regionName }));
+
+                const baseItems = [...cityMatches, ...provMatches, ...regMatches];
+                oaRender(baseItems);
+
+                if (query.length >= 4) {
+                    const snap = query;
+                    oaLoadBrgy().then(barangays => {
+                        if (oaAddressInput.value.trim() !== snap) return;
+                        const brgyMatches = barangays
+                            .filter(b => (b.name || '').toLowerCase().includes(q))
+                            .map(b => {
+                                const cityCode = b.cityCode || b.municipalityCode || b.cityMunicipalityCode;
+                                const city     = cityCode ? data.cityMap.get(cityCode) : null;
+                                const cityName = city ? city.name : null;
+                                const prov     = city?.provinceCode ? data.provinceMap.get(city.provinceCode) : data.provinceMap.get(b.provinceCode);
+                                const reg      = city?.regionCode   ? data.regionMap.get(city.regionCode)   : data.regionMap.get(b.regionCode);
+                                const sfx      = [cityName, prov, reg].filter(Boolean).join(', ');
+                                return { label: sfx ? `${b.name} (${sfx})` : b.name };
+                            });
+                        oaRender([...brgyMatches, ...baseItems]);
+                    }).catch(() => oaRender(baseItems));
+                }
+            } catch (err) {
+                oaClose();
+            }
+        };
+
+        oaAddressInput.addEventListener('input', () => {
+            const q = oaAddressInput.value.trim();
+            if (q.length < 3) { oaClose(); return; }
+            if (oaDebounce) clearTimeout(oaDebounce);
+            oaDebounce = setTimeout(() => oaFetch(q), 300);
+        });
+
+        oaAddressInput.addEventListener('blur', () => {
+            setTimeout(oaClose, 150);
+        });
+    }
+
     // ── Form submission ─────────────────────────────────────────
     form?.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -112,9 +246,34 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
+        // Altcha verification
+        const altchaToken = form.querySelector('input[name="altcha"]')?.value?.trim() || '';
+        if (!altchaToken) {
+            alert('Please complete the human verification before submitting.');
+            return;
+        }
+
         const csrfToken = document.getElementById('oaCsrfToken')?.value || '';
         const headers   = {};
         if (csrfToken) headers['X-CSRF-Token'] = csrfToken;
+
+        // Verify altcha first
+        try {
+            const verifyRes    = await fetch('/api/altcha/verify', {
+                method: 'POST',
+                headers: { ...headers, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ altcha: altchaToken, csrf_token: csrfToken })
+            });
+            const verifyResult = await verifyRes.json();
+            if (!verifyResult?.verified) {
+                alert('Human verification failed. Please try again.');
+                return;
+            }
+        } catch (err) {
+            console.error('Altcha verify error:', err);
+            alert('Verification error. Please try again.');
+            return;
+        }
 
         const data = new FormData();
         data.append('oa_name',    document.getElementById('oaName').value.trim());
@@ -131,8 +290,10 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const res    = await fetch('/api/open-application', { method: 'POST', headers, body: data });
             const result = await res.json();
+            const msg    = result?.message;
+            const ok     = msg === 'Sent' || msg?.message === 'Sent';
 
-            if (res.ok && result.message === 'Sent') {
+            if (res.ok && ok) {
                 formView.style.display    = 'none';
                 successView.style.display = 'block';
                 setTimeout(closeModal, 3500);
