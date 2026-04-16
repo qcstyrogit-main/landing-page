@@ -351,6 +351,7 @@ RATE_LIMITS = {
     "/api/submit-job-applicant": (10, 600),
     "/api/clefincode/create": (30, 300),
     "/api/clefincode/send": (60, 300),
+    "/api/open-application": (5, 600),
 }
 RATE_STATE = {}
 
@@ -414,7 +415,6 @@ def products_styro():
     return render_template("products_styro.html")
 
 @app.route("/view_jobs")
-@cache.cached(timeout=300)
 def view_jobs():
     return render_template("view_jobs.html")
 
@@ -800,6 +800,42 @@ def submit_job_applicant():
 
         res = http_session.post(
             f"{API_BASE_URL}/api/method/qcmc_logic.api.job_openings.submit_job_applicant_custom",
+            data=erp_payload,
+            files=files_to_forward if files_to_forward else None,
+            headers=get_erp_auth_headers(),
+            timeout=15
+        )
+
+        return res.json()
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/open-application", methods=["POST"])
+def open_application():
+    try:
+        form_data = request.form
+
+        files_to_forward = {}
+        for key, file_storage in request.files.items():
+            if file_storage and file_storage.filename:
+                files_to_forward[key] = (
+                    file_storage.filename,
+                    file_storage.stream,
+                    file_storage.content_type or "application/octet-stream"
+                )
+
+        erp_payload = {
+            "oa_name":    form_data.get("oa_name"),
+            "oa_email":   form_data.get("oa_email"),
+            "oa_address": form_data.get("oa_address"),
+            "oa_contact": form_data.get("oa_contact"),
+            "oa_pitch":   form_data.get("oa_pitch") or "",
+        }
+
+        res = http_session.post(
+            f"{API_BASE_URL}/api/method/qcmc_logic.api.job_openings.submit_open_application",
             data=erp_payload,
             files=files_to_forward if files_to_forward else None,
             headers=get_erp_auth_headers(),
