@@ -419,7 +419,6 @@ def view_jobs():
     return render_template("view_jobs.html")
 
 @app.route("/apply_now.html")
-@cache.cached(timeout=300)
 def apply_now():
     return render_template("apply_now.html")
 
