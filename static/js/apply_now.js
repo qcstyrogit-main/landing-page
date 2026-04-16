@@ -313,7 +313,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const verifyResponse = await fetch("/api/altcha/verify", {
                 method: "POST",
-                headers,
+                headers: { ...headers, "Content-Type": "application/json" },
                 body: JSON.stringify({
                     altcha: altchaToken,
                     csrf_token: csrfToken
