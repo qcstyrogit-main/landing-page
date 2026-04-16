@@ -764,7 +764,7 @@ def proxy_download_file():
 @app.route("/api/submit-job-applicant", methods=["POST"])
 def submit_job_applicant():
     try:
-        form_data = request.json or {}
+        form_data = request.form
 
         erp_payload = {
             "doctype": "Job Applicant",
@@ -790,8 +790,8 @@ def submit_job_applicant():
 
         res = http_session.post(
             f"{API_BASE_URL}/api/method/qcmc_logic.api.job_openings.submit_job_applicant_custom",
-            json=erp_payload,
-            headers={"Content-Type": "application/json"},
+            data=erp_payload,
+            files=request.files,
             timeout=15
         )
 

@@ -14,6 +14,61 @@ document.addEventListener('DOMContentLoaded', () => {
         jobIdDisplay.value = decodedTitle ? `${decodedTitle} (${decodedId})` : decodedId;
     }
 
+    // Resume Upload Handling
+    const dropZone = document.getElementById('resumeDropZone');
+    const fileInput = document.getElementById('resumeFile');
+    const filePreview = document.getElementById('filePreview');
+    const fileNameDisplay = document.getElementById('fileName');
+    const dropZoneContent = document.querySelector('.drop-zone-content');
+    const removeFileBtn = document.getElementById('removeFile');
+    let selectedFile = null;
+
+    if (dropZone && fileInput) {
+        dropZone.addEventListener('click', () => fileInput.click());
+
+        ['dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+            });
+        });
+
+        dropZone.addEventListener('dragover', () => dropZone.classList.add('drag-over'));
+        dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+
+        dropZone.addEventListener('drop', (e) => {
+            dropZone.classList.remove('drag-over');
+            const files = e.dataTransfer.files;
+            if (files.length) handleFile(files[0]);
+        });
+
+        fileInput.addEventListener('change', () => {
+            if (fileInput.files.length) handleFile(fileInput.files[0]);
+        });
+
+        const handleFile = (file) => {
+            const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+            if (!allowedTypes.includes(file.type) && !file.name.match(/\.(pdf|doc|docx)$/i)) {
+                alert('Please upload a PDF or Word document.');
+                return;
+            }
+            selectedFile = file;
+            fileNameDisplay.textContent = file.name;
+            dropZoneContent.style.display = 'none';
+            filePreview.style.display = 'flex';
+        };
+
+        if (removeFileBtn) {
+            removeFileBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                selectedFile = null;
+                fileInput.value = '';
+                filePreview.style.display = 'none';
+                dropZoneContent.style.display = 'flex';
+            });
+        }
+    }
+
     // Load Currencies Dropdown
     loadCurrencies();
 
@@ -224,31 +279,37 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        const formData = {
-            job_opening: jobId,
-            applicant_name: document.getElementById('applicantName').value,
-            address: document.getElementById('address').value,
-            email_address: document.getElementById('emailAddress').value,
-            phone_number: document.getElementById('phoneNumber').value,
-            referrer: document.getElementById('referrer').value,
-            cover_letter: document.getElementById('coverLetter').value,
-            resume_link: document.getElementById('resumeLink').value,
-            currency: document.getElementById('salaryCurrency').value,
-            lower_range: document.getElementById('salaryLower').value,
-            upper_range: document.getElementById('salaryUpper').value,
-            custom_i_agree_to_the_data_privacy_statement: document.getElementById('privacy-check').checked ? 1 : 0,
-            custom_current_job_position: document.getElementById('currentJobPosition').value,
-        };
+        const formData = new FormData();
+        formData.append('job_opening', jobId || "");
+        formData.append('applicant_name', document.getElementById('applicantName').value);
+        formData.append('address', document.getElementById('address').value);
+        formData.append('email_address', document.getElementById('emailAddress').value);
+        formData.append('phone_number', document.getElementById('phoneNumber').value);
+        formData.append('referrer', document.getElementById('referrer').value);
+        formData.append('cover_letter', document.getElementById('coverLetter').value);
+        formData.append('resume_link', document.getElementById('resumeLink').value);
+        formData.append('currency', document.getElementById('salaryCurrency').value);
+        formData.append('lower_range', document.getElementById('salaryLower').value);
+        formData.append('upper_range', document.getElementById('salaryUpper').value);
+        formData.append('privacy_check', document.getElementById('privacy-check').checked ? 1 : 0);
+        formData.append('custom_current_job_position', document.getElementById('currentJobPosition').value);
+
+        if (selectedFile) {
+            formData.append('resume_file', selectedFile);
+        }
 
 
         try {
             const csrfToken = form.querySelector('input[name="csrf_token"]')?.value || "";
             const headers = window.withCsrf
-                ? window.withCsrf({ "Content-Type": "application/json" })
-                : { "Content-Type": "application/json" };
+                ? window.withCsrf({})
+                : {};
             if (csrfToken && !headers["X-CSRF-Token"]) {
                 headers["X-CSRF-Token"] = csrfToken;
             }
+            // Add tokens to formData as well
+            formData.append('csrf_token', csrfToken);
+            formData.append('altcha', altchaToken);
 
             const verifyResponse = await fetch("/api/altcha/verify", {
                 method: "POST",
@@ -267,7 +328,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const response = await fetch("/api/submit-job-applicant", {
                 method: "POST",
                 headers,
-                body: JSON.stringify(formData)
+                body: formData
             });
 
             const result = await response.json();

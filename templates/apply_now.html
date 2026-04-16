@@ -77,6 +77,25 @@
               <input type="url" id="resumeLink" placeholder="https://link-to-your-resume.com">
           </div>
 
+          <div class="form-group">
+              <label>For more Opportunity Upload your Resume attach/drop files</label>
+              <div id="resumeDropZone" class="resume-drop-zone">
+                  <div class="drop-zone-content">
+                      <svg class="icon icon-xl" aria-hidden="true"><use href="#icon-upload"></use></svg>
+                      <p>Selection is limited to PDF or Word documents.</p>
+                      <button type="button" class="btn-select-file">Choose File</button>
+                  </div>
+                  <input type="file" id="resumeFile" accept=".pdf,.doc,.docx" style="display: none;">
+                  <div id="filePreview" class="file-preview" style="display: none;">
+                      <svg class="icon" aria-hidden="true"><use href="#icon-file"></use></svg>
+                      <span id="fileName"></span>
+                      <button type="button" id="removeFile" class="btn-remove-file" aria-label="Remove file">
+                          <svg class="icon" aria-hidden="true"><use href="#icon-x"></use></svg>
+                      </button>
+                  </div>
+              </div>
+          </div>
+
           <div class="salary-section">
               <h2>Expected Salary Range per month</h2>
               <div class="salary-grid">
