@@ -788,10 +788,21 @@ def submit_job_applicant():
             "custom_current_job_position": form_data.get("custom_current_job_position") or "",
         }
 
+        # Convert Flask FileStorage objects to the format requests expects:
+        # { field_name: (filename, file_stream, content_type) }
+        files_to_forward = {}
+        for key, file_storage in request.files.items():
+            if file_storage and file_storage.filename:
+                files_to_forward[key] = (
+                    file_storage.filename,
+                    file_storage.stream,
+                    file_storage.content_type or "application/octet-stream"
+                )
+
         res = http_session.post(
             f"{API_BASE_URL}/api/method/qcmc_logic.api.job_openings.submit_job_applicant_custom",
             data=erp_payload,
-            files=request.files,
+            files=files_to_forward if files_to_forward else None,
             headers=get_erp_auth_headers(),
             timeout=15
         )
