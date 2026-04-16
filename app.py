@@ -792,6 +792,7 @@ def submit_job_applicant():
             f"{API_BASE_URL}/api/method/qcmc_logic.api.job_openings.submit_job_applicant_custom",
             data=erp_payload,
             files=request.files,
+            headers=get_erp_auth_headers(),
             timeout=15
         )
 
