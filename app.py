@@ -423,7 +423,6 @@ def apply_now():
     return render_template("apply_now.html")
 
 @app.route("/announcements")
-@cache.cached(timeout=300)
 def announcements():
     return render_template("announcements.html")
 
@@ -1041,8 +1040,10 @@ def add_headers(response):
     ]
     response.headers["Content-Security-Policy"] = "; ".join(csp)
 
-    if request.path.startswith("/api/clefincode/"):
-        response.headers["Cache-Control"] = "no-store"
+    if request.path.startswith("/api/"):
+        # Never cache API responses — auth state, announcements, whoami etc.
+        # must always be fetched fresh from the server.
+        response.headers["Cache-Control"] = "no-store, private"
     elif request.path.startswith("/static/"):
         response.headers["Cache-Control"] = "public, max-age=31536000, immutable"
     else:

@@ -42,6 +42,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 btn.classList.add("is-logged-in");
             });
             setAnnouncementVisibility(true);
+            document.dispatchEvent(new CustomEvent("erp:authenticated", { detail: { displayName } }));
             userMenus.forEach((menu) => {
                 const trigger = menu.querySelector("[data-erp-login]");
                 const dropdown = menu.querySelector(".user-menu-dropdown");
@@ -75,10 +76,12 @@ document.addEventListener("DOMContentLoaded", async () => {
             }
         } else {
             setAnnouncementVisibility(false);
+            document.dispatchEvent(new CustomEvent("erp:unauthenticated"));
             if (authRequired) window.location.href = "/";
         }
     } catch (err) {
         setAnnouncementVisibility(false);
+        document.dispatchEvent(new CustomEvent("erp:unauthenticated"));
         if (authRequired) window.location.href = "/";
     }
 });

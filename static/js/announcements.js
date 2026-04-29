@@ -172,6 +172,27 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    loadAnnouncements();
-    loadCelebrations();
+    // Wait for auth_ui.js to confirm the user is authenticated before loading
+    // data. This avoids a race condition where announcements.js fires its fetch
+    // before the ERP session cookie is validated on first page load.
+    let authResolved = false;
+
+    function onAuthenticated() {
+        if (authResolved) return;
+        authResolved = true;
+        loadAnnouncements();
+        loadCelebrations();
+    }
+
+    document.addEventListener("erp:authenticated", onAuthenticated, { once: true });
+
+    // Safety fallback: if auth_ui.js doesn't fire within 5 s (e.g. network error
+    // or the script is absent), attempt to load anyway so the page isn't blank.
+    setTimeout(() => {
+        if (!authResolved) {
+            authResolved = true;
+            loadAnnouncements();
+            loadCelebrations();
+        }
+    }, 5000);
 });
