@@ -414,14 +414,6 @@ def products():
 def products_styro():
     return render_template("products_styro.html")
 
-@app.route("/login")
-def login():
-    return render_template("login.html", redirect_to="/app/home")
-
-@app.route("/lms-login")
-def lms_login():
-    return render_template("login.html", redirect_to="/lms")
-
 @app.route("/view_jobs")
 def view_jobs():
     return render_template("view_jobs.html")
