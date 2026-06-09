@@ -35,7 +35,7 @@ def load_env():
 
 load_env()
 
-API_BASE_URL = os.environ.get("API_BASE_URL")
+API_BASE_URL = (os.environ.get("API_BASE_URL") or "").rstrip("/")
 if not API_BASE_URL:
     raise RuntimeError("API_BASE_URL is not set")
 ALTCHA_CHALLENGE_URL = (os.environ.get("ALTCHA_CHALLENGE_URL") or "").strip()
