@@ -395,22 +395,18 @@ def security_before_request():
 # ROUTES (PAGES)
 # --------------------------------------------------
 @app.route("/")
-@cache.cached(timeout=60)
 def home():
     return render_template("home.html", API_BASE_URL=API_BASE_URL, events=load_event_posts())
 
 @app.route("/products_plastic")
-@cache.cached(timeout=600)
 def products_plastic():
     return render_template("products_plastic.html")
 
 @app.route("/products")
-@cache.cached(timeout=600)
 def products():
     return render_template("products.html")
 
 @app.route("/products_styro")
-@cache.cached(timeout=600)
 def products_styro():
     return render_template("products_styro.html")
 
