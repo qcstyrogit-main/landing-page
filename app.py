@@ -192,6 +192,27 @@ def fetch_og_meta(url):
         cache.set(cache_key, {"image": "", "title": ""}, timeout=300)
         return {"image": "", "title": ""}
 
+def proxied_erp_public_file_url(thumbnail):
+    if not thumbnail:
+        return ""
+
+    if thumbnail.startswith("/files/"):
+        return flask_url_for("proxy_public_file", filename=thumbnail[len("/files/"):])
+
+    parsed_thumbnail = urlparse(thumbnail)
+    parsed_api = urlparse(API_BASE_URL)
+    if (
+        parsed_thumbnail.scheme in ("http", "https")
+        and parsed_thumbnail.netloc == parsed_api.netloc
+        and parsed_thumbnail.path.startswith("/files/")
+    ):
+        proxied_url = flask_url_for("proxy_public_file", filename=parsed_thumbnail.path[len("/files/"):])
+        if parsed_thumbnail.query:
+            proxied_url = f"{proxied_url}?{parsed_thumbnail.query}"
+        return proxied_url
+
+    return thumbnail
+
 def load_event_posts():
     remote_events = fetch_events_from_erpnext()
     if remote_events:
@@ -208,8 +229,7 @@ def load_event_posts():
                     thumbnail = meta.get("image", "")
                 if not title:
                     title = meta.get("title", "").strip()
-            if thumbnail.startswith("/files/"):
-                thumbnail = f"{API_BASE_URL.rstrip('/')}{thumbnail}"
+            thumbnail = proxied_erp_public_file_url(thumbnail)
             if not thumbnail:
                 continue
             cleaned.append({
@@ -701,7 +721,24 @@ def get_testimonials():
         return jsonify({"error": str(e)}), 500
 
 
-# ------------------ PRIVATE FILE PROXY ------------------
+# ------------------ FILE PROXIES ------------------
+@app.route("/files/<path:filename>", methods=["GET"])
+def proxy_public_file(filename):
+    if ".." in filename or filename.startswith("/"):
+        return Response("invalid path", status=400)
+
+    try:
+        upstream_url = f"{API_BASE_URL.rstrip('/')}/files/{filename}"
+        res = http_session.get(upstream_url, timeout=15)
+        if not res.ok:
+            return Response(res.content, status=res.status_code, mimetype=res.headers.get("Content-Type", "text/plain"))
+        resp = Response(res.content, status=res.status_code, mimetype=res.headers.get("Content-Type", "application/octet-stream"))
+        resp.headers["Cache-Control"] = "public, max-age=86400"
+        return resp
+    except Exception as e:
+        return Response(str(e), status=500)
+
+
 @app.route("/private/files/<path:filename>", methods=["GET"])
 def proxy_private_file(filename):
     if ".." in filename or filename.startswith("/"):
