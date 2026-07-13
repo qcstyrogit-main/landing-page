@@ -213,6 +213,17 @@ def proxied_erp_public_file_url(thumbnail):
 
     return thumbnail
 
+def proxy_public_file_urls_in_payload(payload, image_keys):
+    if isinstance(payload, dict):
+        return {
+            key: proxied_erp_public_file_url(value) if key in image_keys and isinstance(value, str)
+            else proxy_public_file_urls_in_payload(value, image_keys)
+            for key, value in payload.items()
+        }
+    if isinstance(payload, list):
+        return [proxy_public_file_urls_in_payload(item, image_keys) for item in payload]
+    return payload
+
 def load_event_posts():
     remote_events = fetch_events_from_erpnext()
     if remote_events:
@@ -686,11 +697,14 @@ def get_announcements():
             headers=headers,
             timeout=8
         )
-        return Response(
-            res.content,
-            status=res.status_code,
-            mimetype=res.headers.get("Content-Type", "application/json")
-        )
+        if not res.ok:
+            return Response(
+                res.content,
+                status=res.status_code,
+                mimetype=res.headers.get("Content-Type", "application/json")
+            )
+        payload = proxy_public_file_urls_in_payload(res.json(), {"image"})
+        return jsonify(payload), res.status_code
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
@@ -712,11 +726,14 @@ def get_testimonials():
             headers=headers,
             timeout=8
         )
-        return Response(
-            res.content,
-            status=res.status_code,
-            mimetype=res.headers.get("Content-Type", "application/json")
-        )
+        if not res.ok:
+            return Response(
+                res.content,
+                status=res.status_code,
+                mimetype=res.headers.get("Content-Type", "application/json")
+            )
+        payload = proxy_public_file_urls_in_payload(res.json(), {"testimonial_image", "image"})
+        return jsonify(payload), res.status_code
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 

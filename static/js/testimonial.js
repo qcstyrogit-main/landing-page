@@ -18,15 +18,14 @@ document.addEventListener("DOMContentLoaded", () => {
     const indicators = [];
 
     function normalizeImageUrl(image) {
-        const base = section ? section.getAttribute("data-api-base") : "";
         if (image && image.startsWith("/private/files/")) {
+            return image;
+        }
+        if (image && image.startsWith("/files/")) {
             return image;
         }
         if (image && image.startsWith("/api/method/frappe.utils.file_manager.download_file")) {
             return image;
-        }
-        if (image && image.startsWith("/") && base) {
-            return `${base.replace(/\/$/, "")}${image}`;
         }
         return image;
     }
