@@ -399,6 +399,7 @@
   function appendBotMessage(text, options = {}) {
     const bubble = document.createElement('div');
     bubble.className = 'chatbot-message inbound chatbot-message-bot';
+    if (options.kind) bubble.dataset.kind = options.kind;
     if (options.isHtml) {
       const sanitized = sanitizeHtml(text);
       bubble.innerHTML = sanitized || formatMessage(stripHtml(text));
@@ -443,6 +444,7 @@
       outbound: false,
       isHtml: Boolean(options.isHtml),
       buttons: storedButtons,
+      kind: options.kind || '',
       timestamp: Date.now()
     });
   }
@@ -769,7 +771,8 @@
         } else {
           appendBotMessage(entry.content || '', {
             isHtml: Boolean(entry.isHtml),
-            buttons: Array.isArray(entry.buttons) ? entry.buttons : []
+            buttons: Array.isArray(entry.buttons) ? entry.buttons : [],
+            kind: entry.kind || ''
           });
         }
       });
@@ -789,6 +792,13 @@
       const raw = window.sessionStorage.getItem(historyKey);
       const list = raw ? JSON.parse(raw) : [];
       if (!Array.isArray(list)) return;
+      if (entry.kind === 'idle_prompt') {
+        for (let index = list.length - 1; index >= 0; index -= 1) {
+          if (list[index] && list[index].kind === 'idle_prompt') {
+            list.splice(index, 1);
+          }
+        }
+      }
       const last = list[list.length - 1];
       if (last && buildHistoryKey(last) === buildHistoryKey(entry)) {
         return;
@@ -807,7 +817,8 @@
     if (!entry) return '';
     const buttons = Array.isArray(entry.buttons) ? JSON.stringify(entry.buttons) : '';
     const ts = entry.timestamp || '';
-    return `${entry.outbound ? 'out' : 'in'}::${entry.content || ''}::${entry.isHtml ? 'html' : 'txt'}::${buttons}::${ts}`;
+    const kind = entry.kind || '';
+    return `${entry.outbound ? 'out' : 'in'}::${entry.content || ''}::${entry.isHtml ? 'html' : 'txt'}::${buttons}::${kind}::${ts}`;
   }
 
   function initIdlePrompt() {
@@ -816,17 +827,29 @@
     idlePromptReady = true;
     const idleMs = 2 * 60 * 1000;
     let idleTimer = null;
-    let promptShown = false;
+    let idlePromptVisible = false;
+    let idlePromptArmed = false;
 
     const resetIdle = () => {
       if (idleTimer) window.clearTimeout(idleTimer);
+      idlePromptArmed = true;
       idleTimer = window.setTimeout(showIdlePrompt, idleMs);
     };
 
+    const clearIdleTimer = () => {
+      if (!idleTimer) return;
+      window.clearTimeout(idleTimer);
+      idleTimer = null;
+    };
+
     const showIdlePrompt = () => {
-      if (promptShown) return;
-      promptShown = true;
+      if (!idlePromptArmed || idlePromptVisible) return;
+      clearIdleTimer();
+      idlePromptArmed = false;
+      idlePromptVisible = true;
+      removeIdlePromptMessages();
       appendBotMessage('Continue chatting?', {
+        kind: 'idle_prompt',
         buttons: [
           { label: 'Yes', action: 'idle_yes' },
           { label: 'No', action: 'idle_no' }
@@ -834,8 +857,14 @@
       });
     };
 
+    const removeIdlePromptMessages = () => {
+      messagesEl.querySelectorAll('[data-kind="idle_prompt"]').forEach((message) => {
+        message.remove();
+      });
+    };
+
     const markActive = () => {
-      promptShown = false;
+      idlePromptVisible = false;
       resetIdle();
     };
 
@@ -846,7 +875,7 @@
     const originalHandleAction = handleAction;
     handleAction = (button) => {
       if (button.action === 'idle_yes') {
-        promptShown = false;
+        idlePromptVisible = false;
         if (agentActive || handoffEnabled || chatState.room) {
           appendBotMessage('Continuing chat.');
           resetIdle();
@@ -857,7 +886,7 @@
         return;
       }
       if (button.action === 'idle_no') {
-        promptShown = false;
+        idlePromptVisible = false;
         appendBotMessage('Chat Ended.');
         clearAllHistory();
         stopPolling();
