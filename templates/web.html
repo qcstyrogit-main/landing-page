@@ -92,7 +92,7 @@
     {% endblock %}
     {% endblock %}
 </head>
-<body class="{% block body_class %}{% endblock %}">
+<body class="{% block body_class %}{% endblock %}" data-erp-base="{{ API_BASE_URL.rstrip('/') }}">
 
     {% include "partials/icons.svg" %}
 

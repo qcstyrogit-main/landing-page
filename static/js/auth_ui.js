@@ -2,6 +2,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const currentPath = window.location.pathname;
     const isAnnouncementPage = currentPath === "/announcements";
     const isHomePage = currentPath === "/" || currentPath === "/index.html";
+    const erpBase = (document.body?.dataset.erpBase || "").replace(/\/$/, "");
     const userMenus = document.querySelectorAll("[data-erp-user-menu]");
     const loginButtons = document.querySelectorAll("[data-erp-login]");
     const announcementLinks = document.querySelectorAll("[data-erp-announcement]");
@@ -15,20 +16,52 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
     }
 
-    try {
-        const response = await fetch("/api/erp/whoami", { credentials: "include" });
-        if (!response.ok) {
-            if (authRequired) window.location.href = "/";
-            setAnnouncementVisibility(false);
-            return;
+    async function fetchJson(url) {
+        const response = await fetch(url, {
+            credentials: "include",
+            cache: "no-store"
+        });
+        if (!response.ok) return null;
+        return response.json();
+    }
+
+    async function getErpAuthState() {
+        const directUrl = erpBase
+            ? `${erpBase}/api/method/qcmc_logic.api.auth.check_log_user`
+            : "";
+        if (directUrl) {
+            try {
+                const directPayload = await fetchJson(directUrl);
+                if (directPayload) return directPayload;
+            } catch (error) {
+                // Cross-origin ERP checks can fail if ERP CORS is not enabled.
+            }
         }
-        const payload = await response.json();
+        return fetchJson("/api/erp/whoami");
+    }
+
+    function normalizeAuthPayload(payload) {
         const message = payload && payload.message ? payload.message : payload;
+        const loggedIn = Boolean(
+            message && (
+                message.logged_in === true ||
+                message.logged_in === "true" ||
+                message.user ||
+                message.full_name ||
+                message.fullName
+            )
+        );
         const fullName = message && (message.full_name || message.fullName);
         const user = message && message.user;
-        const displayName = (fullName || user || "").trim();
+        const displayName = (fullName || user || (loggedIn ? "ERP User" : "") || "").trim();
+        return { loggedIn, displayName };
+    }
 
-        if (displayName) {
+    try {
+        const payload = await getErpAuthState();
+        const { loggedIn, displayName } = normalizeAuthPayload(payload);
+
+        if (loggedIn) {
             loginButtons.forEach((btn) => {
                 const isMobile = btn.dataset.erpLogin === "mobile";
                 if (isMobile) {
