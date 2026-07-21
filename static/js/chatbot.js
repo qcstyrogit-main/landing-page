@@ -491,9 +491,9 @@
 
     if (action === 'resolved_no') {
       autoFlow.stage = 'agent_offer';
-      appendBotMessage('Do you want to talk to an agent?', {
+      appendBotMessage('Would you like to email Support?', {
         buttons: [
-          { label: 'Yes, talk to agent', action: 'agent_yes' },
+          { label: 'Yes, email Support', action: 'agent_yes' },
           { label: 'No, thanks', action: 'agent_no' }
         ]
       });
@@ -501,10 +501,9 @@
     }
 
     if (action === 'agent_yes') {
-      autoFlow.stage = 'handoff';
-      handoffEnabled = true;
-      appendBotMessage('Connecting you to an agent...');
-      handoffToAgent();
+      autoFlow.stage = 'done';
+      appendBotMessage('Opening the Support email form...');
+      openSupportEmailForm();
       return;
     }
 
@@ -536,7 +535,7 @@
     }
 
     if (autoFlow.stage === 'agent_offer') {
-      appendBotMessage('Please use the buttons so I can connect you properly.');
+      appendBotMessage('Please use the buttons so I can open the Support email form.');
       return;
     }
 
@@ -571,6 +570,28 @@
         { label: 'No', action: 'resolved_no' }
       ]
     });
+  }
+
+  function openSupportEmailForm() {
+    togglePanel(false);
+    const topic = document.getElementById('contactTopic');
+    if (topic) topic.value = 'Support';
+    const openedByContactScript = !document.dispatchEvent(new CustomEvent('openContactSupport', {
+      cancelable: true
+    }));
+    if (!openedByContactScript) {
+      const openContactButton = document.getElementById('openContactPopup');
+      if (openContactButton) {
+        openContactButton.click();
+      } else {
+        try {
+          window.sessionStorage.setItem('open_support_contact', '1');
+        } catch (error) {
+          // Ignore storage failures and still send visitors to the contact section.
+        }
+        window.location.href = '/#contact-us';
+      }
+    }
   }
 
   async function loadTopics() {
@@ -805,7 +826,7 @@
     const showIdlePrompt = () => {
       if (promptShown) return;
       promptShown = true;
-      appendBotMessage('Continue chatting with agent?', {
+      appendBotMessage('Continue chatting?', {
         buttons: [
           { label: 'Yes', action: 'idle_yes' },
           { label: 'No', action: 'idle_no' }
@@ -827,7 +848,7 @@
       if (button.action === 'idle_yes') {
         promptShown = false;
         if (agentActive || handoffEnabled || chatState.room) {
-          appendBotMessage('Continuing chatting with agent.');
+          appendBotMessage('Continuing chat.');
           resetIdle();
           return;
         }

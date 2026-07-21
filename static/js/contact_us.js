@@ -520,6 +520,11 @@ document.addEventListener("DOMContentLoaded", () => {
         trapFocus();
     }
 
+    function selectSupportTopic() {
+        const topic = document.getElementById("contactTopic");
+        if (topic) topic.value = "Support";
+    }
+
     // Function to close popup
     function closePopup() {
         popup.style.display = "none";
@@ -532,8 +537,21 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Click handlers
     if (openBtn) openBtn.addEventListener("click", openPopup);
+    document.addEventListener("openContactSupport", (event) => {
+        selectSupportTopic();
+        openPopup();
+        event.preventDefault();
+    });
     if (closeBtn) closeBtn.addEventListener("click", closePopup);
     if (overlay) overlay.addEventListener("click", closePopup);
+
+    try {
+        if (window.sessionStorage.getItem("open_support_contact") === "1") {
+            window.sessionStorage.removeItem("open_support_contact");
+            selectSupportTopic();
+            window.setTimeout(openPopup, 0);
+        }
+    } catch (error) {
+        // Contact form still works if session storage is unavailable.
+    }
 });
-
-
