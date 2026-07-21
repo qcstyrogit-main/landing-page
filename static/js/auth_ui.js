@@ -2,7 +2,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     const currentPath = window.location.pathname;
     const isAnnouncementPage = currentPath === "/announcements";
     const isHomePage = currentPath === "/" || currentPath === "/index.html";
-    const redirectKey = "announcements_redirected";
     const userMenus = document.querySelectorAll("[data-erp-user-menu]");
     const loginButtons = document.querySelectorAll("[data-erp-login]");
     const announcementLinks = document.querySelectorAll("[data-erp-announcement]");
@@ -70,8 +69,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 });
             });
 
-            if (isHomePage && !isAnnouncementPage && !sessionStorage.getItem(redirectKey)) {
-                sessionStorage.setItem(redirectKey, "1");
+            if (isHomePage && !isAnnouncementPage) {
                 window.location.href = "/announcements";
             }
         } else {
