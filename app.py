@@ -40,6 +40,10 @@ if not API_BASE_URL:
     raise RuntimeError("API_BASE_URL is not set")
 ALTCHA_CHALLENGE_URL = (os.environ.get("ALTCHA_CHALLENGE_URL") or "").strip()
 ALTCHA_HMAC_KEY = (os.environ.get("ALTCHA_HMAC_KEY") or "").strip()
+CHATBOT_SKIP_ALTCHA = (
+    os.getenv("FLASK_ENV", "").lower() != "production"
+    and (os.environ.get("CHATBOT_SKIP_ALTCHA") or "").lower() in ("1", "true", "yes")
+)
 
 try:
     from altcha import ChallengeOptions, create_challenge, verify_solution
@@ -314,7 +318,8 @@ def inject_globals():
         csrf_token=get_csrf_token,
         csp_nonce=getattr(g, "csp_nonce", ""),
         canonical_base_url=CANONICAL_BASE_URL,
-        altcha_challenge_url=ALTCHA_CHALLENGE_URL
+        altcha_challenge_url=ALTCHA_CHALLENGE_URL,
+        chatbot_skip_altcha=CHATBOT_SKIP_ALTCHA
     )
 
 def get_base_url():
@@ -382,6 +387,7 @@ RATE_LIMITS = {
     "/api/submit-job-applicant": (10, 600),
     "/api/clefincode/create": (30, 300),
     "/api/clefincode/send": (60, 300),
+    "/api/clefincode/status": (20, 300),
     "/api/open-application": (5, 600),
 }
 RATE_STATE = {}
@@ -939,6 +945,20 @@ def clefincode_messages():
             timeout=15
         )
         return jsonify(res.json())
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/clefincode/status", methods=["POST"])
+def clefincode_status():
+    try:
+        res = http_session.post(
+            f"{API_BASE_URL}/api/method/company_messenger.api.customer_update_concern",
+            json=request.json or {},
+            headers={"Content-Type": "application/json"},
+            timeout=15,
+        )
+        return jsonify(res.json()), res.status_code
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 

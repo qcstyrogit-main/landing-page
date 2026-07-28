@@ -17,18 +17,21 @@
   const verifyStatus = document.getElementById('chatbot-verify-status');
 
   if (!bubble || !panel || !form || !input || !messagesEl) return;
+  const skipAltcha = panel.dataset.skipAltcha === '1';
 
   const baseUrl = (panel.getAttribute('data-clefincode-base') || '').replace(/\/$/, '');
   const endpoints = baseUrl
     ? {
         create: `${baseUrl}/api/method/clefincode_chat.api.api_1_0_1.chat_portal.create_guest_profile_and_channel`,
         send: `${baseUrl}/api/method/clefincode_chat.api.api_1_0_1.chat_portal.send`,
-        messages: `${baseUrl}/api/method/clefincode_chat.api.api_1_0_1.chat_portal.get_messages`
+        messages: `${baseUrl}/api/method/clefincode_chat.api.api_1_0_1.chat_portal.get_messages`,
+        status: `${baseUrl}/api/method/company_messenger.api.customer_update_concern`
       }
     : {
         create: '/api/clefincode/create',
         send: '/api/clefincode/send',
-        messages: '/api/clefincode/messages'
+        messages: '/api/clefincode/messages',
+        status: '/api/clefincode/status'
       };
 
   const storageKey = 'clefincode_chat_state';
@@ -46,6 +49,8 @@
   const maxHistory = 100;
   let isRestoring = false;
   let handoffEnabled = false;
+  let lastConcernStatus = '';
+  let closureResetTimer = null;
   const autoFlow = {
     stage: 'intro',
     topic: null,
@@ -131,22 +136,29 @@
       return;
     }
 
-    const outboundKey = buildMessageKey({
-      sender,
-      content,
-      sendDate: Date.now()
-    });
-    pendingOutbound.push({ content, at: Date.now(), key: outboundKey });
-    input.value = '';
-    setStatus('Sending...');
-    
-
+    let pendingEntry = null;
     try {
       if (!handoffEnabled && !agentActive) {
+        input.value = '';
         handleAutoFlow(content);
         setStatus('Delivered');
         return;
       }
+      const sentAt = Date.now();
+      const outboundKey = buildMessageKey({ sender, content, sendDate: sentAt });
+      pendingEntry = { content, at: sentAt, key: outboundKey };
+      pendingEntry.el = appendMessage({
+        content,
+        outbound: true,
+        key: outboundKey,
+        timestamp: sentAt,
+        pending: true,
+        sender,
+        sendDate: sentAt
+      });
+      pendingOutbound.push(pendingEntry);
+      input.value = '';
+      setStatus('Sending...');
       if (!chatState.room) {
         await createGuestRoom({ content, sender, senderEmail });
         startPolling();
@@ -156,6 +168,14 @@
       setStatus('Delivered');
       await fetchMessages();
     } catch (error) {
+      if (pendingEntry?.el) {
+        pendingEntry.el.remove();
+        seenMessageKeys.delete(pendingEntry.key);
+        removeHistoryEntry(pendingEntry.key);
+      }
+      const pendingIndex = pendingOutbound.indexOf(pendingEntry);
+      if (pendingIndex !== -1) pendingOutbound.splice(pendingIndex, 1);
+      input.value = content;
       setStatus('Unable to send right now.');
       console.error('Chatbot error:', error);
     }
@@ -185,7 +205,7 @@
   }
 
   function isVerified() {
-    return sessionStorage.getItem(verifyKey) === '1';
+    return skipAltcha || sessionStorage.getItem(verifyKey) === '1';
   }
 
   function setVerified(value) {
@@ -200,7 +220,7 @@
     if (!verifyPanel || !form) return;
     const verified = isVerified();
     verifyPanel.style.display = verified ? 'none' : 'block';
-    form.style.display = verified ? 'flex' : 'none';
+    form.style.display = verified ? 'grid' : 'none';
   }
 
   if (altchaWidget) {
@@ -286,14 +306,14 @@
   }
 
   function getSenderName() {
-    const name = (nameInput && nameInput.value.trim()) || chatState.sender || 'Guest';
+    const name = (nameInput && nameInput.value.trim()) || chatState.sender || '';
     chatState.sender = name;
     saveState();
     return name;
   }
 
   function getSenderEmail() {
-    const email = (emailInput && emailInput.value.trim()) || chatState.sender_email || 'guest@example.com';
+    const email = (emailInput && emailInput.value.trim()) || chatState.sender_email || '';
     chatState.sender_email = email;
     saveState();
     return email;
@@ -365,6 +385,11 @@
     const payload = await safeJson(response);
     const data = payload.message || payload || {};
     const items = Array.isArray(data) ? data : data.messages || data.items || data.results || [];
+    const concernAssigned = Boolean(data.assigned_to_name || data.assigned_to);
+    if (chatState.room) {
+      identityPanel?.classList.toggle('show', !concernAssigned);
+    }
+    syncConcernStatus(data.concern_status || '');
     let sawInbound = false;
 
     items.forEach((item) => {
@@ -483,6 +508,10 @@
 
   function handleAction(button) {
     const action = button.action;
+    if (action === 'concern_close' || action === 'concern_reopen') {
+      updateConcernStatus(action === 'concern_close' ? 'close' : 'reopen');
+      return;
+    }
     if (action === 'topic') {
       autoFlow.topic = button.value;
       autoFlow.stage = 'topic_selected';
@@ -587,6 +616,97 @@
         { label: 'No', action: 'resolved_no' }
       ]
     });
+  }
+
+  function syncConcernStatus(status) {
+    if (!status || status === lastConcernStatus) return;
+    const previousStatus = lastConcernStatus;
+    lastConcernStatus = status;
+    if (status === 'Resolved') {
+      if (messagesEl.lastElementChild?.dataset.kind !== 'concern_resolution') {
+        appendBotMessage('Your support agent marked this concern as resolved. Is everything okay now? If you do not respond, this conversation will close automatically after 24 hours.', {
+          kind: 'concern_resolution',
+          buttons: [
+            { label: 'Yes, close conversation', action: 'concern_close' },
+            { label: 'No, I still need help', action: 'concern_reopen' }
+          ]
+        });
+      }
+      input.disabled = true;
+      form.querySelector('button[type="submit"]')?.setAttribute('disabled', 'disabled');
+    } else if (status === 'Closed') {
+      appendBotMessage('This customer concern is now closed. Thank you for contacting QC & MC.', {
+        kind: 'concern_closed'
+      });
+      input.disabled = true;
+      form.querySelector('button[type="submit"]')?.setAttribute('disabled', 'disabled');
+      if (closureResetTimer) window.clearTimeout(closureResetTimer);
+      closureResetTimer = window.setTimeout(resetCustomerChat, 2500);
+    } else if (status === 'Open') {
+      input.disabled = false;
+      form.querySelector('button[type="submit"]')?.removeAttribute('disabled');
+      if (previousStatus && previousStatus !== 'Open') {
+        appendBotMessage('Your concern is open again. You can continue chatting with the assigned agent.', {
+          kind: 'concern_reopened'
+        });
+      }
+    }
+  }
+
+  function resetCustomerChat() {
+    if (closureResetTimer) {
+      window.clearTimeout(closureResetTimer);
+      closureResetTimer = null;
+    }
+    clearAllHistory();
+    stopPolling();
+    chatState = {};
+    handoffEnabled = false;
+    agentActive = false;
+    lastConcernStatus = '';
+    pendingOutbound.length = 0;
+    seenMessageIds.clear();
+    seenMessageKeys.clear();
+    greetingShown = false;
+    autoFlow.stage = 'intro';
+    autoFlow.topic = null;
+    autoFlow.lastQuestion = '';
+    identityPanel?.classList.remove('show');
+    if (nameInput) nameInput.value = '';
+    if (emailInput) emailInput.value = '';
+    input.value = '';
+    input.disabled = false;
+    form.querySelector('button[type="submit"]')?.removeAttribute('disabled');
+    messagesEl.innerHTML = '';
+    setStatus('');
+    showGreeting();
+    input.focus();
+  }
+
+  async function updateConcernStatus(action) {
+    if (!chatState.room || !chatState.token) return;
+    const headers = window.withCsrf
+      ? window.withCsrf({ 'Content-Type': 'application/json' })
+      : { 'Content-Type': 'application/json' };
+    try {
+      const response = await fetch(endpoints.status, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({
+          room: chatState.room,
+          token: chatState.token,
+          action
+        })
+      });
+      const payload = await safeJson(response);
+      if (!response.ok || payload.error || payload.exception) {
+        throw new Error(payload.error || payload.exception || 'Unable to update concern');
+      }
+      const data = payload.message || payload;
+      syncConcernStatus(data.concern_status || '');
+    } catch (error) {
+      setStatus('Unable to update this concern right now.');
+    }
   }
 
   function openSupportEmailForm() {
@@ -943,6 +1063,21 @@
       window.localStorage.removeItem(storageKey);
       window.sessionStorage.removeItem(historyKey);
       window.sessionStorage.removeItem(initKey);
+    } catch (error) {
+      return;
+    }
+  }
+
+  function removeHistoryEntry(key) {
+    if (!key) return;
+    try {
+      const raw = window.sessionStorage.getItem(historyKey);
+      const entries = raw ? JSON.parse(raw) : [];
+      if (!Array.isArray(entries)) return;
+      window.sessionStorage.setItem(
+        historyKey,
+        JSON.stringify(entries.filter((entry) => entry.key !== key))
+      );
     } catch (error) {
       return;
     }

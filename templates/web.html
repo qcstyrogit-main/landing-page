@@ -105,7 +105,7 @@
         <span id="chat-unread-badge" class="chat-unread-badge" aria-hidden="true">0</span>
     </button>
 
-    <section id="chatbot-panel" class="chatbot-panel" aria-hidden="true" inert role="dialog" aria-label="Chatbot" style="display: none;">
+    <section id="chatbot-panel" class="chatbot-panel" data-skip-altcha="{{ '1' if chatbot_skip_altcha else '0' }}" aria-hidden="true" inert role="dialog" aria-label="Chatbot" style="display: none;">
         <header class="chatbot-header">
             <div class="chatbot-heading">
                 <p class="chatbot-title">QC & MC Support</p>
