@@ -8,6 +8,7 @@
   const statusEl = document.getElementById('chatbot-status');
   const nameInput = document.getElementById('chatbot-name');
   const emailInput = document.getElementById('chatbot-email');
+  const identityPanel = document.querySelector('.chatbot-identity');
   const unreadBadge = document.getElementById('chat-unread-badge');
   const typingIndicator = document.getElementById('chat-typing');
   const typingText = document.getElementById('chat-typing-text');
@@ -81,6 +82,8 @@
   loadHistory();
   if (isVerified()) initIdlePrompt();
   if (chatState.room) {
+    handoffEnabled = true;
+    identityPanel?.classList.add('show');
     fetchMessages();
     startPolling();
   }
@@ -121,6 +124,12 @@
 
     const sender = getSenderName();
     const senderEmail = getSenderEmail();
+    if ((handoffEnabled || agentActive) && (!sender || !senderEmail || !senderEmail.includes('@'))) {
+      identityPanel?.classList.add('show');
+      setStatus('Enter your name and a valid email to talk to an agent.');
+      (sender ? emailInput : nameInput)?.focus();
+      return;
+    }
 
     const outboundKey = buildMessageKey({
       sender,
@@ -494,9 +503,9 @@
 
     if (action === 'resolved_no') {
       autoFlow.stage = 'agent_offer';
-      appendBotMessage('Would you like to email Support?', {
+      appendBotMessage('Would you like to talk to an Agent?', {
         buttons: [
-          { label: 'Yes, email Support', action: 'agent_yes' },
+          { label: 'Talk to an Agent', action: 'agent_yes' },
           { label: 'No, thanks', action: 'agent_no' }
         ]
       });
@@ -504,9 +513,11 @@
     }
 
     if (action === 'agent_yes') {
-      autoFlow.stage = 'done';
-      appendBotMessage('Opening the Support email form...');
-      openSupportEmailForm();
+      autoFlow.stage = 'agent_handoff';
+      handoffEnabled = true;
+      identityPanel?.classList.add('show');
+      appendBotMessage('Please enter your name and email, then type and send your concern. A support agent will respond here.');
+      nameInput?.focus();
       return;
     }
 
@@ -538,7 +549,7 @@
     }
 
     if (autoFlow.stage === 'agent_offer') {
-      appendBotMessage('Please use the buttons so I can open the Support email form.');
+      appendBotMessage('Please choose “Talk to an Agent” to send a customer concern.');
       return;
     }
 
@@ -556,7 +567,10 @@
   }
 
   function showTopicPrompt() {
+    const lastMessage = messagesEl.lastElementChild;
+    if (lastMessage?.dataset.kind === 'topic_prompt') return;
     appendBotMessage('Choose a topic so I can help faster:', {
+      kind: 'topic_prompt',
       buttons: topics.map((topic) => ({
         label: topic.label,
         action: 'topic',
@@ -746,6 +760,16 @@
       const seenKeys = new Set();
       isRestoring = true;
       entries.forEach((entry) => {
+        if (entry.content === 'Would you like to email Support?') {
+          entry.content = 'Would you like to talk to an Agent?';
+        }
+        if (Array.isArray(entry.buttons)) {
+          entry.buttons = entry.buttons.map((button) =>
+            button.action === 'agent_yes'
+              ? { ...button, label: 'Talk to an Agent' }
+              : button
+          );
+        }
         const entryKey = buildHistoryKey(entry);
         if (seenKeys.has(entryKey)) return;
         seenKeys.add(entryKey);
@@ -817,9 +841,11 @@
   function buildHistoryKey(entry) {
     if (!entry) return '';
     const buttons = Array.isArray(entry.buttons) ? JSON.stringify(entry.buttons) : '';
+    const isTopicPrompt = entry.kind === 'topic_prompt' ||
+      entry.content === 'Choose a topic so I can help faster:';
     const ts = entry.timestamp || '';
     const kind = entry.kind || '';
-    return `${entry.outbound ? 'out' : 'in'}::${entry.content || ''}::${entry.isHtml ? 'html' : 'txt'}::${buttons}::${kind}::${ts}`;
+    return `${entry.outbound ? 'out' : 'in'}::${entry.content || ''}::${entry.isHtml ? 'html' : 'txt'}::${buttons}::${kind}::${isTopicPrompt ? '' : ts}`;
   }
 
   function initIdlePrompt() {
@@ -894,6 +920,7 @@
         chatState = {};
         handoffEnabled = false;
         agentActive = false;
+        identityPanel?.classList.remove('show');
         pendingOutbound.length = 0;
         seenMessageIds.clear();
         seenMessageKeys.clear();

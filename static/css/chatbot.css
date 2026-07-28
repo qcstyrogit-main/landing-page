@@ -105,10 +105,15 @@
 }
 
 .chatbot-identity {
-    display: grid;
+    display: none;
     grid-template-columns: 1fr 1fr;
     gap: 8px;
     width: 100%;
+    grid-column: 1 / -1;
+}
+
+.chatbot-identity.show {
+    display: grid;
 }
 
 .chatbot-identity input {
@@ -286,7 +291,8 @@
 }
 
 .chatbot-form {
-    display: flex;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
     gap: 8px;
     padding: 12px 16px 16px;
     border-top: 1px solid #eef2f7;
@@ -344,7 +350,8 @@
 }
 
 .chatbot-form textarea {
-    flex: 1;
+    width: 100%;
+    min-width: 0;
     padding: 10px 12px;
     border-radius: 12px;
     border: 1px solid #e2e8f0;
