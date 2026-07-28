@@ -897,12 +897,12 @@ def open_application():
         return jsonify({"error": str(e)}), 500
 
 
-# ------------------ CLEFINCODE CHAT PROXY ----------------
+# ------------------ TWEET CUSTOMER SUPPORT PROXY ----------------
 @app.route("/api/clefincode/create", methods=["POST"])
 def clefincode_create():
     try:
         res = http_session.post(
-            f"{API_BASE_URL}/api/method/clefincode_chat.api.api_1_0_1.chat_portal.create_guest_profile_and_channel",
+            f"{API_BASE_URL}/api/method/company_messenger.api.create_customer_concern",
             json=request.json or {},
             headers={"Content-Type": "application/json"},
             timeout=15
@@ -916,7 +916,7 @@ def clefincode_create():
 def clefincode_send():
     try:
         res = http_session.post(
-            f"{API_BASE_URL}/api/method/clefincode_chat.api.api_1_0_1.chat_portal.send",
+            f"{API_BASE_URL}/api/method/company_messenger.api.customer_send_message",
             json=request.json or {},
             headers={"Content-Type": "application/json"},
             timeout=15
@@ -930,11 +930,12 @@ def clefincode_send():
 def clefincode_messages():
     try:
         room = request.args.get("room")
-        if not room:
-            return jsonify({"error": "room is required"}), 400
+        token = request.args.get("token")
+        if not room or not token:
+            return jsonify({"error": "room and token are required"}), 400
         res = http_session.get(
-            f"{API_BASE_URL}/api/method/clefincode_chat.api.api_1_0_1.chat_portal.get_messages",
-            params={"room": room},
+            f"{API_BASE_URL}/api/method/company_messenger.api.get_customer_messages",
+            params={"room": room, "token": token},
             timeout=15
         )
         return jsonify(res.json())

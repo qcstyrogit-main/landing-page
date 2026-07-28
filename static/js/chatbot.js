@@ -335,6 +335,7 @@
       body: JSON.stringify({
         content,
         room: chatState.room,
+        token: chatState.token || '',
         sender,
         sender_email: senderEmail,
         send_date: '',
@@ -350,7 +351,7 @@
 
   async function fetchMessages() {
     if (!chatState.room) return;
-    const url = `${endpoints.messages}?room=${encodeURIComponent(chatState.room)}&_=${Date.now()}`;
+    const url = `${endpoints.messages}?room=${encodeURIComponent(chatState.room)}&token=${encodeURIComponent(chatState.token || '')}&_=${Date.now()}`;
     const response = await fetch(url, { method: 'GET' });
     const payload = await safeJson(response);
     const data = payload.message || payload || {};

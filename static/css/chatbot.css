@@ -104,6 +104,28 @@
     color: #64748b;
 }
 
+.chatbot-identity {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    width: 100%;
+}
+
+.chatbot-identity input {
+    min-width: 0;
+    padding: 9px 10px;
+    border: 1px solid #dbe3ee;
+    border-radius: 10px;
+    background: #fff;
+    color: #0f172a;
+    font: inherit;
+}
+
+.chatbot-identity input:focus {
+    border-color: #2563eb;
+    outline: 2px solid rgba(37, 99, 235, .14);
+}
+
 .chatbot-close {
     border: none;
     background: #ffffff;
