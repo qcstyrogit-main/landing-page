@@ -9,6 +9,15 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/analytics.css') }}">
 </head>
 <body class="analytics-body">
+  {% macro metric_label(label, description) -%}
+  <span class="metric-label">
+    <span>{{ label }}</span>
+    <button type="button" class="metric-info" aria-label="{{ label }}: {{ description }}">
+      <span aria-hidden="true">i</span>
+      <span class="metric-tooltip" role="tooltip">{{ description }}</span>
+    </button>
+  </span>
+  {%- endmacro %}
   <header class="dashboard-header">
     <div>
       <p class="eyebrow">Internal reporting</p>
@@ -41,50 +50,50 @@
 
     <section class="analytics-tab-panel is-active" id="analytics-panel-overview" role="tabpanel" aria-labelledby="analytics-tab-overview" data-analytics-panel="overview">
     <section class="stats-grid" aria-label="Visit summary">
-      <article class="stat-card"><span>Views today</span><strong>{{ totals.today_views or 0 }}</strong></article>
-      <article class="stat-card featured"><span>Visits today</span><strong>{{ visit_totals.today_visits or 0 }}</strong></article>
-      <article class="stat-card"><span>Unique visitors today</span><strong>{{ totals.today_visitors or 0 }}</strong></article>
-      <article class="stat-card"><span>30-day views</span><strong>{{ totals.period_views or 0 }}</strong></article>
-      <article class="stat-card featured"><span>30-day visits</span><strong>{{ visit_totals.period_visits or 0 }}</strong></article>
-      <article class="stat-card"><span>30-day unique visitors</span><strong>{{ totals.period_visitors or 0 }}</strong></article>
-      <article class="stat-card"><span>All-time views</span><strong>{{ totals.all_views or 0 }}</strong></article>
-      <article class="stat-card featured"><span>All-time visits</span><strong>{{ visit_totals.all_visits or 0 }}</strong></article>
-      <article class="stat-card"><span>All-time unique visitors</span><strong>{{ totals.all_visitors or 0 }}</strong></article>
+      <article class="stat-card">{{ metric_label('Views today', 'Successful public page loads recorded today. Repeat page loads from the same visitor are counted.') }}<strong>{{ totals.today_views or 0 }}</strong></article>
+      <article class="stat-card featured">{{ metric_label('Visits today', 'Browsing sessions that started today. A new visit begins after 30 minutes of inactivity.') }}<strong>{{ visit_totals.today_visits or 0 }}</strong></article>
+      <article class="stat-card">{{ metric_label('Unique visitors today', 'Estimated distinct visitors today, based on a privacy-safe salted hash rather than a stored IP address.') }}<strong>{{ totals.today_visitors or 0 }}</strong></article>
+      <article class="stat-card">{{ metric_label('30-day views', 'All successful public page loads recorded during the last 30 days, including repeat views.') }}<strong>{{ totals.period_views or 0 }}</strong></article>
+      <article class="stat-card featured">{{ metric_label('30-day visits', 'Browsing sessions that began during the last 30 days. Sessions expire after 30 minutes of inactivity.') }}<strong>{{ visit_totals.period_visits or 0 }}</strong></article>
+      <article class="stat-card">{{ metric_label('30-day unique visitors', 'Estimated distinct visitors seen during the last 30 days using privacy-safe identifiers.') }}<strong>{{ totals.period_visitors or 0 }}</strong></article>
+      <article class="stat-card">{{ metric_label('All-time views', 'Every public page load stored since website analytics tracking began.') }}<strong>{{ totals.all_views or 0 }}</strong></article>
+      <article class="stat-card featured">{{ metric_label('All-time visits', 'Every browsing session stored since visit tracking began.') }}<strong>{{ visit_totals.all_visits or 0 }}</strong></article>
+      <article class="stat-card">{{ metric_label('All-time unique visitors', 'Estimated distinct visitors across all stored analytics history.') }}<strong>{{ totals.all_visitors or 0 }}</strong></article>
     </section>
 
     <section class="outcome-grid" aria-label="Website outcomes">
       <article class="outcome-card">
-        <span>Conversions · 30 days</span>
+        {{ metric_label('Conversions · 30 days', 'Successful contact messages, product inquiries, and job applications submitted during the last 30 days.') }}
         <strong>{{ conversion_totals.conversions or 0 }}</strong>
         <small>{{ conversion_rate }}% of visits converted</small>
       </article>
       <article class="outcome-card">
-        <span>Pages per visit</span>
+        {{ metric_label('Pages per visit', 'Average number of recorded page views per visit during the last 30 days.') }}
         <strong>{{ pages_per_visit }}</strong>
         <small>Average over the last 30 days</small>
       </article>
       <article class="outcome-card">
-        <span>Avg. visit duration</span>
+        {{ metric_label('Avg. visit duration', 'Average active time while the website was visible. Time while the tab is hidden or inactive is excluded.') }}
         <strong>{{ average_visit_duration }}</strong>
         <small>Active, visible time per visit</small>
       </article>
       <article class="outcome-card">
-        <span>Bounce rate</span>
+        {{ metric_label('Bounce rate', 'Percentage of visits with one page view, less than 10 seconds of active time, and no recorded action.') }}
         <strong>{{ bounce_rate }}%</strong>
         <small>One page, under 10 seconds, no action</small>
       </article>
       <article class="outcome-card">
-        <span>Product inquiries</span>
+        {{ metric_label('Product inquiries', 'Product inquiry forms successfully submitted during the last 30 days.') }}
         <strong>{{ conversion_totals.inquiries or 0 }}</strong>
         <small>Successful submissions</small>
       </article>
       <article class="outcome-card">
-        <span>Contact messages</span>
+        {{ metric_label('Contact messages', 'General contact forms successfully submitted during the last 30 days.') }}
         <strong>{{ conversion_totals.contacts or 0 }}</strong>
         <small>Successful submissions</small>
       </article>
       <article class="outcome-card">
-        <span>Job applications</span>
+        {{ metric_label('Job applications', 'Open applications and job applications successfully submitted during the last 30 days.') }}
         <strong>{{ conversion_totals.applications or 0 }}</strong>
         <small>Successful submissions</small>
       </article>
@@ -254,12 +263,12 @@
       </div>
       <p class="security-explanation">Signals include recognized bot user agents, requests for commonly scanned paths, access rejected with 401/403, and requests stopped by rate limits. They indicate unusual traffic—not necessarily a confirmed attack.</p>
       <div class="outcome-grid security-summary" aria-label="Security activity summary">
-        <article class="outcome-card"><span>Flagged requests</span><strong>{{ security_totals.requests or 0 }}</strong><small>Aggregated security signals</small></article>
-        <article class="outcome-card"><span>Distinct sources</span><strong>{{ security_totals.sources or 0 }}</strong><small>Privacy-safe estimates</small></article>
-        <article class="outcome-card"><span>Known bot requests</span><strong>{{ security_totals.bots or 0 }}</strong><small>Excluded from visitor analytics</small></article>
-        <article class="outcome-card"><span>Suspicious paths</span><strong>{{ security_totals.suspicious_paths or 0 }}</strong><small>Common scanner targets</small></article>
-        <article class="outcome-card"><span>Blocked requests</span><strong>{{ security_totals.blocked or 0 }}</strong><small>HTTP 401 or 403</small></article>
-        <article class="outcome-card"><span>Rate limited</span><strong>{{ security_totals.rate_limited or 0 }}</strong><small>HTTP 429 responses</small></article>
+        <article class="outcome-card">{{ metric_label('Flagged requests', 'Total requests carrying at least one bot, scanner, blocked-access, or rate-limit security signal.') }}<strong>{{ security_totals.requests or 0 }}</strong><small>Aggregated security signals</small></article>
+        <article class="outcome-card">{{ metric_label('Distinct sources', 'Estimated number of different sources behind flagged requests, using a salted hash without storing raw IP addresses.') }}<strong>{{ security_totals.sources or 0 }}</strong><small>Privacy-safe estimates</small></article>
+        <article class="outcome-card">{{ metric_label('Known bot requests', 'Requests whose user-agent matched a recognized bot, crawler, monitoring, or automated-browser pattern.') }}<strong>{{ security_totals.bots or 0 }}</strong><small>Excluded from visitor analytics</small></article>
+        <article class="outcome-card">{{ metric_label('Suspicious paths', 'Requests for paths commonly targeted by automated scanners, such as WordPress, PHP, environment, or repository files.') }}<strong>{{ security_totals.suspicious_paths or 0 }}</strong><small>Common scanner targets</small></article>
+        <article class="outcome-card">{{ metric_label('Blocked requests', 'Requests rejected by the website with HTTP 401 Unauthorized or HTTP 403 Forbidden.') }}<strong>{{ security_totals.blocked or 0 }}</strong><small>HTTP 401 or 403</small></article>
+        <article class="outcome-card">{{ metric_label('Rate limited', 'Requests stopped with HTTP 429 because a protected endpoint received too many requests within its allowed window.') }}<strong>{{ security_totals.rate_limited or 0 }}</strong><small>HTTP 429 responses</small></article>
       </div>
     </section>
 
