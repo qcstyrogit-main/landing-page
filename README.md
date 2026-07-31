@@ -7,6 +7,10 @@ are recorded automatically in a local SQLite database. Static files, API calls,
 bots, admin pages, failed requests, and visitors with Do Not Track enabled are
 not counted. Raw IP addresses are never stored.
 
+The dashboard menu separates Overview, Engagement, Audience, and Security.
+The selected section is kept in the URL hash so it can be bookmarked. Printing
+the report includes every section regardless of the currently selected tab.
+
 A visit groups activity until the visitor is inactive for 30 minutes. The
 dashboard also records anonymous product views, inquiry/contact opens, chat and
 jobs interest, and successful inquiry, contact, and application submissions.
@@ -23,6 +27,14 @@ country header supplied by a trusted CDN or hosting proxy, then falls back to
 the Country API in a background request. Raw IP addresses are never written to
 the analytics database. Existing visits recorded before this feature remain
 listed as `Unknown`.
+
+The dashboard also reports bot and suspicious-request signals separately from
+normal visitor analytics. It recognizes common bot user agents and scanner
+paths, plus HTTP 401/403 blocks and HTTP 429 rate limits. Repeated identical
+signals are aggregated by minute. Raw IP addresses and user-agent strings are
+not stored; source counts use a salted one-way hash. These signals are useful
+for spotting trends, but they are not proof that a request was a malicious
+attack.
 
 Configure these environment variables before using the dashboard:
 

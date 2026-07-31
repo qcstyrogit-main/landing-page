@@ -30,6 +30,16 @@
   </header>
 
   <main class="dashboard-main">
+    <nav class="analytics-tabs" aria-label="Analytics sections">
+      <div role="tablist" aria-label="Dashboard views">
+        <button type="button" role="tab" id="analytics-tab-overview" aria-controls="analytics-panel-overview" aria-selected="true" tabindex="0" data-analytics-tab="overview">Overview</button>
+        <button type="button" role="tab" id="analytics-tab-engagement" aria-controls="analytics-panel-engagement" aria-selected="false" tabindex="-1" data-analytics-tab="engagement">Engagement</button>
+        <button type="button" role="tab" id="analytics-tab-audience" aria-controls="analytics-panel-audience" aria-selected="false" tabindex="-1" data-analytics-tab="audience">Audience</button>
+        <button type="button" role="tab" id="analytics-tab-security" aria-controls="analytics-panel-security" aria-selected="false" tabindex="-1" data-analytics-tab="security">Security</button>
+      </div>
+    </nav>
+
+    <section class="analytics-tab-panel is-active" id="analytics-panel-overview" role="tabpanel" aria-labelledby="analytics-tab-overview" data-analytics-panel="overview">
     <section class="stats-grid" aria-label="Visit summary">
       <article class="stat-card"><span>Views today</span><strong>{{ totals.today_views or 0 }}</strong></article>
       <article class="stat-card featured"><span>Visits today</span><strong>{{ visit_totals.today_visits or 0 }}</strong></article>
@@ -105,7 +115,9 @@
         {% endfor %}
       </div>
     </section>
+    </section>
 
+    <section class="analytics-tab-panel" id="analytics-panel-engagement" role="tabpanel" aria-labelledby="analytics-tab-engagement" data-analytics-panel="engagement">
     <div class="dashboard-columns analytics-actions">
       <section class="dashboard-card pages-card">
         <div class="card-heading">
@@ -149,7 +161,9 @@
         </ol>
       </section>
     </div>
+    </section>
 
+    <section class="analytics-tab-panel" id="analytics-panel-audience" role="tabpanel" aria-labelledby="analytics-tab-audience" data-analytics-panel="audience">
     <div class="dashboard-columns">
       <section class="dashboard-card pages-card">
         <div class="card-heading">
@@ -227,9 +241,106 @@
       <p class="empty-state">Country data will appear as new visits arrive.</p>
       {% endif %}
     </section>
+    </section>
+
+    <section class="analytics-tab-panel" id="analytics-panel-security" role="tabpanel" aria-labelledby="analytics-tab-security" data-analytics-panel="security">
+    <section class="dashboard-card security-card">
+      <div class="card-heading">
+        <div>
+          <p class="eyebrow">Security signals</p>
+          <h2>Bot &amp; suspicious activity</h2>
+        </div>
+        <span class="card-metric-label">Last 30 days</span>
+      </div>
+      <p class="security-explanation">Signals include recognized bot user agents, requests for commonly scanned paths, access rejected with 401/403, and requests stopped by rate limits. They indicate unusual traffic—not necessarily a confirmed attack.</p>
+      <div class="outcome-grid security-summary" aria-label="Security activity summary">
+        <article class="outcome-card"><span>Flagged requests</span><strong>{{ security_totals.requests or 0 }}</strong><small>Aggregated security signals</small></article>
+        <article class="outcome-card"><span>Distinct sources</span><strong>{{ security_totals.sources or 0 }}</strong><small>Privacy-safe estimates</small></article>
+        <article class="outcome-card"><span>Known bot requests</span><strong>{{ security_totals.bots or 0 }}</strong><small>Excluded from visitor analytics</small></article>
+        <article class="outcome-card"><span>Suspicious paths</span><strong>{{ security_totals.suspicious_paths or 0 }}</strong><small>Common scanner targets</small></article>
+        <article class="outcome-card"><span>Blocked requests</span><strong>{{ security_totals.blocked or 0 }}</strong><small>HTTP 401 or 403</small></article>
+        <article class="outcome-card"><span>Rate limited</span><strong>{{ security_totals.rate_limited or 0 }}</strong><small>HTTP 429 responses</small></article>
+      </div>
+    </section>
+
+    <div class="dashboard-columns security-details">
+      <section class="dashboard-card pages-card">
+        <div class="card-heading">
+          <div>
+            <p class="eyebrow">Targets</p>
+            <h2>Most requested flagged paths</h2>
+          </div>
+        </div>
+        {% if security_paths %}
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Path</th><th>Requests</th><th>Sources</th></tr></thead>
+            <tbody>
+              {% for item in security_paths %}
+              <tr><td>{{ item.path }}</td><td>{{ item.requests }}</td><td>{{ item.sources }}</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% else %}
+        <p class="empty-state">No bot or suspicious-request signals recorded yet.</p>
+        {% endif %}
+      </section>
+
+      <section class="dashboard-card pages-card">
+        <div class="card-heading">
+          <div>
+            <p class="eyebrow">Recent activity</p>
+            <h2>Latest security signals</h2>
+          </div>
+        </div>
+        {% if recent_security %}
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Signal</th><th>Request</th><th>Count</th></tr></thead>
+            <tbody>
+              {% for item in recent_security %}
+              <tr>
+                <td>{{ item.signal }}<small>{{ item.observed_at.strftime('%b %d, %I:%M %p') }}</small></td>
+                <td><code>{{ item.method }} {{ item.path }}</code><small>HTTP {{ item.status_code }}</small></td>
+                <td>{{ item.requests }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% else %}
+        <p class="empty-state">Recent signals will appear here when detected.</p>
+        {% endif %}
+      </section>
+    </div>
+
+    <section class="dashboard-card pages-card security-countries">
+      <div class="card-heading">
+        <div>
+          <p class="eyebrow">Network geography</p>
+          <h2>Flagged requests by country</h2>
+        </div>
+      </div>
+      {% if security_countries %}
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Country</th><th>Flagged requests</th></tr></thead>
+          <tbody>
+            {% for country in security_countries %}
+            <tr><td><span data-country-code="{{ country.country_code }}">{{ country.country_code or 'Unknown' }}</span></td><td>{{ country.requests }}</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <p class="empty-state">Country appears when your hosting proxy supplies a country header.</p>
+      {% endif %}
+    </section>
+    </section>
 
     <footer class="analytics-note">
-      <p>Unique visitors are privacy-safe estimates. Country is derived from the visitor's IP, but only the two-letter country code is stored. Raw IP addresses, full referrer URLs, and query strings are not stored.</p>
+      <p>Unique visitors and security sources are privacy-safe estimates. Country is derived from the visitor's IP, but only the two-letter country code is stored. Raw IP addresses, user-agent strings, full referrer URLs, and query strings are not stored.</p>
       <p>Updated {{ generated_at.strftime('%b %d, %Y at %I:%M %p') }} ({{ generated_at.tzname() }}).</p>
     </footer>
   </main>

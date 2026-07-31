@@ -63,6 +63,23 @@ COUNTRY_HEADERS = (
     "X-Country-Code",
 )
 COUNTRY_CODE_PATTERN = re.compile(r"^[A-Z]{2}$")
+SECURITY_PATH_PATTERN = re.compile(
+    r"(?:^|/)(?:"
+    r"\.env(?:\.|/|$)|\.git(?:/|$)|\.aws(?:/|$)|"
+    r"wp-admin(?:/|$)|wp-login\.php$|xmlrpc\.php$|wp-content(?:/|$)|"
+    r"phpmyadmin(?:/|$)|pma(?:/|$)|vendor/phpunit(?:/|$)|"
+    r"cgi-bin(?:/|$)|server-status$|actuator(?:/|$)|"
+    r"boaform(?:/|$)|HNAP1(?:/|$)|autodiscover/autodiscover\.xml$|"
+    r"[^\s/]+\.php$"
+    r")",
+    re.IGNORECASE,
+)
+SECURITY_TRACKING_EXCLUSIONS = (
+    "/static/",
+    "/files/",
+    "/private/",
+    "/api/analytics/",
+)
 
 
 def init_analytics(app):
@@ -148,6 +165,32 @@ def init_analytics(app):
         database.execute("CREATE INDEX IF NOT EXISTS idx_events_date ON analytics_events(occurred_at)")
         database.execute("CREATE INDEX IF NOT EXISTS idx_events_name ON analytics_events(event_name)")
         database.execute("CREATE INDEX IF NOT EXISTS idx_events_session ON analytics_events(session_id)")
+        database.execute(
+            """
+            CREATE TABLE IF NOT EXISTS security_requests (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                minute_bucket TEXT NOT NULL,
+                observed_at TEXT NOT NULL,
+                path TEXT NOT NULL,
+                method TEXT NOT NULL,
+                status_code INTEGER NOT NULL,
+                actor_hash TEXT NOT NULL,
+                country_code TEXT NOT NULL DEFAULT '',
+                bot_requests INTEGER NOT NULL DEFAULT 0,
+                suspicious_requests INTEGER NOT NULL DEFAULT 0,
+                blocked_requests INTEGER NOT NULL DEFAULT 0,
+                rate_limited_requests INTEGER NOT NULL DEFAULT 0,
+                request_count INTEGER NOT NULL DEFAULT 1,
+                UNIQUE(minute_bucket, path, method, status_code, actor_hash)
+            )
+            """
+        )
+        database.execute(
+            "CREATE INDEX IF NOT EXISTS idx_security_observed ON security_requests(observed_at)"
+        )
+        database.execute(
+            "CREATE INDEX IF NOT EXISTS idx_security_path ON security_requests(path)"
+        )
         # Preserve the usefulness of page views recorded before visit tracking
         # was introduced. New visits use the 30-minute inactivity rule below.
         database.execute(
@@ -274,6 +317,20 @@ def init_analytics(app):
         except (ValueError, KeyError, requests.RequestException):
             return ""
 
+    def trusted_country_code():
+        for header in COUNTRY_HEADERS:
+            code = valid_country_code(request.headers.get(header))
+            if code:
+                return code
+        return ""
+
+    def security_actor_hash():
+        salt = os.getenv("ANALYTICS_HASH_SALT") or str(app.config["SECRET_KEY"])
+        user_agent = request.headers.get("User-Agent", "")
+        return hashlib.sha256(
+            f"security|{salt}|{client_ip()}|{user_agent}".encode()
+        ).hexdigest()
+
     def record_event(event_name, path, label=""):
         occurred_at = datetime.now(analytics_timezone).isoformat(timespec="seconds")
         visitor_hash, analytics_session = analytics_identity()
@@ -363,6 +420,61 @@ def init_analytics(app):
         if request.path.startswith("/analytics"):
             response.headers["Cache-Control"] = "no-store, private"
             response.headers["Pragma"] = "no-cache"
+        return response
+
+    @app.after_request
+    def record_security_signal(response):
+        if any(request.path.startswith(prefix) for prefix in SECURITY_TRACKING_EXCLUSIONS):
+            return response
+
+        user_agent = request.headers.get("User-Agent", "")
+        is_bot = bool(BOT_PATTERN.search(user_agent))
+        is_suspicious_path = bool(SECURITY_PATH_PATTERN.search(request.path))
+        is_rate_limited = response.status_code == 429
+        is_blocked = response.status_code in {401, 403}
+        if not (is_bot or is_suspicious_path or is_rate_limited or is_blocked):
+            return response
+
+        try:
+            observed_at = datetime.now(analytics_timezone).isoformat(timespec="seconds")
+            minute_bucket = observed_at[:16]
+            with connect() as database:
+                database.execute(
+                    """
+                    INSERT INTO security_requests
+                    (minute_bucket, observed_at, path, method, status_code, actor_hash,
+                     country_code, bot_requests, suspicious_requests, blocked_requests,
+                     rate_limited_requests, request_count)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1)
+                    ON CONFLICT(minute_bucket, path, method, status_code, actor_hash)
+                    DO UPDATE SET
+                        observed_at = excluded.observed_at,
+                        country_code = CASE
+                            WHEN security_requests.country_code = '' THEN excluded.country_code
+                            ELSE security_requests.country_code
+                        END,
+                        bot_requests = security_requests.bot_requests + excluded.bot_requests,
+                        suspicious_requests = security_requests.suspicious_requests + excluded.suspicious_requests,
+                        blocked_requests = security_requests.blocked_requests + excluded.blocked_requests,
+                        rate_limited_requests = security_requests.rate_limited_requests + excluded.rate_limited_requests,
+                        request_count = security_requests.request_count + 1
+                    """,
+                    (
+                        minute_bucket,
+                        observed_at,
+                        clean_path(request.path),
+                        request.method[:10],
+                        response.status_code,
+                        security_actor_hash(),
+                        trusted_country_code(),
+                        int(is_bot),
+                        int(is_suspicious_path),
+                        int(is_blocked),
+                        int(is_rate_limited),
+                    ),
+                )
+        except Exception:
+            app.logger.exception("Unable to record analytics security signal")
         return response
 
     @app.route("/api/analytics/event", methods=["POST"])
@@ -609,6 +721,56 @@ def init_analytics(app):
                 """,
                 (thirty_days,),
             ).fetchall()
+            security_totals = database.execute(
+                """
+                SELECT
+                    COALESCE(SUM(request_count), 0) AS requests,
+                    COUNT(DISTINCT actor_hash) AS sources,
+                    COALESCE(SUM(bot_requests), 0) AS bots,
+                    COALESCE(SUM(suspicious_requests), 0) AS suspicious_paths,
+                    COALESCE(SUM(blocked_requests), 0) AS blocked,
+                    COALESCE(SUM(rate_limited_requests), 0) AS rate_limited
+                FROM security_requests
+                WHERE substr(observed_at, 1, 10) >= ?
+                """,
+                (thirty_days,),
+            ).fetchone()
+            security_paths = database.execute(
+                """
+                SELECT path, SUM(request_count) AS requests,
+                       COUNT(DISTINCT actor_hash) AS sources,
+                       MAX(observed_at) AS last_seen
+                FROM security_requests
+                WHERE substr(observed_at, 1, 10) >= ?
+                GROUP BY path
+                ORDER BY requests DESC, last_seen DESC
+                LIMIT 10
+                """,
+                (thirty_days,),
+            ).fetchall()
+            security_countries = database.execute(
+                """
+                SELECT country_code, SUM(request_count) AS requests
+                FROM security_requests
+                WHERE substr(observed_at, 1, 10) >= ?
+                GROUP BY country_code
+                ORDER BY requests DESC, country_code
+                LIMIT 10
+                """,
+                (thirty_days,),
+            ).fetchall()
+            recent_security = database.execute(
+                """
+                SELECT observed_at, path, method, status_code, request_count,
+                       bot_requests, suspicious_requests, blocked_requests,
+                       rate_limited_requests
+                FROM security_requests
+                WHERE substr(observed_at, 1, 10) >= ?
+                ORDER BY observed_at DESC
+                LIMIT 12
+                """,
+                (thirty_days,),
+            ).fetchall()
             trend_rows = database.execute(
                 """
                 SELECT substr(viewed_at, 1, 10) AS day, COUNT(*) AS views,
@@ -690,6 +852,27 @@ def init_analytics(app):
             }
             for row in country_rows
         ]
+        recent_security_signals = []
+        for row in recent_security:
+            labels = []
+            if row["rate_limited_requests"]:
+                labels.append("Rate limited")
+            if row["blocked_requests"]:
+                labels.append("Blocked")
+            if row["suspicious_requests"]:
+                labels.append("Suspicious path")
+            if row["bot_requests"]:
+                labels.append("Known bot")
+            recent_security_signals.append(
+                {
+                    "observed_at": datetime.fromisoformat(row["observed_at"]),
+                    "path": row["path"],
+                    "method": row["method"],
+                    "status_code": row["status_code"],
+                    "requests": row["request_count"],
+                    "signal": " · ".join(labels),
+                }
+            )
         return render_template(
             "analytics_dashboard.html",
             totals=totals,
@@ -706,6 +889,10 @@ def init_analytics(app):
             browsers=browsers,
             referrers=referrers,
             countries=countries,
+            security_totals=security_totals,
+            security_paths=security_paths,
+            security_countries=security_countries,
+            recent_security=recent_security_signals,
             trend=trend,
             max_trend=max_trend,
             generated_at=now,

@@ -244,6 +244,47 @@ html[data-theme="light"] .analytics-body :is(.analytics-brand, .analytics-form l
   padding: 2.5rem 0 4rem;
 }
 
+.analytics-tabs {
+  position: sticky;
+  z-index: 10;
+  top: 0;
+  margin-bottom: 1.5rem;
+  border: 1px solid var(--line);
+  background: var(--background);
+  background: color-mix(in srgb, var(--background) 92%, transparent);
+  backdrop-filter: blur(16px);
+}
+
+.analytics-tabs [role="tablist"] {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.analytics-tabs button {
+  min-width: 0;
+  min-height: 3.25rem;
+  padding: .75rem 1rem;
+  border: 0;
+  border-right: 1px solid var(--line);
+  background: transparent;
+  color: var(--muted);
+  font: 600 .72rem/1 "Courier New", monospace;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.analytics-tabs button:last-child { border-right: 0; }
+.analytics-tabs button:hover { color: var(--text); }
+.analytics-tabs button:focus-visible { outline: 2px solid var(--blue); outline-offset: -3px; }
+.analytics-tabs button.is-active {
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: inset 0 -2px 0 var(--red);
+}
+
+.analytics-tab-panel[hidden] { display: none; }
+
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -360,6 +401,43 @@ th:not(:first-child), td:not(:first-child) { text-align: right; }
 .breakdown-card li > i { display: block; height: 2px; margin-top: .45rem; background: linear-gradient(90deg, var(--red), var(--blue)); }
 .empty-state { margin: 2rem 0; color: var(--muted); }
 
+.security-card,
+.security-countries {
+  margin-top: 1.5rem;
+  padding: clamp(1.25rem, 3vw, 2.5rem);
+}
+
+.security-explanation {
+  max-width: 58rem;
+  margin: 1rem 0 0;
+  color: var(--muted);
+  font-size: .82rem;
+  line-height: 1.7;
+}
+
+.security-summary {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.security-details {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.security-details td small {
+  display: block;
+  margin-top: .35rem;
+  color: var(--muted);
+  font-family: inherit;
+  font-size: .68rem;
+}
+
+.security-details code {
+  color: var(--text);
+  font-family: "Courier New", monospace;
+  font-size: .76rem;
+  overflow-wrap: anywhere;
+}
+
 .analytics-note {
   display: flex;
   justify-content: space-between;
@@ -373,6 +451,7 @@ th:not(:first-child), td:not(:first-child) { text-align: right; }
   .stats-grid { grid-template-columns: repeat(3, 1fr); }
   .outcome-grid { grid-template-columns: repeat(3, 1fr); }
   .dashboard-columns { grid-template-columns: 1fr; }
+  .security-summary { grid-template-columns: repeat(3, 1fr); }
   .breakdown-stack { grid-template-columns: repeat(3, 1fr); }
 }
 
@@ -381,9 +460,16 @@ th:not(:first-child), td:not(:first-child) { text-align: right; }
   .login-panel { min-height: 100vh; border: 0; }
   .analytics-brand { margin-bottom: 3rem; }
   .dashboard-header { display: block; }
+  .analytics-tabs {
+    overflow-x: auto;
+  }
+  .analytics-tabs [role="tablist"] {
+    grid-template-columns: repeat(4, minmax(7.5rem, 1fr));
+  }
   .header-actions { align-items: stretch; margin-top: 2rem; flex-wrap: wrap; }
   .stats-grid { grid-template-columns: repeat(2, 1fr); }
   .outcome-grid { grid-template-columns: 1fr 1fr; }
+  .security-summary { grid-template-columns: 1fr 1fr; }
   .stats-grid .stat-card:last-child:nth-child(odd),
   .outcome-grid .outcome-card:last-child:nth-child(odd) { grid-column: span 2; }
   .stat-card { padding: 1.15rem; }
@@ -418,6 +504,14 @@ th:not(:first-child), td:not(:first-child) { text-align: right; }
 
   .site-theme-toggle {
     display: none !important;
+  }
+
+  .analytics-tabs {
+    display: none !important;
+  }
+
+  .analytics-tab-panel[hidden] {
+    display: block !important;
   }
 
   html,
