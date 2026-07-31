@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Website Analytics | QC &amp; MC</title>
+  <script src="{{ url_for('static', filename='js/analytics_theme.js') }}"></script>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/analytics.css') }}">
+</head>
+<body class="analytics-body">
+  <header class="dashboard-header">
+    <div>
+      <p class="eyebrow">Internal reporting</p>
+      <h1>Website Analytics</h1>
+      <p class="dashboard-subtitle">A privacy-conscious view of how visitors use the website.</p>
+    </div>
+    <div class="header-actions">
+      <span class="date-range">Last 30 days</span>
+      <a href="{{ url_for('home') }}">View website</a>
+      <button type="button" class="site-theme-toggle analytics-header-theme-toggle" data-theme-toggle aria-label="Switch to light theme" title="Switch to light theme">
+        <span class="theme-toggle-icon" aria-hidden="true">☼</span>
+      </button>
+      <button type="button" class="secondary-button print-report-button">Print report</button>
+      <form action="{{ url_for('analytics_logout') }}" method="post">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button type="submit" class="secondary-button">Log out</button>
+      </form>
+    </div>
+  </header>
+
+  <main class="dashboard-main">
+    <section class="stats-grid" aria-label="Visit summary">
+      <article class="stat-card"><span>Views today</span><strong>{{ totals.today_views or 0 }}</strong></article>
+      <article class="stat-card featured"><span>Visits today</span><strong>{{ visit_totals.today_visits or 0 }}</strong></article>
+      <article class="stat-card"><span>Unique visitors today</span><strong>{{ totals.today_visitors or 0 }}</strong></article>
+      <article class="stat-card"><span>30-day views</span><strong>{{ totals.period_views or 0 }}</strong></article>
+      <article class="stat-card featured"><span>30-day visits</span><strong>{{ visit_totals.period_visits or 0 }}</strong></article>
+      <article class="stat-card"><span>30-day unique visitors</span><strong>{{ totals.period_visitors or 0 }}</strong></article>
+      <article class="stat-card"><span>All-time views</span><strong>{{ totals.all_views or 0 }}</strong></article>
+      <article class="stat-card featured"><span>All-time visits</span><strong>{{ visit_totals.all_visits or 0 }}</strong></article>
+      <article class="stat-card"><span>All-time unique visitors</span><strong>{{ totals.all_visitors or 0 }}</strong></article>
+    </section>
+
+    <section class="outcome-grid" aria-label="Website outcomes">
+      <article class="outcome-card">
+        <span>Conversions · 30 days</span>
+        <strong>{{ conversion_totals.conversions or 0 }}</strong>
+        <small>{{ conversion_rate }}% of visits converted</small>
+      </article>
+      <article class="outcome-card">
+        <span>Pages per visit</span>
+        <strong>{{ pages_per_visit }}</strong>
+        <small>Average over the last 30 days</small>
+      </article>
+      <article class="outcome-card">
+        <span>Avg. visit duration</span>
+        <strong>{{ average_visit_duration }}</strong>
+        <small>Active, visible time per visit</small>
+      </article>
+      <article class="outcome-card">
+        <span>Bounce rate</span>
+        <strong>{{ bounce_rate }}%</strong>
+        <small>One page, under 10 seconds, no action</small>
+      </article>
+      <article class="outcome-card">
+        <span>Product inquiries</span>
+        <strong>{{ conversion_totals.inquiries or 0 }}</strong>
+        <small>Successful submissions</small>
+      </article>
+      <article class="outcome-card">
+        <span>Contact messages</span>
+        <strong>{{ conversion_totals.contacts or 0 }}</strong>
+        <small>Successful submissions</small>
+      </article>
+      <article class="outcome-card">
+        <span>Job applications</span>
+        <strong>{{ conversion_totals.applications or 0 }}</strong>
+        <small>Successful submissions</small>
+      </article>
+    </section>
+
+    <section class="dashboard-card trend-card">
+      <div class="card-heading">
+        <div>
+          <p class="eyebrow">Traffic</p>
+          <h2>Last 14 days</h2>
+        </div>
+        <div class="legend">
+          <span><i class="views-dot"></i>Views</span>
+          <span><i class="visits-dot"></i>Visits</span>
+          <span><i class="visitors-dot"></i>Unique visitors</span>
+        </div>
+      </div>
+      <div class="trend-chart" aria-label="Daily views and visitors chart">
+        {% for day in trend %}
+        <div class="trend-column" title="{{ day.label }}: {{ day.views }} views, {{ day.visits }} visits, {{ day.visitors }} unique visitors">
+          <div class="bars">
+            <i class="visitor-bar" style="height: {{ (day.visitors / max_trend * 100)|round }}%"></i>
+            <i class="visit-bar" style="height: {{ (day.visits / max_trend * 100)|round }}%"></i>
+            <i class="view-bar" style="height: {{ (day.views / max_trend * 100)|round }}%"></i>
+          </div>
+          <span>{{ day.label }}</span>
+        </div>
+        {% endfor %}
+      </div>
+    </section>
+
+    <div class="dashboard-columns analytics-actions">
+      <section class="dashboard-card pages-card">
+        <div class="card-heading">
+          <div>
+            <p class="eyebrow">Business outcomes</p>
+            <h2>Conversion activity</h2>
+          </div>
+          <span class="card-metric-label">Last 30 days</span>
+        </div>
+        {% if event_summary %}
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Action</th><th>Events</th><th>Visits</th></tr></thead>
+            <tbody>
+              {% for event in event_summary %}
+              <tr><td>{{ event.label }}</td><td>{{ event.events }}</td><td>{{ event.visits }}</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% else %}
+        <p class="empty-state">Visitor actions will appear here as people use the website.</p>
+        {% endif %}
+      </section>
+
+      <section class="dashboard-card funnel-card">
+        <div class="card-heading">
+          <div>
+            <p class="eyebrow">Journey</p>
+            <h2>Action funnel</h2>
+          </div>
+        </div>
+        <ol>
+          {% set funnel_maximum = funnel[0].value or 1 %}
+          {% for stage in funnel %}
+          <li>
+            <div><span>{{ stage.label }}</span><strong>{{ stage.value }}</strong></div>
+            <i style="width: {{ (stage.value / funnel_maximum * 100)|round }}%"></i>
+          </li>
+          {% endfor %}
+        </ol>
+      </section>
+    </div>
+
+    <div class="dashboard-columns">
+      <section class="dashboard-card pages-card">
+        <div class="card-heading">
+          <div>
+            <p class="eyebrow">Content</p>
+            <h2>Top pages</h2>
+          </div>
+        </div>
+        {% if top_pages %}
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Page</th><th>Views</th><th>Unique visitors</th></tr></thead>
+            <tbody>
+              {% for page in top_pages %}
+              <tr><td>{{ page.path }}</td><td>{{ page.views }}</td><td>{{ page.visitors }}</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% else %}
+        <p class="empty-state">Visits will appear here after people browse the website.</p>
+        {% endif %}
+      </section>
+
+      <aside class="breakdown-stack">
+        {% for title, rows, metric in [('Devices', devices, 'Unique visitors'), ('Browsers', browsers, 'Unique visitors'), ('Traffic sources', referrers, 'Page views')] %}
+        <section class="dashboard-card breakdown-card">
+          <div class="breakdown-heading">
+            <h2>{{ title }}</h2>
+            <span>{{ metric }}</span>
+          </div>
+          {% if rows %}
+          <ul>
+            {% set maximum = rows[0].value %}
+            {% for row in rows %}
+            <li>
+              <div><span>{{ row.label }}</span><strong>{{ row.value }}</strong></div>
+              <i style="width: {{ (row.value / maximum * 100)|round }}%"></i>
+            </li>
+            {% endfor %}
+          </ul>
+          {% else %}
+          <p class="empty-state">No data yet.</p>
+          {% endif %}
+        </section>
+        {% endfor %}
+      </aside>
+    </div>
+
+    <footer class="analytics-note">
+      <p>Unique visitors are privacy-safe estimates. Raw IP addresses, full referrer URLs, and query strings are not stored.</p>
+      <p>Updated {{ generated_at.strftime('%b %d, %Y at %I:%M %p') }} ({{ generated_at.tzname() }}).</p>
+    </footer>
+  </main>
+  <script defer src="{{ url_for('static', filename='js/analytics_dashboard.js') }}"></script>
+</body>
+</html>

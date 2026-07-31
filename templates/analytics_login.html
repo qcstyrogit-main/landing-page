@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Analytics Login | QC &amp; MC</title>
+  <script src="{{ url_for('static', filename='js/analytics_theme.js') }}"></script>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/analytics.css') }}">
+</head>
+<body class="analytics-body analytics-login-page">
+  <button type="button" class="site-theme-toggle analytics-theme-toggle" data-theme-toggle aria-label="Switch to light theme" title="Switch to light theme">
+    <span class="theme-toggle-icon" aria-hidden="true">☼</span>
+  </button>
+  <main class="login-shell">
+    <section class="login-panel" aria-labelledby="login-title">
+      <div class="analytics-brand" aria-label="QC Styropackaging and Multiplast Corporation">
+        <span class="brand-mark">QC</span>
+        <span>QC Styropackaging &amp; Multiplast</span>
+      </div>
+
+      <p class="eyebrow">Internal reporting</p>
+      <h1 id="login-title">Website Analytics</h1>
+      <p class="login-intro">Sign in to view visits, popular pages, devices, browsers, and traffic sources.</p>
+
+      {% if not configured %}
+      <div class="notice" role="status">
+        Analytics access is not configured yet. Set the admin username and password environment variables before signing in.
+      </div>
+      {% endif %}
+
+      {% if error %}
+      <div class="form-error" role="alert">{{ error }}</div>
+      {% endif %}
+
+      <form method="post" class="analytics-form">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <label for="username">Username</label>
+        <input id="username" name="username" type="text" autocomplete="username" required autofocus>
+
+        <label for="password">Password</label>
+        <input id="password" name="password" type="password" autocomplete="current-password" required>
+
+        <button type="submit" {% if not configured %}disabled{% endif %}>Sign in</button>
+      </form>
+
+      <a class="back-link" href="{{ url_for('home') }}">← Return to website</a>
+    </section>
+  </main>
+</body>
+</html>

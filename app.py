@@ -429,6 +429,13 @@ def security_before_request():
 
 
 # --------------------------------------------------
+# INTERNAL WEBSITE ANALYTICS
+# --------------------------------------------------
+from analytics import init_analytics
+init_analytics(app)
+
+
+# --------------------------------------------------
 # ROUTES (PAGES)
 # --------------------------------------------------
 @app.route("/")
