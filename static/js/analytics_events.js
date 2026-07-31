@@ -108,9 +108,19 @@
     const target = event.target instanceof Element ? event.target : null;
     if (!target) return;
 
-    const productCard = target.closest(".product-card");
-    if (productCard && !target.closest("button, a, input, select, textarea")) {
-      track("product_view", productCard.dataset.name || productCard.dataset.code || "Product");
+    const productCard = target.closest(".product-card, .catalog-card");
+    const productDetails = target.closest(".catalog-card-details, [data-product-details]");
+    if (
+      productDetails ||
+      (productCard && !target.closest("button, a, input, select, textarea"))
+    ) {
+      track(
+        "product_view",
+        productCard?.dataset.name ||
+          productCard?.dataset.code ||
+          productCard?.querySelector("h2, h3")?.textContent ||
+          "Product"
+      );
       return;
     }
 
@@ -135,6 +145,25 @@
 
     if (target.closest(".view-jobs-btn, a[href^='/view_jobs']")) {
       track("view_jobs", "", "view-jobs");
+      return;
+    }
+
+    if (target.closest(".apply-btn-large, #openApplicationBtn, [data-application-start]")) {
+      const jobName =
+        document.getElementById("detailTitle")?.textContent ||
+        target.closest(".job-card")?.querySelector(".job-title")?.textContent ||
+        "Open application";
+      track("application_start", jobName);
+      return;
+    }
+
+    const jobCard = target.closest(".job-card");
+    if (jobCard) {
+      const jobName =
+        jobCard.querySelector(".job-title")?.textContent ||
+        jobCard.dataset.jobTitle ||
+        "Job opening";
+      track("job_view", jobName);
     }
   }, true);
 

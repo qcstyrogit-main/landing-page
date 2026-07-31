@@ -1,4 +1,14 @@
 (() => {
+  const reportRange = document.getElementById("analyticsRange");
+  const customDateFields = document.querySelector(".custom-date-fields");
+  if (reportRange && customDateFields) {
+    const updateCustomDates = () => {
+      customDateFields.hidden = reportRange.value !== "custom";
+    };
+    reportRange.addEventListener("change", updateCustomDates);
+    updateCustomDates();
+  }
+
   const tabs = Array.from(document.querySelectorAll("[data-analytics-tab]"));
   const panels = Array.from(document.querySelectorAll("[data-analytics-panel]"));
   const validTabs = new Set(tabs.map((tab) => tab.dataset.analyticsTab));
