@@ -18,6 +18,12 @@ Engagement heartbeats stop after inactivity and while the page is hidden.
 Bounce rate means a one-page visit with less than 10 seconds of active time and
 no recorded action.
 
+Country reporting stores only the two-letter country code. It first uses a
+country header supplied by a trusted CDN or hosting proxy, then falls back to
+the Country API in a background request. Raw IP addresses are never written to
+the analytics database. Existing visits recorded before this feature remain
+listed as `Unknown`.
+
 Configure these environment variables before using the dashboard:
 
 ```text
@@ -27,6 +33,10 @@ ANALYTICS_ADMIN_PASSWORD_HASH=replace-with-a-werkzeug-password-hash
 ANALYTICS_HASH_SALT=replace-with-a-separate-long-random-value
 ANALYTICS_TIMEZONE=Asia/Manila
 ```
+
+Country lookup is enabled by default with `https://api.country.is/{ip}`. To
+disable the external fallback and use hosting/CDN country headers only, add an
+empty `ANALYTICS_COUNTRY_LOOKUP_URL` environment variable.
 
 Generate the password hash locally:
 

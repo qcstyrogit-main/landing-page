@@ -1,4 +1,5 @@
 import hashlib
+import ipaddress
 import os
 import re
 import secrets
@@ -9,6 +10,7 @@ from time import time
 from urllib.parse import urlparse
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
+import requests
 from flask import abort, jsonify, redirect, render_template, request, session, url_for
 from werkzeug.security import check_password_hash
 
@@ -54,6 +56,13 @@ EVENT_LABELS = {
     "product_view": "Product viewed",
     "view_jobs": "Jobs page opened",
 }
+COUNTRY_HEADERS = (
+    "CF-IPCountry",
+    "CloudFront-Viewer-Country",
+    "X-Vercel-IP-Country",
+    "X-Country-Code",
+)
+COUNTRY_CODE_PATTERN = re.compile(r"^[A-Z]{2}$")
 
 
 def init_analytics(app):
@@ -105,7 +114,8 @@ def init_analytics(app):
                 referrer_domain TEXT NOT NULL DEFAULT '',
                 device TEXT NOT NULL,
                 browser TEXT NOT NULL,
-                engaged_seconds INTEGER NOT NULL DEFAULT 0
+                engaged_seconds INTEGER NOT NULL DEFAULT 0,
+                country_code TEXT NOT NULL DEFAULT ''
             )
             """
         )
@@ -115,6 +125,10 @@ def init_analytics(app):
         if "engaged_seconds" not in visit_columns:
             database.execute(
                 "ALTER TABLE visits ADD COLUMN engaged_seconds INTEGER NOT NULL DEFAULT 0"
+            )
+        if "country_code" not in visit_columns:
+            database.execute(
+                "ALTER TABLE visits ADD COLUMN country_code TEXT NOT NULL DEFAULT ''"
             )
         database.execute("CREATE INDEX IF NOT EXISTS idx_visits_started ON visits(started_at)")
         database.execute("CREATE INDEX IF NOT EXISTS idx_visits_visitor ON visits(visitor_hash)")
@@ -194,18 +208,27 @@ def init_analytics(app):
         if not analytics_session or current_timestamp - int(last_seen or 0) > SESSION_TIMEOUT_SECONDS:
             analytics_session = secrets.token_urlsafe(18)
             session["_analytics_sid"] = analytics_session
+            session.pop("_analytics_country", None)
+            session.pop("_analytics_country_checked", None)
         session["_analytics_last_seen"] = current_timestamp
         return visitor_hash, analytics_session
 
     def record_visit(database, visitor_hash, analytics_session, occurred_at, path):
         user_agent = request.headers.get("User-Agent", "")
         device, browser = classify_user_agent(user_agent)
+        country_code = session.get("_analytics_country", "")
         database.execute(
             """
             INSERT INTO visits
-            (session_id, visitor_hash, started_at, last_seen_at, entry_path, referrer_domain, device, browser)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-            ON CONFLICT(session_id) DO UPDATE SET last_seen_at = excluded.last_seen_at
+            (session_id, visitor_hash, started_at, last_seen_at, entry_path, referrer_domain,
+             device, browser, country_code)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ON CONFLICT(session_id) DO UPDATE SET
+                last_seen_at = excluded.last_seen_at,
+                country_code = CASE
+                    WHEN visits.country_code = '' THEN excluded.country_code
+                    ELSE visits.country_code
+                END
             """,
             (
                 analytics_session,
@@ -216,8 +239,40 @@ def init_analytics(app):
                 request_referrer_domain(),
                 device,
                 browser,
+                country_code,
             ),
         )
+
+    def valid_country_code(value):
+        code = str(value or "").strip().upper()
+        return code if COUNTRY_CODE_PATTERN.fullmatch(code) and code not in {"T1", "XX"} else ""
+
+    def resolve_country_code():
+        for header in COUNTRY_HEADERS:
+            code = valid_country_code(request.headers.get(header))
+            if code:
+                return code
+
+        lookup_url = os.getenv(
+            "ANALYTICS_COUNTRY_LOOKUP_URL",
+            "https://api.country.is/{ip}",
+        ).strip()
+        if not lookup_url:
+            return ""
+        try:
+            address = ipaddress.ip_address(client_ip())
+            if not address.is_global:
+                return ""
+            response = requests.get(
+                lookup_url.format(ip=address.compressed),
+                timeout=2,
+                headers={"Accept": "application/json"},
+            )
+            response.raise_for_status()
+            payload = response.json()
+            return valid_country_code(payload.get("country") if isinstance(payload, dict) else "")
+        except (ValueError, KeyError, requests.RequestException):
+            return ""
 
     def record_event(event_name, path, label=""):
         occurred_at = datetime.now(analytics_timezone).isoformat(timespec="seconds")
@@ -354,6 +409,28 @@ def init_analytics(app):
         except Exception:
             app.logger.exception("Unable to record analytics engagement")
             return jsonify({"error": "analytics_unavailable"}), 503
+        return "", 204
+
+    @app.route("/api/analytics/country", methods=["POST"])
+    def analytics_country():
+        if actor_is_excluded() or session.get("_analytics_country_checked"):
+            return "", 204
+        try:
+            _, analytics_session = analytics_identity()
+            country_code = resolve_country_code()
+            session["_analytics_country_checked"] = True
+            if country_code:
+                session["_analytics_country"] = country_code
+                with connect() as database:
+                    database.execute(
+                        """
+                        UPDATE visits SET country_code = ?
+                        WHERE session_id = ? AND country_code = ''
+                        """,
+                        (country_code, analytics_session),
+                    )
+        except Exception:
+            app.logger.warning("Unable to resolve analytics country")
         return "", 204
 
     def credentials_configured():
@@ -521,6 +598,17 @@ def init_analytics(app):
                 """,
                 (thirty_days,),
             ).fetchall()
+            country_rows = database.execute(
+                """
+                SELECT country_code, COUNT(*) AS visits,
+                       COUNT(DISTINCT visitor_hash) AS visitors
+                FROM visits
+                WHERE substr(started_at, 1, 10) >= ?
+                GROUP BY country_code
+                ORDER BY visits DESC, country_code
+                """,
+                (thirty_days,),
+            ).fetchall()
             trend_rows = database.execute(
                 """
                 SELECT substr(viewed_at, 1, 10) AS day, COUNT(*) AS views,
@@ -593,6 +681,15 @@ def init_analytics(app):
             {"label": "Lead-submitting visits", "value": funnel_rows["lead_submits"] or 0},
             {"label": "Job-application visits", "value": funnel_rows["job_applications"] or 0},
         ]
+        countries = [
+            {
+                "code": row["country_code"] or "",
+                "visits": row["visits"],
+                "visitors": row["visitors"],
+                "share": round(row["visits"] / period_visits * 100, 1) if period_visits else 0,
+            }
+            for row in country_rows
+        ]
         return render_template(
             "analytics_dashboard.html",
             totals=totals,
@@ -608,6 +705,7 @@ def init_analytics(app):
             devices=devices,
             browsers=browsers,
             referrers=referrers,
+            countries=countries,
             trend=trend,
             max_trend=max_trend,
             generated_at=now,

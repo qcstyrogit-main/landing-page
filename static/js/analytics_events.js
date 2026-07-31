@@ -3,6 +3,20 @@
 
   const sentOnce = new Set();
 
+  function resolveCountry() {
+    const headers = window.withCsrf ? window.withCsrf({}) : {};
+    fetch("/api/analytics/country", {
+      method: "POST",
+      headers,
+      credentials: "same-origin",
+      keepalive: true
+    }).catch(() => {
+      // Country reporting is optional and must never interrupt the website.
+    });
+  }
+
+  resolveCountry();
+
   function track(event, label = "", onceKey = "") {
     if (onceKey && sentOnce.has(onceKey)) return;
     if (onceKey) sentOnce.add(onceKey);

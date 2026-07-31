@@ -199,8 +199,37 @@
       </aside>
     </div>
 
+    <section class="dashboard-card pages-card countries-card">
+      <div class="card-heading">
+        <div>
+          <p class="eyebrow">Geography</p>
+          <h2>Visitor countries</h2>
+        </div>
+        <span class="card-metric-label">Last 30 days</span>
+      </div>
+      {% if countries %}
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Country</th><th>Visits</th><th>Unique visitors</th><th>Traffic share</th></tr></thead>
+          <tbody>
+            {% for country in countries %}
+            <tr>
+              <td><span data-country-code="{{ country.code }}">{{ country.code or 'Unknown' }}</span></td>
+              <td>{{ country.visits }}</td>
+              <td>{{ country.visitors }}</td>
+              <td>{{ country.share }}%</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <p class="empty-state">Country data will appear as new visits arrive.</p>
+      {% endif %}
+    </section>
+
     <footer class="analytics-note">
-      <p>Unique visitors are privacy-safe estimates. Raw IP addresses, full referrer URLs, and query strings are not stored.</p>
+      <p>Unique visitors are privacy-safe estimates. Country is derived from the visitor's IP, but only the two-letter country code is stored. Raw IP addresses, full referrer URLs, and query strings are not stored.</p>
       <p>Updated {{ generated_at.strftime('%b %d, %Y at %I:%M %p') }} ({{ generated_at.tzname() }}).</p>
     </footer>
   </main>
