@@ -1227,6 +1227,16 @@ def init_analytics(app):
                     COALESCE(SUM(blocked_requests), 0) AS blocked,
                     COALESCE(SUM(rate_limited_requests), 0) AS rate_limited,
                     COALESCE(SUM(CASE WHEN severity = 'critical' THEN request_count ELSE 0 END), 0) AS critical,
+                    COALESCE(SUM(CASE
+                        WHEN severity = 'critical' AND status_code IN (401, 403, 429)
+                        THEN request_count ELSE 0 END), 0) AS critical_protected,
+                    COALESCE(SUM(CASE
+                        WHEN severity = 'critical' AND status_code IN (404, 410)
+                        THEN request_count ELSE 0 END), 0) AS failed_scanner_attempts,
+                    COALESCE(SUM(CASE
+                        WHEN severity = 'critical'
+                         AND status_code NOT IN (401, 403, 404, 410, 429)
+                        THEN request_count ELSE 0 END), 0) AS critical_investigate,
                     COALESCE(SUM(CASE WHEN severity = 'warning' THEN request_count ELSE 0 END), 0) AS warnings
                 FROM security_requests
                 WHERE substr(observed_at, 1, 10) BETWEEN ? AND ?
@@ -1406,6 +1416,18 @@ def init_analytics(app):
                 labels.append("Known bot")
             elif row["actor_type"] == "suspected_bot":
                 labels.append("Suspected automation")
+            if row["severity"] == "critical" and row["status_code"] in {404, 410}:
+                review_label = "Failed scanner attempt — no action needed"
+                review_tone = "safe"
+            elif row["severity"] == "critical" and row["status_code"] in {401, 403, 429}:
+                review_label = "Critical — blocked/protected"
+                review_tone = "protected"
+            elif row["severity"] == "critical":
+                review_label = "Critical — investigate"
+                review_tone = "critical"
+            else:
+                review_label = (row["severity"] or "info").title()
+                review_tone = row["severity"] or "info"
             recent_security_signals.append(
                 {
                     "observed_at": datetime.fromisoformat(row["observed_at"]),
@@ -1414,6 +1436,8 @@ def init_analytics(app):
                     "status_code": row["status_code"],
                     "requests": row["request_count"],
                     "severity": row["severity"] or "info",
+                    "review_label": review_label,
+                    "review_tone": review_tone,
                     "reason": row["reason"] or "Automated security rule matched",
                     "actor_type": row["actor_type"] or "",
                     "signal": " / ".join(labels),

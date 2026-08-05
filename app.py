@@ -4,12 +4,13 @@ import base64
 import json
 import re
 import secrets
+import ipaddress
 from time import time
 from datetime import date, datetime, timedelta
-from urllib.parse import urlparse
+from urllib.parse import parse_qs, urlparse
 from collections import deque
 from html import unescape
-from flask import Flask, render_template, request, jsonify, Response, url_for as flask_url_for, session as flask_session, g
+from flask import Flask, render_template, request, jsonify, Response, redirect, url_for as flask_url_for, session as flask_session, g
 import requests
 from flask_caching import Cache
 
@@ -34,6 +35,23 @@ def load_env():
 
 
 load_env()
+
+
+def environment_flag(name, default=False):
+    value = os.getenv(name)
+    if value is None:
+        return default
+    return value.strip().lower() in {"1", "true", "yes", "on"}
+
+
+def environment_integer(name, default, minimum=0, maximum=None):
+    try:
+        value = int(os.getenv(name, str(default)))
+    except (TypeError, ValueError):
+        value = default
+    value = max(minimum, value)
+    return min(value, maximum) if maximum is not None else value
+
 
 API_BASE_URL = (os.environ.get("API_BASE_URL") or "").rstrip("/")
 if not API_BASE_URL:
@@ -68,6 +86,26 @@ EVENTS_DATA_PATH = os.path.join(app.root_path, "static", "data", "events.json")
 CACHE_BUST_TOKEN = os.getenv("CACHE_BUST_TOKEN", "")
 CANONICAL_BASE_URL = os.getenv("CANONICAL_BASE_URL", "").rstrip("/")
 HREFLANGS = [lang.strip() for lang in os.getenv("HREFLANGS", "en").split(",") if lang.strip()]
+production_default = __name__ != "__main__"
+app.config.update(
+    SESSION_COOKIE_SECURE=environment_flag("SESSION_COOKIE_SECURE", production_default),
+    SESSION_COOKIE_HTTPONLY=True,
+    SESSION_COOKIE_SAMESITE="Lax",
+    FORCE_HTTPS=environment_flag("FORCE_HTTPS", production_default),
+    TRUSTED_PROXY_HOPS=environment_integer(
+        "TRUSTED_PROXY_HOPS",
+        1 if production_default else 0,
+        minimum=0,
+        maximum=5,
+    ),
+    HSTS_MAX_AGE=environment_integer(
+        "HSTS_MAX_AGE",
+        31536000 if production_default else 0,
+        minimum=0,
+        maximum=63072000,
+    ),
+    HSTS_INCLUDE_SUBDOMAINS=environment_flag("HSTS_INCLUDE_SUBDOMAINS", False),
+)
 
 PRODUCT_CATEGORY_URLS = {
     "products_plastic": [
@@ -228,6 +266,53 @@ def proxy_public_file_urls_in_payload(payload, image_keys):
         return [proxy_public_file_urls_in_payload(item, image_keys) for item in payload]
     return payload
 
+def proxied_testimonial_image_url(image_url):
+    if not image_url:
+        return ""
+
+    public_url = proxied_erp_public_file_url(image_url)
+    if public_url != image_url:
+        return public_url
+
+    parsed_image = urlparse(image_url)
+    parsed_api = urlparse(API_BASE_URL)
+    is_erp_url = (
+        not parsed_image.netloc
+        or parsed_image.netloc == parsed_api.netloc
+    )
+
+    if is_erp_url and parsed_image.path.startswith("/private/files/"):
+        return flask_url_for(
+            "proxy_private_file",
+            filename=parsed_image.path[len("/private/files/"):],
+        )
+
+    testimonial_method = (
+        "/api/method/"
+        "qcmc_logic.api.public_testimonials.get_testimonial_image"
+    )
+    if is_erp_url and parsed_image.path == testimonial_method:
+        testimonial_name = parse_qs(parsed_image.query).get("name", [""])[0].strip()
+        if testimonial_name:
+            return flask_url_for(
+                "proxy_testimonial_image",
+                name=testimonial_name,
+            )
+
+    return image_url
+
+def proxy_testimonial_image_urls_in_payload(payload):
+    if isinstance(payload, dict):
+        return {
+            key: proxied_testimonial_image_url(value)
+            if key == "testimonial_image" and isinstance(value, str)
+            else proxy_testimonial_image_urls_in_payload(value)
+            for key, value in payload.items()
+        }
+    if isinstance(payload, list):
+        return [proxy_testimonial_image_urls_in_payload(item) for item in payload]
+    return payload
+
 def load_event_posts():
     remote_events = fetch_events_from_erpnext()
     if remote_events:
@@ -283,14 +368,6 @@ cache = Cache(app, config={
 
 # Cache static files for 1 year
 app.config["SEND_FILE_MAX_AGE_DEFAULT"] = 31536000
-
-# --------------------------------------------------
-# ENV LOADING
-# --------------------------------------------------
-if os.getenv("RENDER") is None:
-    load_dotenv(".env")
-    if os.path.exists(".env.local"):
-        load_dotenv(".env.local", override=True)
 
 API_BASE_URL = os.getenv("API_BASE_URL")
 if not API_BASE_URL:
@@ -385,12 +462,34 @@ RATE_LIMITS = {
     "/api/send-inquiry-qc": (20, 300),
     "/api/contact-us": (15, 300),
     "/api/submit-job-applicant": (10, 600),
-    "/api/clefincode/create": (30, 300),
-    "/api/clefincode/send": (60, 300),
-    "/api/clefincode/status": (20, 300),
+    "/api/support-chat/create": (30, 300),
+    "/api/support-chat/send": (60, 300),
+    "/api/support-chat/status": (20, 300),
     "/api/open-application": (5, 600),
 }
 RATE_STATE = {}
+
+
+def trusted_client_ip():
+    remote_address = request.remote_addr or "unknown"
+    proxy_hops = app.config.get("TRUSTED_PROXY_HOPS", 0)
+    if not proxy_hops:
+        return remote_address
+
+    forwarded_addresses = [
+        value.strip()
+        for value in request.headers.get("X-Forwarded-For", "").split(",")
+        if value.strip()
+    ]
+    if len(forwarded_addresses) < proxy_hops:
+        return remote_address
+
+    candidate = forwarded_addresses[-proxy_hops]
+    try:
+        return ipaddress.ip_address(candidate).compressed
+    except ValueError:
+        return remote_address
+
 
 def is_rate_limited(ip, key, limit, window_seconds):
     now = time()
@@ -410,12 +509,27 @@ def is_rate_limited(ip, key, limit, window_seconds):
 def security_before_request():
     g.csp_nonce = secrets.token_urlsafe(16)
 
+    forwarded_proto = request.headers.get("X-Forwarded-Proto", "").split(",", 1)[0].strip().lower()
+    request_hostname = (request.host.split(":", 1)[0] or "").lower()
+    is_local_request = request_hostname in {"localhost", "127.0.0.1", "::1"}
+    if (
+        app.config.get("FORCE_HTTPS")
+        and not is_local_request
+        and not request.is_secure
+        and forwarded_proto != "https"
+    ):
+        if CANONICAL_BASE_URL.startswith("https://"):
+            target = f"{CANONICAL_BASE_URL}{request.full_path.rstrip('?')}"
+        else:
+            target = request.url.replace("http://", "https://", 1)
+        return redirect(target, code=308)
+
     if request.method in ("POST", "PUT", "PATCH", "DELETE") and request.path.startswith("/api/"):
         if request.path == "/api/cache/events/refresh":
             return None
         limit_cfg = RATE_LIMITS.get(request.path)
         if limit_cfg:
-            ip = request.headers.get("X-Forwarded-For", request.remote_addr) or "unknown"
+            ip = trusted_client_ip()
             limit, window_seconds = limit_cfg
             if is_rate_limited(ip, request.path, limit, window_seconds):
                 return jsonify({"error": "rate_limited"}), 429
@@ -746,12 +860,48 @@ def get_testimonials():
                 mimetype=res.headers.get("Content-Type", "application/json")
             )
         payload = proxy_public_file_urls_in_payload(res.json(), {"testimonial_image", "image"})
+        payload = proxy_testimonial_image_urls_in_payload(payload)
         return jsonify(payload), res.status_code
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
 
 # ------------------ FILE PROXIES ------------------
+@app.route("/api/testimonial-image", methods=["GET"])
+def proxy_testimonial_image():
+    testimonial_name = (request.args.get("name") or "").strip()
+    if not re.fullmatch(r"[A-Za-z0-9._-]{1,140}", testimonial_name):
+        return Response("invalid testimonial", status=400)
+
+    try:
+        upstream_url = (
+            f"{API_BASE_URL.rstrip('/')}/api/method/"
+            "qcmc_logic.api.public_testimonials.get_testimonial_image"
+        )
+        res = http_session.get(
+            upstream_url,
+            params={"name": testimonial_name},
+            headers=get_erp_auth_headers(),
+            timeout=15,
+        )
+        if not res.ok:
+            return Response(
+                res.content,
+                status=res.status_code,
+                mimetype=res.headers.get("Content-Type", "text/plain"),
+            )
+
+        response = Response(
+            res.content,
+            status=res.status_code,
+            mimetype=res.headers.get("Content-Type", "application/octet-stream"),
+        )
+        response.headers["Cache-Control"] = "public, max-age=3600"
+        return response
+    except Exception as e:
+        return Response(str(e), status=500)
+
+
 @app.route("/files/<path:filename>", methods=["GET"])
 def proxy_public_file(filename):
     if ".." in filename or filename.startswith("/"):
@@ -910,9 +1060,9 @@ def open_application():
         return jsonify({"error": str(e)}), 500
 
 
-# ------------------ TWEET CUSTOMER SUPPORT PROXY ----------------
-@app.route("/api/clefincode/create", methods=["POST"])
-def clefincode_create():
+# ------------------ CUSTOMER SUPPORT CHAT PROXY ----------------
+@app.route("/api/support-chat/create", methods=["POST"])
+def support_chat_create():
     try:
         res = http_session.post(
             f"{API_BASE_URL}/api/method/company_messenger.api.create_customer_concern",
@@ -925,8 +1075,8 @@ def clefincode_create():
         return jsonify({"error": str(e)}), 500
 
 
-@app.route("/api/clefincode/send", methods=["POST"])
-def clefincode_send():
+@app.route("/api/support-chat/send", methods=["POST"])
+def support_chat_send():
     try:
         res = http_session.post(
             f"{API_BASE_URL}/api/method/company_messenger.api.customer_send_message",
@@ -939,8 +1089,8 @@ def clefincode_send():
         return jsonify({"error": str(e)}), 500
 
 
-@app.route("/api/clefincode/messages", methods=["GET"])
-def clefincode_messages():
+@app.route("/api/support-chat/messages", methods=["GET"])
+def support_chat_messages():
     try:
         room = request.args.get("room")
         token = request.args.get("token")
@@ -956,8 +1106,8 @@ def clefincode_messages():
         return jsonify({"error": str(e)}), 500
 
 
-@app.route("/api/clefincode/status", methods=["POST"])
-def clefincode_status():
+@app.route("/api/support-chat/status", methods=["POST"])
+def support_chat_status():
     try:
         res = http_session.post(
             f"{API_BASE_URL}/api/method/company_messenger.api.customer_update_concern",
@@ -970,24 +1120,8 @@ def clefincode_status():
         return jsonify({"error": str(e)}), 500
 
 
-@app.route("/api/clefincode/settings", methods=["GET"])
-def clefincode_settings():
-    try:
-        token = request.args.get("token")
-        if not token:
-            return jsonify({"error": "token is required"}), 400
-        res = http_session.get(
-            f"{API_BASE_URL}/api/method/clefincode_chat.api.api_1_3_1.api.get_settings",
-            params={"token": token},
-            timeout=15
-        )
-        return jsonify(res.json())
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
-
-@app.route("/api/clefincode/bot-topics", methods=["GET"])
-def clefincode_bot_topics():
+@app.route("/api/support-chat/bot-topics", methods=["GET"])
+def support_chat_bot_topics():
     try:
         res = http_session.get(
             f"{API_BASE_URL}/api/method/qcmc_logic.api.chatbot.get_bot_topics",
@@ -1064,7 +1198,27 @@ def add_headers(response):
     response.headers["X-Frame-Options"] = "DENY"
     response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
     response.headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=(), payment=(), usb=()"
-    response.headers["Cross-Origin-Opener-Policy"] = "same-origin"
+
+    forwarded_proto = request.headers.get("X-Forwarded-Proto", "").split(",", 1)[0].strip().lower()
+    request_hostname = (request.host.split(":", 1)[0] or "").lower()
+    is_trustworthy_origin = (
+        request.is_secure
+        or forwarded_proto == "https"
+        or request_hostname in {"localhost", "127.0.0.1", "::1"}
+    )
+    if is_trustworthy_origin:
+        response.headers["Cross-Origin-Opener-Policy"] = "same-origin"
+        hsts_max_age = app.config.get("HSTS_MAX_AGE", 0)
+        if hsts_max_age and request_hostname not in {"localhost", "127.0.0.1", "::1"}:
+            hsts = f"max-age={hsts_max_age}"
+            if app.config.get("HSTS_INCLUDE_SUBDOMAINS"):
+                hsts += "; includeSubDomains"
+            response.headers["Strict-Transport-Security"] = hsts
+    else:
+        response.headers.pop("Cross-Origin-Opener-Policy", None)
+        response.headers.pop("Strict-Transport-Security", None)
+    response.headers["X-Permitted-Cross-Domain-Policies"] = "none"
+    response.headers.pop("X-Powered-By", None)
 
     nonce = getattr(g, "csp_nonce", "")
     if response.mimetype == "text/html":
@@ -1098,6 +1252,8 @@ def add_headers(response):
         img_src += f" {api_origin}"
 
     connect_src = "connect-src 'self' https://psgc.gitlab.io https://open.er-api.com https://csp.secureserver.net https://cdn.jsdelivr.net"
+    if api_origin:
+        connect_src = f"{connect_src} {api_origin}"
     if altcha_origin:
         connect_src = f"{connect_src} {altcha_origin}"
 
@@ -1124,13 +1280,16 @@ def add_headers(response):
         response.headers["Cache-Control"] = "no-store, private"
     elif request.path.startswith("/static/"):
         response.headers["Cache-Control"] = "public, max-age=31536000, immutable"
+    elif response.mimetype == "text/html":
+        # Revalidate HTML so it always points to the latest versioned scripts.
+        response.headers["Cache-Control"] = "no-cache, max-age=0, must-revalidate"
     else:
         response.headers["Cache-Control"] = "public, max-age=300"
 
     response.set_cookie(
         "csrf_token",
         get_csrf_token(),
-        secure=request.is_secure,
+        secure=app.config.get("SESSION_COOKIE_SECURE", False),
         httponly=False,
         samesite="Lax"
     )
