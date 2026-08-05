@@ -96,6 +96,64 @@
     }
   });
 
+  document.querySelectorAll("[data-severity-dropdown]").forEach((dropdown) => {
+    const trigger = dropdown.querySelector(".severity-dropdown-trigger");
+    const menu = dropdown.querySelector(".severity-dropdown-menu");
+    const input = dropdown.querySelector("[data-severity-input]");
+    const label = dropdown.querySelector("[data-severity-label]");
+    const options = Array.from(dropdown.querySelectorAll("[data-severity-option]"));
+    if (!trigger || !menu || !input || !label || !options.length) return;
+
+    const setOpen = (open, { focusOption = false } = {}) => {
+      trigger.setAttribute("aria-expanded", String(open));
+      menu.hidden = !open;
+      if (open && focusOption) {
+        (options.find((option) => option.getAttribute("aria-selected") === "true") || options[0]).focus();
+      }
+    };
+
+    trigger.addEventListener("click", () => {
+      setOpen(trigger.getAttribute("aria-expanded") !== "true", { focusOption: true });
+    });
+
+    trigger.addEventListener("keydown", (event) => {
+      if (event.key !== "ArrowDown" && event.key !== "ArrowUp") return;
+      event.preventDefault();
+      setOpen(true);
+      (event.key === "ArrowDown" ? options[0] : options[options.length - 1]).focus();
+    });
+
+    options.forEach((option) => {
+      option.addEventListener("click", () => {
+        input.value = option.dataset.value;
+        label.textContent = option.textContent.trim();
+        options.forEach((item) => item.setAttribute("aria-selected", String(item === option)));
+        setOpen(false);
+        trigger.focus();
+      });
+    });
+
+    menu.addEventListener("keydown", (event) => {
+      const currentIndex = options.indexOf(document.activeElement);
+      if (event.key === "Escape") {
+        event.preventDefault();
+        setOpen(false);
+        trigger.focus();
+      } else if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+        event.preventDefault();
+        const direction = event.key === "ArrowDown" ? 1 : -1;
+        options[(currentIndex + direction + options.length) % options.length].focus();
+      } else if (event.key === "Home" || event.key === "End") {
+        event.preventDefault();
+        options[event.key === "Home" ? 0 : options.length - 1].focus();
+      }
+    });
+
+    document.addEventListener("click", (event) => {
+      if (!dropdown.contains(event.target)) setOpen(false);
+    });
+  });
+
   const printButton = document.querySelector(".print-report-button");
   if (!printButton) return;
 
