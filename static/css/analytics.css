@@ -554,6 +554,8 @@ th:not(:first-child), td:not(:first-child) { text-align: right; }
 }
 
 .severity-card--critical { box-shadow: inset 3px 0 0 #d51f37; }
+.severity-card--protected { box-shadow: inset 3px 0 0 var(--blue); }
+.severity-card--safe { box-shadow: inset 3px 0 0 #3ca879; }
 .severity-card--warning { box-shadow: inset 3px 0 0 #d7a72f; }
 
 .severity-badge {
@@ -567,6 +569,8 @@ th:not(:first-child), td:not(:first-child) { text-align: right; }
 }
 
 .severity-badge--critical { border-color: #d51f37; color: #f06a79; }
+.severity-badge--protected { border-color: var(--blue); color: #7ba4f0; }
+.severity-badge--safe { border-color: #3ca879; color: #72d7a8; }
 .severity-badge--warning { border-color: #d7a72f; color: #dbbb62; }
 .severity-badge--info { border-color: var(--blue); color: #7ba4f0; }
 
@@ -618,6 +622,12 @@ th:not(:first-child), td:not(:first-child) { text-align: right; }
   background: #090d16;
   color: var(--text);
   font: inherit;
+}
+
+.security-search-controls select[data-native-select] {
+  -webkit-appearance: menulist;
+  appearance: auto;
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
 }
 
 .security-search-controls input:focus,
@@ -682,6 +692,14 @@ th:not(:first-child), td:not(:first-child) { text-align: right; }
   .security-search-controls { grid-template-columns: 1fr; }
   .security-search-controls .secondary-button { width: 100%; }
   .analytics-note { display: block; }
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .security-search-controls select[data-native-select] {
+    min-height: 3rem;
+    font-size: 1rem;
+    touch-action: manipulation;
+  }
 }
 
 @page {
