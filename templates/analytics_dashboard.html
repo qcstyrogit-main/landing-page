@@ -322,9 +322,35 @@
         <div class="card-heading">
           <div>
             <p class="eyebrow">Recent activity</p>
-            <h2>Latest security signals</h2>
+            <h2>Security signal details</h2>
           </div>
         </div>
+        <form class="security-search-form" method="get" action="{{ url_for('analytics_dashboard') }}#security" role="search">
+          <input type="hidden" name="range" value="{{ report_window.preset }}">
+          <input type="hidden" name="start" value="{{ report_window.start.isoformat() }}">
+          <input type="hidden" name="end" value="{{ report_window.end.isoformat() }}">
+          <label for="securitySearch">Search signals</label>
+          <div class="security-search-controls">
+            <input id="securitySearch" type="search" name="security_q" value="{{ security_search }}" placeholder="Path, status, method, or reason">
+            <select name="security_severity" aria-label="Filter by severity">
+              {% for value, label in [('all', 'All severities'), ('critical', 'Critical'), ('warning', 'Warning'), ('info', 'Info')] %}
+              <option value="{{ value }}" {% if security_severity == value %}selected{% endif %}>{{ label }}</option>
+              {% endfor %}
+            </select>
+            <button type="submit" class="secondary-button">Search</button>
+            {% if security_search or security_severity != 'all' %}
+            <a class="security-search-clear" href="{{ url_for('analytics_dashboard', range=report_window.preset, start=report_window.start.isoformat(), end=report_window.end.isoformat()) }}#security">Clear</a>
+            {% endif %}
+          </div>
+        </form>
+        <p class="security-result-summary" aria-live="polite">
+          {% if security_search or security_severity != 'all' %}
+            {{ security_result_summary.records }} matching aggregated record{% if security_result_summary.records != 1 %}s{% endif %}, representing {{ security_result_summary.requests }} request{% if security_result_summary.requests != 1 %}s{% endif %}.
+          {% else %}
+            Showing the latest {{ recent_security|length }} of {{ security_result_summary.records }} aggregated records.
+          {% endif %}
+          {% if security_result_summary.records > security_result_limit %} Only the newest {{ security_result_limit }} are displayed; narrow the search to see older matches.{% endif %}
+        </p>
         {% if recent_security %}
         <div class="table-wrap">
           <table>
@@ -348,7 +374,7 @@
           </table>
         </div>
         {% else %}
-        <p class="empty-state">Recent signals will appear here when detected.</p>
+        <p class="empty-state">No security signals match this search and report period.</p>
         {% endif %}
       </section>
     </div>

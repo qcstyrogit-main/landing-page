@@ -1045,6 +1045,10 @@ def init_analytics(app):
         period_end = window["end"].isoformat()
         previous_start = window["previous_start"].isoformat()
         previous_end = window["previous_end"].isoformat()
+        security_search = request.args.get("security_q", "").strip()[:100]
+        security_severity = request.args.get("security_severity", "all").strip().lower()
+        if security_severity not in {"all", "critical", "warning", "info"}:
+            security_severity = "all"
         trend_start = window["start"]
 
         with connect() as database:
@@ -1253,19 +1257,46 @@ def init_analytics(app):
                 """,
                 (period_start, period_end),
             ).fetchall()
+            security_filters = ["substr(observed_at, 1, 10) BETWEEN ? AND ?"]
+            security_filter_values = [period_start, period_end]
+            if security_severity != "all":
+                security_filters.append("severity = ?")
+                security_filter_values.append(security_severity)
+            if security_search:
+                security_filters.append(
+                    """(
+                        lower(path) LIKE ? OR lower(method) LIKE ?
+                        OR CAST(status_code AS TEXT) LIKE ?
+                        OR lower(actor_type) LIKE ? OR lower(severity) LIKE ?
+                        OR lower(reason) LIKE ?
+                    )"""
+                )
+                search_term = f"%{security_search.lower()}%"
+                security_filter_values.extend([search_term] * 6)
+            security_where = " AND ".join(security_filters)
+            security_result_limit = 100 if security_search or security_severity != "all" else 12
             recent_security = database.execute(
-                """
+                f"""
                 SELECT observed_at, path, method, status_code, request_count,
                        actor_type, severity, reason,
                        bot_requests, suspicious_requests, blocked_requests,
                        rate_limited_requests
                 FROM security_requests
-                WHERE substr(observed_at, 1, 10) BETWEEN ? AND ?
+                WHERE {security_where}
                 ORDER BY observed_at DESC
-                LIMIT 12
+                LIMIT ?
                 """,
-                (period_start, period_end),
+                (*security_filter_values, security_result_limit),
             ).fetchall()
+            security_result_summary = database.execute(
+                f"""
+                SELECT COUNT(*) AS records,
+                       COALESCE(SUM(request_count), 0) AS requests
+                FROM security_requests
+                WHERE {security_where}
+                """,
+                security_filter_values,
+            ).fetchone()
             trend_rows = database.execute(
                 """
                 SELECT substr(viewed_at, 1, 10) AS day, COUNT(*) AS views,
@@ -1408,6 +1439,10 @@ def init_analytics(app):
             security_paths=security_paths,
             security_countries=security_countries,
             recent_security=recent_security_signals,
+            security_search=security_search,
+            security_severity=security_severity,
+            security_result_summary=security_result_summary,
+            security_result_limit=security_result_limit,
             trend=trend,
             max_trend=max_trend,
             report_window=window,

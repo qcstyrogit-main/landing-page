@@ -90,7 +90,7 @@ html[data-theme="light"] .analytics-body :is(.login-panel, .stat-card, .dashboar
   background: rgba(255, 255, 255, .92);
 }
 
-html[data-theme="light"] .analytics-body :is(.analytics-form input, .secondary-button, .report-range-form select, .report-range-form input) {
+html[data-theme="light"] .analytics-body :is(.analytics-form input, .secondary-button, .report-range-form select, .report-range-form input, .security-search-controls input, .security-search-controls select) {
   color: var(--text);
   background: #fff;
 }
@@ -589,6 +589,54 @@ th:not(:first-child), td:not(:first-child) { text-align: right; }
   overflow-wrap: anywhere;
 }
 
+.security-search-form {
+  display: grid;
+  gap: .55rem;
+  margin-top: 1.5rem;
+}
+
+.security-search-form label {
+  color: var(--muted);
+  font: 700 .68rem/1 "Courier New", monospace;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.security-search-controls {
+  display: grid;
+  grid-template-columns: minmax(12rem, 1fr) minmax(9rem, auto) auto auto;
+  align-items: center;
+  gap: .65rem;
+}
+
+.security-search-controls input,
+.security-search-controls select {
+  min-height: 3.2rem;
+  padding: 0 .85rem;
+  border: 1px solid var(--line);
+  outline: none;
+  background: #090d16;
+  color: var(--text);
+  font: inherit;
+}
+
+.security-search-controls input:focus,
+.security-search-controls select:focus { border-color: var(--blue); }
+
+.security-search-clear {
+  color: var(--muted);
+  font: 700 .7rem/1 "Courier New", monospace;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+.security-result-summary {
+  margin: .85rem 0 0;
+  color: var(--muted);
+  font-size: .72rem;
+  line-height: 1.55;
+}
+
 .analytics-note {
   display: flex;
   justify-content: space-between;
@@ -631,6 +679,8 @@ th:not(:first-child), td:not(:first-child) { text-align: right; }
   .trend-card { overflow-x: auto; }
   .trend-chart { min-width: max(42rem, calc(var(--trend-days, 14) * 2.5rem)); }
   .breakdown-stack { grid-template-columns: 1fr; }
+  .security-search-controls { grid-template-columns: 1fr; }
+  .security-search-controls .secondary-button { width: 100%; }
   .analytics-note { display: block; }
 }
 
