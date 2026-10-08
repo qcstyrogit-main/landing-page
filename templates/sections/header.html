@@ -31,7 +31,7 @@
             <li><a href="/#sustainability">Sustainability</a></li>
             <li><a href="/view_jobs">Careers</a></li>
             <li><a href="/#about-us">About Us</a></li>
-            <li><a href="/#contact-us">Contact</a></li>
+            <li><a href="#footer-contact">Contact</a></li>
         </ul>
     </nav>
 
@@ -43,12 +43,6 @@
         <a href="/announcements" class="btn-announcement" data-erp-announcement aria-hidden="true" aria-label="Announcements">
             <svg class="icon" aria-hidden="true"><use href="#icon-bell"></use></svg>
         </a>
-        <div class="user-menu" data-erp-user-menu>
-            <a href="{{ API_BASE_URL }}" class="btn-login" data-erp-login="desktop" aria-label="Login">Login</a>
-            <div class="user-menu-dropdown" aria-hidden="true">
-                <a href="{{ API_BASE_URL.rstrip('/') }}/app" class="user-menu-item">Go to ERP</a>
-            </div>
-        </div>
     </div>
 </header>
 
@@ -81,16 +75,12 @@
         <span class="material-symbols-outlined" aria-hidden="true">info</span>
         <span>About Us</span>
     </a>
-    <a href="/#contact-us">
+    <a href="#footer-contact">
         <span class="material-symbols-outlined" aria-hidden="true">contact_mail</span>
         <span>Contact</span>
     </a>
     <a href="/announcements" class="mobile-announcement" data-erp-announcement aria-hidden="true" aria-label="Announcements">
         <svg class="icon" aria-hidden="true"><use href="#icon-bell"></use></svg>
         <span>Announcement</span>
-    </a>
-    <a href="{{ API_BASE_URL }}" class="mobile-login" data-erp-login="mobile">
-        <svg class="icon" aria-hidden="true"><use href="#icon-user"></use></svg>
-        <span>Login</span>
     </a>
 </nav>

@@ -119,7 +119,11 @@ function escapeHtml(value) {
 
 function sanitizeHtml(value) {
   if (!value || typeof value !== 'string') return '';
-  if (!/[<>]/.test(value)) return '';
+  if (!/[<>]/.test(value)) {
+    // Frappe also returns plain-text descriptions; preserve their line breaks
+    // while escaping text before it is inserted as HTML.
+    return escapeHtml(value).replace(/\r\n?|\n/g, '<br>').trim();
+  }
 
   const allowedTags = new Set(['A', 'BR', 'P', 'B', 'STRONG', 'EM', 'I', 'UL', 'OL', 'LI']);
   const template = document.createElement('template');
@@ -544,7 +548,7 @@ function showJobDetail(job, isFromRouting = false) {
     detailType.textContent = job.employment_type || 'Full-time';
     detailCount.textContent = job.applicants || '0';
     
-    const safeDescription = sanitizeHtml(job.description || '');
+    const safeDescription = sanitizeHtml(job.description || job.job_description || '');
     detailDescription.innerHTML = safeDescription || '<p>No description provided.</p>';
 }
 
