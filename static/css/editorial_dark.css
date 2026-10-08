@@ -3039,7 +3039,7 @@ body:not(.auth-page) #main-content {
     color: var(--ed-cream-dim);
 }
 
-.careers-page :is(.job-card, .detail-empty, .info-box, .detail-panel) {
+.careers-page :is(.job-card, .detail-empty, .detail-panel) {
     border-color: var(--ed-rule);
     border-radius: 0;
     color: var(--ed-cream);
@@ -3076,6 +3076,21 @@ body:not(.auth-page) #main-content {
 
 .careers-page :is(.job-card, .detail-panel) :is(h2, h3, p, span, small) {
     color: inherit;
+}
+
+.careers-page .info-box {
+    min-width: 0;
+    color: var(--ed-cream);
+    background: transparent;
+}
+
+.careers-page .info-box small {
+    color: var(--ed-cream-dim);
+}
+
+.careers-page .info-box p {
+    color: var(--ed-cream);
+    overflow-wrap: anywhere;
 }
 
 .careers-page :is(.oa-banner-btn, .apply, .oa-submit-btn) {

@@ -7,9 +7,9 @@
   const readTheme = () => {
     try {
       const saved = window.localStorage.getItem(storageKey);
-      return saved === "light" || saved === "dark" ? saved : "dark";
+      return saved === "light" || saved === "dark" ? saved : "light";
     } catch (error) {
-      return "dark";
+      return "light";
     }
   };
 
@@ -41,7 +41,7 @@
   applyTheme(readTheme());
 
   document.addEventListener("DOMContentLoaded", () => {
-    updateButtons(root.dataset.theme || "dark");
+    updateButtons(root.dataset.theme || "light");
     document.querySelectorAll("[data-theme-toggle]").forEach((button) => {
       button.addEventListener("click", () => {
         applyTheme(root.dataset.theme === "light" ? "dark" : "light", true);

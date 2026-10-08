@@ -266,9 +266,14 @@ def proxy_public_file_urls_in_payload(payload, image_keys):
         return [proxy_public_file_urls_in_payload(item, image_keys) for item in payload]
     return payload
 
-def proxied_testimonial_image_url(image_url):
+def proxied_testimonial_image_url(image_url, testimonial_name=None):
     if not image_url:
         return ""
+
+    # Resolve named testimonials through the public image method. Direct ERP
+    # file URLs can use a retired hostname or a path blocked by the API proxy.
+    if isinstance(testimonial_name, str) and re.fullmatch(r"[A-Za-z0-9._-]{1,140}", testimonial_name):
+        return flask_url_for("proxy_testimonial_image", name=testimonial_name)
 
     public_url = proxied_erp_public_file_url(image_url)
     if public_url != image_url:
@@ -276,6 +281,17 @@ def proxied_testimonial_image_url(image_url):
 
     parsed_image = urlparse(image_url)
     parsed_api = urlparse(API_BASE_URL)
+    # Legacy testimonial links still name the retired public ERP host.
+    # Fetch their file paths through our configured ERP origin instead.
+    if (
+        parsed_image.scheme in ("http", "https")
+        and parsed_image.hostname == "qcmc.qcstyro.com"
+        and parsed_image.path.startswith("/files/")
+    ):
+        return flask_url_for(
+            "proxy_public_file",
+            filename=parsed_image.path[len("/files/"):],
+        )
     is_erp_url = (
         not parsed_image.netloc
         or parsed_image.netloc == parsed_api.netloc
@@ -307,7 +323,7 @@ def proxied_testimonial_image_url(image_url):
 def proxy_testimonial_image_urls_in_payload(payload):
     if isinstance(payload, dict):
         return {
-            key: proxied_testimonial_image_url(value)
+            key: proxied_testimonial_image_url(value, payload.get("name"))
             if key == "testimonial_image" and isinstance(value, str)
             else proxy_testimonial_image_urls_in_payload(value)
             for key, value in payload.items()
