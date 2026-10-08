@@ -1,0 +1,116 @@
+{% extends "web.html" %}
+
+{% block title %}Products | QC & MC{% endblock %}
+{% block meta_description %}Explore QC Styropackaging and Multiplast Corporation product lines for food service and industrial packaging.{% endblock %}
+
+{% block head %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
+{% endblock %}
+
+{% block body_class %}product-hub-page{% endblock %}
+
+{% block page_content %}
+{% include "sections/header.html" %}
+
+<section class="product-hub">
+    <header class="product-hub-hero">
+        <div>
+            <p class="site-eyebrow">Product directory</p>
+            <h1>Packaging built around<br><em>your operation.</em></h1>
+            <p>Choose a product line to browse specifications, categories, and available packaging formats.</p>
+        </div>
+        <div class="product-hub-index" aria-hidden="true">
+            <span>QC / MC</span>
+            <strong>02</strong>
+            <small>Products</small>
+        </div>
+    </header>
+
+    <section id="packaging-finder" class="packaging-finder" aria-labelledby="packaging-finder-title">
+        <div class="packaging-finder-heading">
+            <p class="site-eyebrow">Packaging finder</p>
+            <h2 id="packaging-finder-title">Find the right product line.</h2>
+            <p>Choose an application, material, and format to continue to matching products.</p>
+        </div>
+        <form id="packagingFinderForm" class="packaging-finder-form">
+            <label>
+                <span>01 / Application</span>
+                <select id="finderApplication">
+                    <option value="">Select application</option>
+                    <option value="food-service">Food service</option>
+                    <option value="dinnerware">Dinnerware</option>
+                    <option value="industrial">Industrial packaging</option>
+                    <option value="transport">Transport &amp; protection</option>
+                </select>
+            </label>
+            <label>
+                <span>02 / Material</span>
+                <select id="finderMaterial">
+                    <option value="">Any material</option>
+                    <option value="plastic">Plasticware</option>
+                    <option value="styro">Styroware</option>
+                </select>
+            </label>
+            <label>
+                <span>03 / Format</span>
+                <select id="finderFormat" disabled>
+                    <option value="">Choose an application first</option>
+                </select>
+            </label>
+            <button type="submit" class="packaging-finder-submit" disabled>
+                Show matching products <span aria-hidden="true">&rarr;</span>
+            </button>
+        </form>
+        <p id="packagingFinderStatus" class="packaging-finder-status" aria-live="polite"></p>
+    </section>
+
+    <div class="product-line-grid">
+        <a class="product-line-card product-line-card--plastic" href="{{ url_for('products_plastic') }}">
+            <div class="product-line-media">
+                <picture>
+                    <source type="image/avif" srcset="{{ url_for('static', filename='images/products/Plastic_Products.avif') }}">
+                    <source type="image/webp" srcset="{{ url_for('static', filename='images/products/Plastic_Products.webp') }}">
+                    <img src="{{ url_for('static', filename='images/products/Plastic_Products.png') }}" alt="Plasticware packaging range">
+                </picture>
+            </div>
+            <div class="product-line-copy">
+                <span class="product-line-number">01 / PET &amp; PP</span>
+                <h2>Plasticware</h2>
+                <p>Clear, durable, and versatile packaging for food service and everyday applications.</p>
+                <span class="product-line-link">Browse Plasticware <b aria-hidden="true">&rarr;</b></span>
+            </div>
+        </a>
+
+        <a class="product-line-card product-line-card--styro" href="{{ url_for('products_styro') }}">
+            <div class="product-line-media">
+                <picture>
+                    <source type="image/avif" srcset="{{ url_for('static', filename='images/products/Hotdog_Boxes.avif') }}">
+                    <source type="image/webp" srcset="{{ url_for('static', filename='images/products/Hotdog_Boxes.webp') }}">
+                    <img src="{{ url_for('static', filename='images/products/Hotdog_Boxes.png') }}" alt="Styroware packaging range">
+                </picture>
+            </div>
+            <div class="product-line-copy">
+                <span class="product-line-number">02 / EPS &amp; PSP</span>
+                <h2>Styroware</h2>
+                <p>Lightweight, insulating packaging engineered for protection, service, and transport.</p>
+                <span class="product-line-link">Browse Styroware <b aria-hidden="true">&rarr;</b></span>
+            </div>
+        </a>
+    </div>
+
+    <aside class="product-support-strip">
+        <div>
+            <p class="site-eyebrow">Need help choosing?</p>
+            <h2>Tell us what your product needs to do.</h2>
+        </div>
+        <a href="/#contact-us">Contact our product team <span aria-hidden="true">&rarr;</span></a>
+    </aside>
+</section>
+{% endblock %}
+
+{% block footer %}
+{{ super() }}
+<script defer src="{{ url_for('static', filename='js/home.js') }}"></script>
+<script defer src="{{ url_for('static', filename='js/product_finder.js') }}"></script>
+{% endblock %}

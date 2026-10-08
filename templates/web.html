@@ -8,6 +8,7 @@
     <meta name="robots" content="{% block meta_robots %}index, follow{% endblock %}">
     <link rel="canonical" href="{{ (canonical_base_url or request.url_root.rstrip('/')) ~ request.path }}">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
 
     <meta property="og:title" content="{% block og_title %}{{ self.title() }}{% endblock %}">
     <meta property="og:description" content="{% block og_description %}{{ self.meta_description() }}{% endblock %}">
@@ -91,8 +92,16 @@
     </script>
     {% endblock %}
     {% endblock %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/site_system.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/editorial_dark.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
 </head>
 <body class="{% block body_class %}{% endblock %}" data-erp-base="{{ API_BASE_URL.rstrip('/') }}">
+
+    <canvas class="site-field" id="siteField" aria-hidden="true"></canvas>
+    <button type="button" class="site-theme-toggle site-theme-toggle--standalone" data-theme-toggle aria-label="Switch to light theme" title="Switch to light theme">
+        <span class="theme-toggle-icon" aria-hidden="true">☼</span>
+    </button>
 
     {% include "partials/icons.svg" %}
 
@@ -100,8 +109,8 @@
         {% block page_content %}{% endblock %}
     </main>
 
-    <button id="chat-bubble" class="chat-bubble" type="button" aria-label="Open chat" data-chatbot-src="{{ url_for('static', filename='js/chatbot.js') }}" style="display: none;">
-        <svg class="icon" aria-hidden="true"><use href="#icon-chat"></use></svg>
+    <button id="chat-bubble" class="chat-bubble" type="button" aria-label="Open chat" aria-expanded="false" data-chatbot-src="{{ url_for('static', filename='js/chatbot.js', rev='support-chat-v4') }}" style="display: none;">
+        <svg class="icon" aria-hidden="true"><use href="#icon-support-chat"></use></svg>
         <span id="chat-unread-badge" class="chat-unread-badge" aria-hidden="true">0</span>
     </button>
 
@@ -149,10 +158,11 @@
     <script defer src="{{ url_for('static', filename='js/csrf.js') }}"></script>
     <script defer src="{{ url_for('static', filename='js/analytics_events.js') }}"></script>
     <script defer src="{{ url_for('static', filename='js/auth_ui.js') }}"></script>
-    {% block footer %}{% endblock %}
+    {% block footer %}{% include "sections/footer.html" %}{% endblock %}
 
     <script defer src="{{ url_for('static', filename='js/image_formats.js') }}"></script>
     <script defer src="{{ url_for('static', filename='js/critical_css.js') }}"></script>
     <script defer src="{{ url_for('static', filename='js/chatbot_loader.js') }}"></script>
+    <script defer src="{{ url_for('static', filename='js/site_field.js') }}"></script>
 </body>
 </html>

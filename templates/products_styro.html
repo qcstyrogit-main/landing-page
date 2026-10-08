@@ -11,6 +11,8 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/products_styro.css') }}">
 {% endblock %}
 
+{% block body_class %}product-catalog-page styro-catalog-page{% endblock %}
+
 {% block page_content %}
   {% include "sections/header.html" %}
 
@@ -18,22 +20,7 @@
     <div class="container products-container">
       <header class="page-hero styrofoam-header">
         <div class="hero-copy">
-          <div class="hero-brand">
-            <div class="logos">
-              <picture>
-                <source type="image/avif" srcset="{{ url_for('static', filename='images/QC.avif') }}">
-                <source type="image/webp" srcset="{{ url_for('static', filename='images/QC.webp') }}">
-                <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/QC.png') }}" alt="QC Logo" class="logo" width="42" height="42">
-              </picture>
-              <picture>
-                <source type="image/avif" srcset="{{ url_for('static', filename='images/MC.avif') }}">
-                <source type="image/webp" srcset="{{ url_for('static', filename='images/MC.webp') }}">
-                <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/MC.png') }}" alt="MC Logo" class="logo" width="42" height="42">
-              </picture>
-            </div>
-            <p class="eyebrow">QC &amp; MC Products</p>
-          </div>
-          <h1 class="title">Styropor Products</h1>
+          <h1 class="title">Styropor <em>Products</em></h1>
           <p class="subtitle">Browse our full range of styrofoam packaging with quick filters and search.</p>
         </div>
 
@@ -788,7 +775,7 @@
   <!-- PRODUCT SIDEBAR -->
   <div id="productSidebar" class="product-sidebar">
     <div class="sidebar-content">
-      <span id="sidebarClose" class="close-btn">&times;</span>
+      <button type="button" id="sidebarClose" class="close-btn" aria-label="Close product details">&times;</button>
 
       <!-- PRODUCT VIEW -->
       <div id="productView">
@@ -800,10 +787,18 @@
           Inquire
         </button>
       </div>
+    </div>
+  </div>
 
-      <!-- INQUIRY FORM (HIDDEN INITIALLY) -->
-      <div id="inquiryForm" style="display:none;">
-        <h3>Product Inquiry</h3>
+  <!-- DARK OVERLAY -->
+  <div id="sidebarOverlay" class="sidebar-overlay"></div>
+
+  <!-- PRODUCT INQUIRY MODAL -->
+  <div id="inquiryModal" class="product-inquiry-modal" aria-hidden="true" inert>
+    <div class="product-inquiry-dialog" role="dialog" aria-modal="true" aria-labelledby="inquiryModalTitle">
+      <button type="button" id="inquiryModalClose" class="inquiry-modal-close" aria-label="Close product inquiry">&times;</button>
+      <div id="inquiryForm">
+        <h3 id="inquiryModalTitle">Product Inquiry</h3>
         <form id="productInquiryForm">
           <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
           <input type="text" name="hp" id="inqHp" style="display:none">
@@ -831,9 +826,6 @@
     </div>
   </div>
 
-  <!-- DARK OVERLAY -->
-  <div id="sidebarOverlay" class="sidebar-overlay"></div>
-
   <!-- SUCCESS POPUP -->
   <div id="inquirySuccessPopup" class="inquiry-popup" aria-hidden="true" inert>
     <div class="inquiry-popup-card" role="dialog" aria-modal="true" aria-labelledby="inquiryPopupTitle">
@@ -849,6 +841,7 @@
   {{ super() }}
   <script defer src="{{ url_for('static', filename='js/home.js') }}"></script>
   <script defer src="{{ url_for('static', filename='js/products_styro.js') }}"></script>
+  <script defer src="{{ url_for('static', filename='js/catalog_upgrade.js') }}"></script>
 {% endblock %}
 
 

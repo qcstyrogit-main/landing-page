@@ -144,6 +144,8 @@
   </style>
 {% endblock %}
 
+{% block body_class %}careers-page{% endblock %}
+
 {% block structured_data %}
   {{ super() }}
   <script type="application/ld+json" id="jobPostingSchema" nonce="{{ csp_nonce }}"></script>
@@ -160,7 +162,7 @@
       <header class="page-hero">
         <div class="hero-copy">
           <p class="eyebrow">QC &amp; MC Careers</p>
-          <h1 class="title">Job Openings</h1>
+          <h1 class="title">Job <em>Openings</em></h1>
           <p class="subtitle">Search by role, department, or location. Updated daily.</p>
         </div>
         <div class="hero-actions">
@@ -319,10 +321,10 @@
 
     <div id="backdrop" class="backdrop"></div>
 
-    <aside id="drawer" class="drawer">
+    <aside id="drawer" class="drawer" aria-hidden="true" inert>
       <div class="drawer-header">
         <h3>Filters</h3>
-        <button id="closeDrawer" class="link-btn">Close</button>
+        <button type="button" id="closeDrawer" class="link-btn">Close</button>
       </div>
       <div class="drawer-body">
         <div class="filter-group">

@@ -12,6 +12,131 @@ document.addEventListener("DOMContentLoaded", function() {
     const panelLink = document.getElementById("contactPanelLink");
     const panelMap = document.getElementById("contactPanelMap");
 
+    function createAreaDropdown(select) {
+        const container = select?.closest(".area-filter, .contact-topic-select");
+        const label = container?.querySelector("label");
+        if (!select || !container || container.classList.contains("custom-ready")) return;
+
+        const trigger = document.createElement("button");
+        const value = document.createElement("span");
+        const chevron = document.createElement("span");
+        const menu = document.createElement("div");
+
+        trigger.type = "button";
+        trigger.id = `${select.id}Trigger`;
+        trigger.className = "catalog-select-trigger";
+        trigger.setAttribute("aria-haspopup", "listbox");
+        trigger.setAttribute("aria-expanded", "false");
+
+        value.className = "catalog-select-value";
+        value.textContent = select.options[select.selectedIndex]?.text || "All Areas";
+        chevron.className = "catalog-select-chevron";
+        chevron.setAttribute("aria-hidden", "true");
+        trigger.append(value, chevron);
+
+        menu.className = "catalog-select-menu";
+        menu.setAttribute("role", "listbox");
+        menu.hidden = true;
+
+        Array.from(select.options).forEach(option => {
+            const item = document.createElement("button");
+            item.type = "button";
+            item.className = "catalog-select-option";
+            item.dataset.value = option.value;
+            item.textContent = option.text;
+            item.setAttribute("role", "option");
+            item.setAttribute("aria-selected", String(option.selected));
+            item.addEventListener("click", () => {
+                select.value = option.value;
+                select.dispatchEvent(new Event("change", { bubbles: true }));
+                closeMenu();
+                trigger.focus();
+            });
+            menu.appendChild(item);
+        });
+
+        function syncSelection() {
+            value.textContent = select.options[select.selectedIndex]?.text || "All Areas";
+            menu.querySelectorAll(".catalog-select-option").forEach(item => {
+                item.setAttribute("aria-selected", String(item.dataset.value === select.value));
+            });
+        }
+
+        function openMenu() {
+            const rect = trigger.getBoundingClientRect();
+            const spaceBelow = window.innerHeight - rect.bottom - 12;
+            const spaceAbove = rect.top - 12;
+            const openAbove = spaceBelow < 220 && spaceAbove > spaceBelow;
+
+            menu.style.left = `${rect.left}px`;
+            menu.style.width = `${rect.width}px`;
+            menu.style.maxHeight = `${Math.max(160, Math.min(320, openAbove ? spaceAbove : spaceBelow))}px`;
+            menu.style.top = openAbove ? "auto" : `${rect.bottom + 7}px`;
+            menu.style.bottom = openAbove ? `${window.innerHeight - rect.top + 7}px` : "auto";
+            menu.hidden = false;
+            trigger.setAttribute("aria-expanded", "true");
+            container.classList.add("is-open");
+            menu.querySelector('[aria-selected="true"]')?.focus({ preventScroll: true });
+        }
+
+        function closeMenu() {
+            menu.hidden = true;
+            trigger.setAttribute("aria-expanded", "false");
+            container.classList.remove("is-open");
+        }
+
+        trigger.addEventListener("click", () => {
+            if (menu.hidden) openMenu();
+            else closeMenu();
+        });
+        trigger.addEventListener("keydown", event => {
+            if (["ArrowDown", "ArrowUp", "Enter", " "].includes(event.key) && menu.hidden) {
+                event.preventDefault();
+                openMenu();
+            }
+        });
+        menu.addEventListener("keydown", event => {
+            const items = Array.from(menu.querySelectorAll(".catalog-select-option"));
+            const index = items.indexOf(document.activeElement);
+            if (event.key === "Escape") {
+                event.preventDefault();
+                event.stopPropagation();
+                closeMenu();
+                trigger.focus();
+            } else if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+                event.preventDefault();
+                const direction = event.key === "ArrowDown" ? 1 : -1;
+                items[(index + direction + items.length) % items.length]?.focus();
+            }
+        });
+        document.addEventListener("click", event => {
+            if (!container.contains(event.target) && !menu.contains(event.target)) closeMenu();
+        });
+        window.addEventListener("resize", closeMenu);
+        window.addEventListener("scroll", event => {
+            if (!menu.contains(event.target)) closeMenu();
+        }, true);
+        select.addEventListener("change", syncSelection);
+        select.addEventListener("invalid", event => {
+            event.preventDefault();
+            openMenu();
+        });
+        select.form?.addEventListener("reset", () => {
+            window.setTimeout(syncSelection, 0);
+        });
+
+        if (label) label.htmlFor = trigger.id;
+        select.tabIndex = -1;
+        select.setAttribute("aria-hidden", "true");
+        container.appendChild(trigger);
+        document.body.appendChild(menu);
+        container.classList.add("custom-ready");
+        syncSelection();
+    }
+
+    createAreaDropdown(areaSelect);
+    createAreaDropdown(document.getElementById("contactTopic"));
+
     const geoBounds = {
         minLon: 116.927573,
         maxLon: 126.606549,
@@ -459,13 +584,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 document.addEventListener("DOMContentLoaded", () => {
-    const openBtn = document.getElementById("openContactPopup");
+    const openButtons = document.querySelectorAll("[data-contact-modal-trigger]");
     const closeBtn = document.getElementById("closeContactPopup");
     const popup = document.getElementById("contactPopup");
     const overlay = document.getElementById("contactOverlay");
     let lastFocused = null;
     let trapHandler = null;
-
     function getFocusable(container) {
         if (!container) return [];
         return Array.from(
@@ -492,9 +616,23 @@ document.addEventListener("DOMContentLoaded", () => {
             if (event.key === "Escape") {
                 closePopup();
             }
+            if (event.key === "PageDown") {
+                event.preventDefault();
+                popup.scrollBy({ top: popup.clientHeight * 0.8, behavior: "smooth" });
+            } else if (event.key === "PageUp") {
+                event.preventDefault();
+                popup.scrollBy({ top: -popup.clientHeight * 0.8, behavior: "smooth" });
+            } else if (event.key === "Home" && event.ctrlKey) {
+                event.preventDefault();
+                popup.scrollTop = 0;
+            } else if (event.key === "End" && event.ctrlKey) {
+                event.preventDefault();
+                popup.scrollTop = popup.scrollHeight;
+            }
         };
         document.addEventListener("keydown", trapHandler);
-        first.focus();
+        first.focus({ preventScroll: true });
+        popup.scrollTop = 0;
     }
 
     function releaseFocus() {
@@ -511,39 +649,50 @@ document.addEventListener("DOMContentLoaded", () => {
         lastFocused = document.activeElement;
         popup.style.display = "block";
         overlay.style.display = "block";
-        popup.setAttribute("aria-hidden", "false");
         overlay.setAttribute("aria-hidden", "false");
-        popup.removeAttribute("inert");
+        overlay.removeAttribute("inert");
+        document.body.classList.add("modal-open");
+        popup.scrollTop = 0;
 
-        // Optional: add slide-up animation
-        popup.style.animation = "slideUp 0.4s ease forwards";
         trapFocus();
     }
 
     function selectSupportTopic() {
         const topic = document.getElementById("contactTopic");
-        if (topic) topic.value = "Support";
+        if (topic) {
+            topic.value = "Support";
+            topic.dispatchEvent(new Event("change", { bubbles: true }));
+        }
     }
 
     // Function to close popup
     function closePopup() {
         popup.style.display = "none";
         overlay.style.display = "none";
-        popup.setAttribute("aria-hidden", "true");
         overlay.setAttribute("aria-hidden", "true");
-        popup.setAttribute("inert", "");
+        overlay.setAttribute("inert", "");
+        document.body.classList.remove("modal-open");
         releaseFocus();
     }
 
     // Click handlers
-    if (openBtn) openBtn.addEventListener("click", openPopup);
+    openButtons.forEach((button) => {
+        button.addEventListener("click", (event) => {
+            event.preventDefault();
+            openPopup();
+        });
+    });
     document.addEventListener("openContactSupport", (event) => {
         selectSupportTopic();
         openPopup();
         event.preventDefault();
     });
     if (closeBtn) closeBtn.addEventListener("click", closePopup);
-    if (overlay) overlay.addEventListener("click", closePopup);
+    if (overlay) {
+        overlay.addEventListener("click", (event) => {
+            if (event.target === overlay) closePopup();
+        });
+    }
 
     try {
         if (window.sessionStorage.getItem("open_support_contact") === "1") {

@@ -10,6 +10,8 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
 {% endblock %}
 
+{% block body_class %}auth-page login-page{% endblock %}
+
 {% block page_content %}
 <div class="custom-login-page">
     <div class="login-right">
@@ -69,7 +71,7 @@
 
 {% block footer %}
 <div class="custom-footer">
-    Copyright © 2025 QC Styropackaging & Multiplast Corporation | Powered by QCMC MIS
+    Copyright &copy; 2026 QC Styropackaging &amp; Multiplast Corporation | Powered by QCMC MIS
 </div>
 
 <!-- Include external login JS -->

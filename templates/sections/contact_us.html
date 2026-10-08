@@ -4,20 +4,24 @@
             <!-- Header -->
             <div class="about-us-header">
                 <p class="about-us-eyebrow">Contact</p>
-                <h2 id="contact-title" class="contact-header">Our Offices & Plants</h2>
-                <p class="about-us-lede">Reach our teams, explore locations, and send your inquiries to QC & MC.</p>
-            </div>
+                <div class="contact-heading-row">
+                    <h2 id="contact-title" class="contact-header">Our Offices<br><em>&amp; Plants</em></h2>
+                    <div class="contact-heading-meta">
+                        <p class="about-us-lede">Reach our teams, explore locations, and send your inquiries to QC & MC.</p>
 
-            <!-- Area Filter -->
-            <div class="area-filter">
-                <label for="area">Select Area:</label>
-                <select id="area">
-                    <option value="all">All Areas</option>
-                    <option value="luzon">Luzon</option>
-                    <option value="visayas">Visayas</option>
-                    <option value="mindanao">Mindanao</option>
-                    <option value="plant">Plant</option>
-                </select>
+                        <!-- Area Filter -->
+                        <div class="area-filter">
+                            <label for="area">Select Area:</label>
+                            <select id="area">
+                                <option value="all">All Areas</option>
+                                <option value="luzon">Luzon</option>
+                                <option value="visayas">Visayas</option>
+                                <option value="mindanao">Mindanao</option>
+                                <option value="plant">Plant</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <div class="contact_mapboard">
@@ -47,58 +51,52 @@
             </div>
            
 
-            <!-- Message Us Button -->
-            <div class="message-btn-container">
-                <button type="button" class="message-btn" id="openContactPopup">
-                    Message Us
-                </button>
-            </div>
+            <!-- Contact Modal -->
+            <div id="contactOverlay" class="modal contact-overlay" role="dialog" aria-modal="true" aria-labelledby="contactPopupTitle" aria-hidden="true" inert>
+                <div id="contactPopup" class="modal-content contact-popup">
+                    <button type="button" class="contact-close" id="closeContactPopup" aria-label="Close contact form">&times;</button>
 
-            <!-- Overlay -->
-            <div id="contactOverlay" class="contact-overlay" aria-hidden="true"></div>
+                    <h3 id="contactPopupTitle">Contact Us</h3>
 
-            <!-- Popup -->
-            <div id="contactPopup" class="contact-popup" role="dialog" aria-modal="true" aria-labelledby="contactPopupTitle" aria-hidden="true" inert>
-                <button type="button" class="contact-close" id="closeContactPopup" aria-label="Close contact form">&times;</button>
+                    <form id="contactForm">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <input id="contactName" name="name" type="text" placeholder="Name" required>
+                        <input id="contactCompany" name="company" type="text" placeholder="Company Name">
+                        <input id="contactNo" name="contact_no" type="text" placeholder="Contact No.">
+                        <input id="contactEmail" name="email" type="email" placeholder="Email" required>
 
-                <h3 id="contactPopupTitle">Contact Us</h3>
+                        <div class="contact-topic-select">
+                            <select id="contactTopic" name="topic" required>
+                                <option value="">Select Topic</option>
+                                <option>General Inquiry</option>
+                                <option>Sales</option>
+                                <option selected>Support</option>
+                            </select>
+                        </div>
 
-                <form id="contactForm">
-                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                    <input id="contactName" name="name" type="text" placeholder="Name" required>
-                    <input id="contactCompany" name="company" type="text" placeholder="Company Name">
-                    <input id="contactNo" name="contact_no" type="text" placeholder="Contact No.">
-                    <input id="contactEmail" name="email" type="email" placeholder="Email" required>
+                        <textarea
+                            id="contactInquiry"
+                            name="inquiry"
+                            placeholder="Your Inquiry"
+                            rows="4"
+                            required
+                        ></textarea>
 
-                    <select id="contactTopic" name="topic" required>
-                        <option value="">Select Topic</option>
-                        <option>General Inquiry</option>
-                        <option>Sales</option>
-                        <option selected>Support</option>
-                    </select>
+                        <!-- Honeypot -->
+                        <input type="text" id="contactHp" name="hp" style="display:none">
 
-                    <textarea
-                        id="contactInquiry"
-                        name="inquiry"
-                        placeholder="Your Inquiry"
-                        rows="4"
-                        required
-                    ></textarea>
+                        <div class="contact-altcha">
+                            <altcha-widget
+                                challengeurl="{{ altcha_challenge_url }}"
+                                floating="false"
+                            ></altcha-widget>
+                        </div>
 
-                    <!-- Honeypot -->
-                    <input type="text" id="contactHp" name="hp" style="display:none">
-
-                    <div class="contact-altcha">
-                        <altcha-widget
-                            challengeurl="{{ altcha_challenge_url }}"
-                            floating="false"
-                        ></altcha-widget>
-                    </div>
-
-                    <button type="submit" class="submit-btn">
-                        Send Message
-                    </button>
-                </form>
+                        <button type="submit" class="submit-btn">
+                            Send Message
+                        </button>
+                    </form>
+                </div>
             </div>
 
             <!-- Success Popup -->

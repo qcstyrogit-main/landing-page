@@ -19,22 +19,14 @@
   if (!bubble || !panel || !form || !input || !messagesEl) return;
   const skipAltcha = panel.dataset.skipAltcha === '1';
 
-  const baseUrl = (panel.getAttribute('data-clefincode-base') || '').replace(/\/$/, '');
-  const endpoints = baseUrl
-    ? {
-        create: `${baseUrl}/api/method/clefincode_chat.api.api_1_0_1.chat_portal.create_guest_profile_and_channel`,
-        send: `${baseUrl}/api/method/clefincode_chat.api.api_1_0_1.chat_portal.send`,
-        messages: `${baseUrl}/api/method/clefincode_chat.api.api_1_0_1.chat_portal.get_messages`,
-        status: `${baseUrl}/api/method/company_messenger.api.customer_update_concern`
-      }
-    : {
-        create: '/api/clefincode/create',
-        send: '/api/clefincode/send',
-        messages: '/api/clefincode/messages',
-        status: '/api/clefincode/status'
-      };
+  const endpoints = {
+    create: '/api/support-chat/create',
+    send: '/api/support-chat/send',
+    messages: '/api/support-chat/messages',
+    status: '/api/support-chat/status'
+  };
 
-  const storageKey = 'clefincode_chat_state';
+  const storageKey = 'qcmc_support_chat_state';
   let chatState = loadState();
   let pollingId = null;
   const seenMessageIds = new Set();
@@ -95,6 +87,14 @@
 
   const topicsPromise = loadTopics();
 
+  function resizeComposer() {
+    input.style.height = 'auto';
+    input.style.height = `${Math.min(Math.max(input.scrollHeight, 48), 112)}px`;
+  }
+
+  input.addEventListener('input', resizeComposer);
+  resizeComposer();
+
   bubble.addEventListener('click', () => {
     togglePanel(true);
     fetchMessages();
@@ -140,6 +140,7 @@
     try {
       if (!handoffEnabled && !agentActive) {
         input.value = '';
+        resizeComposer();
         handleAutoFlow(content);
         setStatus('Delivered');
         return;
@@ -158,12 +159,16 @@
       });
       pendingOutbound.push(pendingEntry);
       input.value = '';
+      resizeComposer();
       setStatus('Sending...');
-      if (!chatState.room) {
+      const needsRoom = !chatState.room;
+      if (needsRoom) {
         await createGuestRoom({ content, sender, senderEmail });
         startPolling();
       }
-      await sendMessage({ content, sender, senderEmail });
+      if (!needsRoom) {
+        await sendMessage({ content, sender, senderEmail });
+      }
 
       setStatus('Delivered');
       await fetchMessages();
@@ -176,12 +181,15 @@
       const pendingIndex = pendingOutbound.indexOf(pendingEntry);
       if (pendingIndex !== -1) pendingOutbound.splice(pendingIndex, 1);
       input.value = content;
+      resizeComposer();
       setStatus('Unable to send right now.');
       console.error('Chatbot error:', error);
     }
   });
 
   function togglePanel(open) {
+    bubble.setAttribute('aria-expanded', String(open));
+    bubble.setAttribute('aria-label', open ? 'Chat is open' : 'Open chat');
     if (open) {
       panel.classList.add('open');
       panel.setAttribute('aria-hidden', 'false');
@@ -198,6 +206,12 @@
         showGreeting();
       }
     } else {
+      // Move focus out of the dialog before making its contents unavailable.
+      // Otherwise browsers reject aria-hidden/inert when the close button or
+      // composer still owns focus.
+      if (panel.contains(document.activeElement)) {
+        bubble.focus({ preventScroll: true });
+      }
       panel.classList.remove('open');
       panel.setAttribute('aria-hidden', 'true');
       panel.setAttribute('inert', '');
@@ -263,7 +277,7 @@
     if (!content) return;
     if (id && seenMessageIds.has(id)) return;
     if (key && seenMessageKeys.has(key)) return;
-    if (!id && outbound && isRecentDuplicate(content)) return;
+    if (outbound && !pending && isRecentDuplicate(content)) return;
     if (id) seenMessageIds.add(id);
     if (key) seenMessageKeys.add(key);
 
@@ -642,10 +656,24 @@
       form.querySelector('button[type="submit"]')?.setAttribute('disabled', 'disabled');
       if (closureResetTimer) window.clearTimeout(closureResetTimer);
       closureResetTimer = window.setTimeout(resetCustomerChat, 2500);
+    } else if (status === 'Unassigned') {
+      if (messagesEl.lastElementChild?.dataset.kind !== 'concern_waiting') {
+        appendBotMessage('Your concern was sent. Please wait for a support agent to accept it before continuing the chat.', {
+          kind: 'concern_waiting'
+        });
+      }
+      input.disabled = true;
+      input.placeholder = 'Waiting for a support agent...';
+      form.querySelector('button[type="submit"]')?.setAttribute('disabled', 'disabled');
     } else if (status === 'Open') {
       input.disabled = false;
+      input.placeholder = 'Type your message...';
       form.querySelector('button[type="submit"]')?.removeAttribute('disabled');
-      if (previousStatus && previousStatus !== 'Open') {
+      if (previousStatus === 'Unassigned') {
+        appendBotMessage('A support agent accepted your concern. You can now continue chatting.', {
+          kind: 'concern_accepted'
+        });
+      } else if (previousStatus && previousStatus !== 'Open') {
         appendBotMessage('Your concern is open again. You can continue chatting with the assigned agent.', {
           kind: 'concern_reopened'
         });
@@ -675,6 +703,7 @@
     if (nameInput) nameInput.value = '';
     if (emailInput) emailInput.value = '';
     input.value = '';
+    resizeComposer();
     input.disabled = false;
     form.querySelector('button[type="submit"]')?.removeAttribute('disabled');
     messagesEl.innerHTML = '';
@@ -733,7 +762,7 @@
 
   async function loadTopics() {
     try {
-      const res = await fetch('/api/clefincode/bot-topics', { cache: 'no-store' });
+      const res = await fetch('/api/support-chat/bot-topics', { cache: 'no-store' });
       if (res.ok) {
         const raw = await res.json();
         const data = raw && raw.message ? raw.message : raw;
@@ -1035,21 +1064,12 @@
       if (button.action === 'idle_no') {
         idlePromptVisible = false;
         appendBotMessage('Chat Ended.');
-        clearAllHistory();
-        stopPolling();
-        chatState = {};
-        handoffEnabled = false;
-        agentActive = false;
-        identityPanel?.classList.remove('show');
-        pendingOutbound.length = 0;
-        seenMessageIds.clear();
-        seenMessageKeys.clear();
-        greetingShown = false;
-        autoFlow.stage = 'intro';
-        autoFlow.topic = null;
-        autoFlow.lastQuestion = '';
-        messagesEl.innerHTML = '';
-        showGreeting();
+        if (chatState.room && chatState.token) {
+          setStatus('Closing conversation...');
+          updateConcernStatus('end');
+          return;
+        }
+        resetCustomerChat();
         resetIdle();
         return;
       }
@@ -1138,24 +1158,24 @@
   function reconcileOutbound(content, sendDate, key) {
     if (!content) return false;
     if (!pendingOutbound.length) return false;
-    const sentAt = parseSendDate(sendDate);
     const index = pendingOutbound.findIndex((entry) => {
-      if (entry.content !== content) return false;
-      if (!sentAt) return true;
-      return Math.abs(sentAt - entry.at) < 15000;
+      return entry.content === content;
     });
     if (index === -1) return false;
     const [removed] = pendingOutbound.splice(index, 1);
     if (removed && removed.key) seenMessageKeys.add(removed.key);
+    if (key) seenMessageKeys.add(key);
     if (removed && removed.el) {
       removed.el.dataset.pending = 'false';
       const timeEl = removed.el.querySelector('.chatbot-message-time');
-      if (timeEl) timeEl.textContent = formatTimestamp(sentAt || Date.now());
+      if (timeEl) timeEl.textContent = formatTimestamp(removed.at || Date.now());
     }
     return true;
   }
 
   function reconcilePendingFromItem(item, content, sendDate, key) {
+    if (reconcileOutbound(content, sendDate, key)) return true;
+
     const senderEmail = (item.sender_email || '').toLowerCase();
     const localEmail = (chatState.sender_email || '').toLowerCase();
     const senderName = (item.sender || '').toLowerCase();
@@ -1172,7 +1192,10 @@
   function isRecentDuplicate(content) {
     if (!content) return false;
     const recent = Array.from(messagesEl.querySelectorAll('.chatbot-message.outbound')).slice(-3);
-    return recent.some((node) => (node.textContent || '').trim() === content);
+    return recent.some((node) => {
+      const contentEl = node.querySelector('.chatbot-message-content');
+      return ((contentEl ? contentEl.textContent : node.textContent) || '').trim() === content;
+    });
   }
 
   function parseSendDate(value) {

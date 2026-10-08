@@ -92,6 +92,7 @@ document.addEventListener("DOMContentLoaded", function() {
         mobileNav.classList.add("show");
         menuToggle.classList.add("active");
         menuToggle.setAttribute("aria-expanded", "true");
+        menuToggle.setAttribute("aria-label", "Close menu");
         document.body.style.overflow = "hidden";
         mobileNav.setAttribute("aria-hidden", "false");
         mobileNav.removeAttribute("inert");
@@ -104,6 +105,7 @@ document.addEventListener("DOMContentLoaded", function() {
         mobileNav.classList.remove("show");
         menuToggle.classList.remove("active");
         menuToggle.setAttribute("aria-expanded", "false");
+        menuToggle.setAttribute("aria-label", "Open menu");
         if (mobileDropdown) {
             mobileDropdown.classList.remove("show");
             mobileDropdown.setAttribute("aria-hidden", "true");

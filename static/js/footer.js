@@ -36,7 +36,7 @@ function trapFocus(modal) {
     }
   };
   document.addEventListener("keydown", trapHandler);
-  first.focus();
+  first.focus({ preventScroll: true });
 }
 
 function releaseFocus() {
@@ -51,7 +51,9 @@ function releaseFocus() {
 function openModal(modal, trigger) {
   if (!modal) return;
   lastFocused = trigger || document.activeElement;
+  const scrollContainer = modal.querySelector(".modal-content");
   modal.style.display = "block";
+  if (scrollContainer) scrollContainer.scrollTop = 0;
   modal.setAttribute("aria-hidden", "false");
   modal.removeAttribute("inert");
   document.body.classList.add("modal-open");

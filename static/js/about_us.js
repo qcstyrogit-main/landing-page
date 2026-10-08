@@ -20,22 +20,4 @@ document.addEventListener("DOMContentLoaded", () => {
         prevBtn?.addEventListener("click", rotatePrev);
     }
 
-    const aboutCards = document.querySelectorAll(".about-us-cards .about-card");
-    aboutCards.forEach((card) => {
-        const cta = card.querySelector(".card-cta");
-        if (!cta) return;
-
-        const arrow = cta.querySelector("span");
-        const baseLabel = cta.getAttribute("data-label") || "Read more";
-        const expandedLabel = cta.getAttribute("data-expanded-label") || "Read less";
-
-        cta.setAttribute("aria-expanded", "false");
-
-        cta.addEventListener("click", (event) => {
-            event.preventDefault();
-            const isExpanded = card.classList.toggle("expanded");
-            cta.setAttribute("aria-expanded", isExpanded ? "true" : "false");
-            cta.innerHTML = `${isExpanded ? expandedLabel : baseLabel}${arrow ? " " + arrow.outerHTML : ""}`;
-        });
-    });
 });

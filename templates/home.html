@@ -11,6 +11,7 @@
 <!-- CSS -->
 <link rel="stylesheet" href="{{ url_for('static', filename='css/home.bundle.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/products_section.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/scroll_3d.css') }}">
 <link rel="preload" as="image" href="{{ url_for('static', filename='images/products/Tray.avif') }}" type="image/avif">
 {% endblock %}
 
@@ -56,6 +57,13 @@
 
     {% include "sections/header.html" %}
 
+    <div class="depth-atmosphere" aria-hidden="true">
+        <span class="depth-orb depth-orb--blue"></span>
+        <span class="depth-orb depth-orb--green"></span>
+        <span class="depth-grid"></span>
+        <span class="depth-scanline"></span>
+    </div>
+
     <!-- Page Sections -->
       <!-- Home Sections -->
     {% include "sections/intro.html" %}
@@ -80,17 +88,46 @@
       <!-- Contact Us Sections -->
     {% include "sections/contact_us.html" %}
 
-    <!-- Back to top button -->
-    <button id="back-to-top" aria-label="Back to top">
-        <svg class="icon icon-lg" aria-hidden="true"><use href="#icon-arrow-up"></use></svg>
-    </button>
-
 </div>
+
+<!-- Keep fixed controls outside the clipped home-page scene so the footer
+     cannot cover them at the bottom of the document. -->
+<button id="back-to-top" aria-label="Back to top">
+    <svg class="icon icon-lg" aria-hidden="true"><use href="#icon-arrow-up"></use></svg>
+</button>
+
+<div class="scroll-depth-indicator" aria-label="Page section navigator">
+    <span class="scroll-depth-label">Explore</span>
+    <span class="scroll-depth-track">
+        <svg class="scroll-depth-wave" viewBox="0 0 32 160" preserveAspectRatio="none">
+            <defs>
+                <linearGradient id="scroll-depth-wave-gradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop class="scroll-depth-wave-start" offset="0"></stop>
+                    <stop class="scroll-depth-wave-end" offset="1"></stop>
+                </linearGradient>
+            </defs>
+            <path class="scroll-depth-wave-base" d="M16 0 L16 56 C16 64 4 68 4 80 C4 92 16 96 16 104 L16 160"></path>
+            <path class="scroll-depth-wave-progress" d="M16 0 L16 56 C16 64 4 68 4 80"></path>
+        </svg>
+        <button
+            type="button"
+            class="scroll-depth-current"
+            role="slider"
+            aria-label="Scroll through page sections"
+            aria-valuemin="1"
+            aria-valuemax="9"
+            aria-valuenow="1"
+            aria-valuetext="Section 01 of 09"
+        >01</button>
+    </span>
+</div>
+
+{% include "sections/footer.html" %}
 
 {% endblock %}
 
 {% block footer %}
-{% include "sections/footer.html" %}
 <script defer src="{{ url_for('static', filename='js/home.js') }}"></script>
+<script defer src="{{ url_for('static', filename='js/scroll_3d.js') }}"></script>
 {% endblock %}
 

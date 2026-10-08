@@ -2,19 +2,29 @@
     <div class="intro-content">
         <!-- Left Text Column -->
         <div class="intro-text">
+            <p class="intro-kicker"><span aria-hidden="true"></span>Made in the Philippines</p>
             <h1 id="products-title">
                 Continuous innovation that meets<br>
-                World Class Standards
+                <em>World Class Standards</em>
             </h1>
-            <p>
-                Discover the superior packaging solutions from QC Styropackaging, crafted to meet your every need, 
-                and the wide array of reliable, high-quality offerings from Multiplast Corporation. 
-                Your trusted partners in innovation and quality!
+            <p class="intro-description">
+                Discover the superior packaging solutions from QC Styropackaging, crafted to meet your every need, and the wide array of reliable, high-quality offerings from Multiplast Corporation. Your trusted partners in innovation and quality!
             </p>
+            <div class="intro-actions">
+                <a class="intro-primary-action" href="/products">Explore products</a>
+                <a class="intro-secondary-action" href="/#contact-us">Start a conversation</a>
+            </div>
+            <div class="intro-capabilities" aria-label="Core capabilities">
+                <span><b>01</b>Food &amp; industrial Styrofoam products</span>
+                <span><b>02</b>Plastic dinnerware</span>
+                <span><b>03</b>Packaging solutions</span>
+            </div>
         </div>
 
         <!-- Right Image Column -->
         <div class="intro-images">
+            <span class="intro-corner intro-corner--top" aria-hidden="true"></span>
+            <span class="intro-corner intro-corner--bottom" aria-hidden="true"></span>
             <picture>
                 <source type="image/avif" srcset="{{ url_for('static', filename='images/products/Tray.avif') }}">
                 <source type="image/webp" srcset="{{ url_for('static', filename='images/products/Tray.webp') }}">

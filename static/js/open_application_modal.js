@@ -16,18 +16,22 @@ document.addEventListener('DOMContentLoaded', () => {
     const submitBtn    = document.getElementById('oaSubmitBtn');
     const successView  = document.getElementById('oaSuccess');
     const formView     = document.getElementById('oaFormView');
+    const modal        = overlay.querySelector('.oa-modal');
 
     let selectedFile = null;
 
     // ── Modal open / close ──────────────────────────────────────
     const openModal = () => {
         overlay.classList.add('open');
+        document.body.classList.add('oa-modal-open');
         document.body.style.overflow = 'hidden';
-        document.getElementById('oaName')?.focus();
+        if (modal) modal.scrollTop = 0;
+        document.getElementById('oaName')?.focus({ preventScroll: true });
     };
 
     const closeModal = () => {
         overlay.classList.remove('open');
+        document.body.classList.remove('oa-modal-open');
         document.body.style.overflow = '';
         setTimeout(() => {
             form?.reset();

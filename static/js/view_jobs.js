@@ -389,11 +389,20 @@ function applyFrom(container) {
 function openDrawer() {
   drawer.classList.add('open');
   backdrop.classList.add('active');
+  drawer.setAttribute('aria-hidden', 'false');
+  drawer.removeAttribute('inert');
+  document.body.classList.add('jobs-filter-open');
+  document.body.style.overflow = 'hidden';
+  closeDrawer.focus({ preventScroll: true });
 }
 
 function closeDrawerFn() {
   drawer.classList.remove('open');
   backdrop.classList.remove('active');
+  drawer.setAttribute('aria-hidden', 'true');
+  drawer.setAttribute('inert', '');
+  document.body.classList.remove('jobs-filter-open');
+  document.body.style.overflow = '';
 }
 
 // ------------------- Event Listeners (Retained) -------------------
@@ -421,6 +430,12 @@ clearDrawer.addEventListener('click', () => {
 openFilters.addEventListener('click', openDrawer);
 closeDrawer.addEventListener('click', closeDrawerFn);
 backdrop.addEventListener('click', closeDrawerFn);
+document.addEventListener('keydown', (event) => {
+  if (event.key === 'Escape' && drawer.classList.contains('open')) {
+    closeDrawerFn();
+    openFilters.focus({ preventScroll: true });
+  }
+});
 
 searchInput.addEventListener('input', () => applyFrom(getPrimaryFilterContainer()));
 clearSearch.addEventListener('click', () => {
