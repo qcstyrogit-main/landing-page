@@ -284,6 +284,12 @@ html[data-theme="light"] :is(
     background: rgba(255, 255, 255, 0.92);
 }
 
+html[data-theme="light"] .careers-page .job-card-footer {
+    color: var(--site-muted);
+    background: var(--ed-bg);
+    border-top-color: var(--ed-rule);
+}
+
 html[data-theme="light"] .product-line-media,
 html[data-theme="light"] .product-catalog-page .product-card .card-image {
     background:

@@ -371,17 +371,9 @@
 }
 
 .motion-3d-ready .depth-scene > .scene-plane {
-    transform:
-        perspective(1400px)
-        translate3d(var(--scene-x, 0px), var(--scene-y, 0px), var(--scene-z, 0px));
-    transform-origin: 50% 50%;
-    transform-style: preserve-3d;
-    backface-visibility: hidden;
-    opacity: var(--scene-opacity, 1);
-}
-
-.motion-3d-ready .depth-scene.is-depth-near > .scene-plane {
-    will-change: transform, opacity;
+    /* Keep section copy on the pixel grid; depth motion belongs to decoration. */
+    transform: none;
+    opacity: 1;
 }
 
 .depth-scene-number {

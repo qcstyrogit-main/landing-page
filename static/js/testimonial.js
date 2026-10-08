@@ -156,9 +156,12 @@ document.addEventListener("DOMContentLoaded", () => {
             frame.className = "testimonial-frame";
 
             const img = document.createElement("img");
+            // Load the initial slide immediately so the carousel gains its
+            // natural height even before it enters the viewport.
+            img.loading = idx === 0 ? "eager" : "lazy";
+            img.decoding = "async";
             img.src = normalizeImageUrl(item.image);
             img.alt = item.alt || "Testimonial image";
-            img.loading = "lazy";
             frame.appendChild(img);
 
             wrapper.appendChild(frame);
