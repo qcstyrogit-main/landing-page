@@ -291,7 +291,10 @@ def proxied_testimonial_image_url(image_url):
         "/api/method/"
         "qcmc_logic.api.public_testimonials.get_testimonial_image"
     )
-    if is_erp_url and parsed_image.path == testimonial_method:
+    # The testimonials API may return this method URL using a legacy ERP
+    # hostname (for example qcmc.qcstyro.com). Match the known method path
+    # instead of requiring the response hostname to equal API_BASE_URL.
+    if parsed_image.path == testimonial_method:
         testimonial_name = parse_qs(parsed_image.query).get("name", [""])[0].strip()
         if testimonial_name:
             return flask_url_for(

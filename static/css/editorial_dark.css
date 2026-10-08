@@ -3063,6 +3063,22 @@ body:not(.auth-page) #main-content {
     border-left-color: var(--ed-red);
 }
 
+.careers-page .job-card-footer {
+    background: rgba(10, 12, 20, 0.92);
+    border-top-color: var(--ed-rule);
+    color: var(--ed-cream-dim);
+}
+
+.careers-page .job-card-footer strong {
+    color: var(--ed-cream);
+}
+
+.careers-page .job-card .type-badge {
+    background: rgba(242, 238, 221, 0.08);
+    border-color: var(--ed-rule);
+    color: var(--ed-cream-dim);
+}
+
 .careers-page :is(.job-card, .detail-panel) :is(h2, h3, p, span, small) {
     color: inherit;
 }
