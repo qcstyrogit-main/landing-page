@@ -1270,7 +1270,7 @@ def add_headers(response):
     elif api_origin and api_origin.startswith("https://"):
         img_src += f" {api_origin}"
 
-    connect_src = "connect-src 'self' https://psgc.gitlab.io https://open.er-api.com https://csp.secureserver.net https://cdn.jsdelivr.net"
+    connect_src = "connect-src 'self' https://psgc.gitlab.io https://open.er-api.com https://csp.secureserver.net https://cdn.jsdelivr.net https://www.clarity.ms https://*.clarity.ms"
     if api_origin:
         connect_src = f"{connect_src} {api_origin}"
     if altcha_origin:
@@ -1282,7 +1282,7 @@ def add_headers(response):
         "form-action 'self'",
         "frame-ancestors 'none'",
         "object-src 'none'",
-        f"script-src 'self' 'nonce-{nonce}' 'sha256-j9UDKlBdU2OvJLCxxVGF011MFoS+SFn/EamE8+cU4VQ=' https://cdnjs.cloudflare.com https://img1.wsimg.com https://cdn.jsdelivr.net",
+        f"script-src 'self' 'nonce-{nonce}' 'sha256-j9UDKlBdU2OvJLCxxVGF011MFoS+SFn/EamE8+cU4VQ=' https://cdnjs.cloudflare.com https://img1.wsimg.com https://cdn.jsdelivr.net https://www.clarity.ms",
         "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com",
         img_src,
         "font-src 'self' https://fonts.gstatic.com",

@@ -1,0 +1,1323 @@
+from dotenv import load_dotenv
+import os
+import base64
+import json
+import re
+import secrets
+import ipaddress
+from time import time
+from datetime import date, datetime, timedelta
+from urllib.parse import parse_qs, urlparse
+from collections import deque
+from html import unescape
+from flask import Flask, render_template, request, jsonify, Response, redirect, url_for as flask_url_for, session as flask_session, g
+import requests
+from flask_caching import Cache
+
+def load_env():
+    """
+    Local: load .env + .env.local
+    Production (cPanel): use real environment variables only
+    """
+    env = os.getenv("FLASK_ENV", "").lower()
+
+    # If running in production (cPanel), do NOT load dotenv
+    if env == "production":
+        return
+
+    try:
+        from dotenv import load_dotenv
+        load_dotenv(".env")
+        if os.path.exists(".env.local"):
+            load_dotenv(".env.local", override=True)
+    except Exception:
+        pass
+
+
+load_env()
+
+
+def environment_flag(name, default=False):
+    value = os.getenv(name)
+    if value is None:
+        return default
+    return value.strip().lower() in {"1", "true", "yes", "on"}
+
+
+def environment_integer(name, default, minimum=0, maximum=None):
+    try:
+        value = int(os.getenv(name, str(default)))
+    except (TypeError, ValueError):
+        value = default
+    value = max(minimum, value)
+    return min(value, maximum) if maximum is not None else value
+
+
+API_BASE_URL = (os.environ.get("API_BASE_URL") or "").rstrip("/")
+if not API_BASE_URL:
+    raise RuntimeError("API_BASE_URL is not set")
+ALTCHA_CHALLENGE_URL = (os.environ.get("ALTCHA_CHALLENGE_URL") or "").strip()
+ALTCHA_HMAC_KEY = (os.environ.get("ALTCHA_HMAC_KEY") or "").strip()
+CHATBOT_SKIP_ALTCHA = (
+    os.getenv("FLASK_ENV", "").lower() != "production"
+    and (os.environ.get("CHATBOT_SKIP_ALTCHA") or "").lower() in ("1", "true", "yes")
+)
+
+try:
+    from altcha import ChallengeOptions, create_challenge, verify_solution
+except Exception:
+    ChallengeOptions = None
+    create_challenge = None
+    verify_solution = None
+
+if not ALTCHA_CHALLENGE_URL:
+    ALTCHA_CHALLENGE_URL = "/api/altcha/challenge"
+
+# --------------------------------------------------
+# APP INIT
+# --------------------------------------------------
+app = Flask(__name__)
+app.config["SECRET_KEY"] = os.getenv("SECRET_KEY") or os.getenv("FLASK_SECRET_KEY")
+if not app.config["SECRET_KEY"]:
+    app.logger.warning("SECRET_KEY not set; using ephemeral key")
+    app.config["SECRET_KEY"] = secrets.token_urlsafe(32)
+ASSET_VERSION = os.getenv("ASSET_VERSION", "1")
+EVENTS_DATA_PATH = os.path.join(app.root_path, "static", "data", "events.json")
+CACHE_BUST_TOKEN = os.getenv("CACHE_BUST_TOKEN", "")
+CANONICAL_BASE_URL = os.getenv("CANONICAL_BASE_URL", "").rstrip("/")
+HREFLANGS = [lang.strip() for lang in os.getenv("HREFLANGS", "en").split(",") if lang.strip()]
+production_default = __name__ != "__main__"
+app.config.update(
+    SESSION_COOKIE_SECURE=environment_flag("SESSION_COOKIE_SECURE", production_default),
+    SESSION_COOKIE_HTTPONLY=True,
+    SESSION_COOKIE_SAMESITE="Lax",
+    FORCE_HTTPS=environment_flag("FORCE_HTTPS", production_default),
+    TRUSTED_PROXY_HOPS=environment_integer(
+        "TRUSTED_PROXY_HOPS",
+        1 if production_default else 0,
+        minimum=0,
+        maximum=5,
+    ),
+    HSTS_MAX_AGE=environment_integer(
+        "HSTS_MAX_AGE",
+        31536000 if production_default else 0,
+        minimum=0,
+        maximum=63072000,
+    ),
+    HSTS_INCLUDE_SUBDOMAINS=environment_flag("HSTS_INCLUDE_SUBDOMAINS", False),
+)
+
+PRODUCT_CATEGORY_URLS = {
+    "products_plastic": [
+        "egg-tray",
+        "ice-cream-cups",
+        "kubyertos",
+        "lids",
+        "microwavable-tray",
+        "pet-cups",
+        "plastic-tray",
+        "pp-bowl",
+        "salad-trays-cover",
+        "sauce-cups",
+        "traditional-cups",
+    ],
+    "products_styro": [
+        "cooler",
+        "eps-psp-bowl",
+        "hamburger-box",
+        "hotdog-box",
+        "industrial",
+        "lunch-packs",
+        "noodle-cup",
+        "plates",
+        "spaghetti-box",
+        "styro-cup",
+        "tray",
+    ],
+}
+
+
+OG_IMAGE_REGEX = re.compile(
+    r'<meta[^>]+property=["\']og:image["\'][^>]+content=["\']([^"\']+)["\']',
+    re.IGNORECASE
+)
+OG_TITLE_REGEX = re.compile(
+    r'<meta[^>]+property=["\']og:title["\'][^>]+content=["\']([^"\']+)["\']',
+    re.IGNORECASE
+)
+
+def fetch_events_from_erpnext(limit=9):
+    cache_key = f"website_events:{limit}"
+    cached = cache.get(cache_key)
+    if cached is not None:
+        app.logger.info("Events cache hit: %s items", len(cached))
+        return cached
+    try:
+        res = http_session.get(
+            f"{API_BASE_URL}/api/method/qcmc_logic.api.website_event.get_website_events",
+            params={"limit": limit},
+            timeout=8
+        )
+        res.raise_for_status()
+        payload = res.json()
+        items = payload.get("message") or payload.get("data") or []
+        if not isinstance(items, list):
+            app.logger.warning("Events API returned non-list payload")
+            return []
+        app.logger.info("Events API returned %s items", len(items))
+        cleaned = []
+        seen = set()
+        for item in items:
+            if not isinstance(item, dict):
+                continue
+            title = (item.get("title") or item.get("event_title") or item.get("name") or "").strip()
+            url = (item.get("url") or item.get("link") or "").strip()
+            thumbnail = (item.get("thumbnail") or item.get("image") or item.get("image_url") or "").strip()
+            if not title:
+                continue
+            if not url:
+                url = "#"
+            dedupe_key = f"{title.lower()}::{url}"
+            if dedupe_key in seen:
+                continue
+            seen.add(dedupe_key)
+            cleaned.append({
+                "title": title,
+                "url": url,
+                "thumbnail": thumbnail,
+                "alt": (item.get("alt") or title).strip()
+            })
+        cache.set(cache_key, cleaned, timeout=30)
+        return cleaned
+    except Exception:
+        app.logger.exception("Events API fetch failed")
+        cache.set(cache_key, [], timeout=30)
+        return []
+
+def clear_event_caches():
+    # Clear homepage cache and event lists
+    try:
+        cache.delete_memoized(home)
+    except Exception:
+        pass
+    for limit in (3, 6, 9, 12, 15):
+        cache.delete(f"website_events:{limit}")
+
+def fetch_og_meta(url):
+    if not url:
+        return {"image": "", "title": ""}
+    cache_key = f"og_image:{url}"
+    cached = cache.get(cache_key)
+    if cached:
+        return cached
+    try:
+        res = http_session.get(
+            url,
+            headers={"User-Agent": "Mozilla/5.0"},
+            timeout=8
+        )
+        if not res.ok:
+            cache.set(cache_key, {"image": "", "title": ""}, timeout=300)
+            return {"image": "", "title": ""}
+        html = res.text or ""
+        image_match = OG_IMAGE_REGEX.search(html)
+        title_match = OG_TITLE_REGEX.search(html)
+        image_url = unescape(image_match.group(1).strip()) if image_match else ""
+        title = unescape(title_match.group(1).strip()) if title_match else ""
+        payload = {"image": image_url, "title": title}
+        if image_url or title:
+            cache.set(cache_key, payload, timeout=3600)
+        else:
+            cache.set(cache_key, payload, timeout=300)
+        return payload
+    except Exception:
+        cache.set(cache_key, {"image": "", "title": ""}, timeout=300)
+        return {"image": "", "title": ""}
+
+def proxied_erp_public_file_url(thumbnail):
+    if not thumbnail:
+        return ""
+
+    if thumbnail.startswith("/files/"):
+        return flask_url_for("proxy_public_file", filename=thumbnail[len("/files/"):])
+
+    parsed_thumbnail = urlparse(thumbnail)
+    parsed_api = urlparse(API_BASE_URL)
+    if (
+        parsed_thumbnail.scheme in ("http", "https")
+        and parsed_thumbnail.netloc == parsed_api.netloc
+        and parsed_thumbnail.path.startswith("/files/")
+    ):
+        proxied_url = flask_url_for("proxy_public_file", filename=parsed_thumbnail.path[len("/files/"):])
+        if parsed_thumbnail.query:
+            proxied_url = f"{proxied_url}?{parsed_thumbnail.query}"
+        return proxied_url
+
+    return thumbnail
+
+def proxy_public_file_urls_in_payload(payload, image_keys):
+    if isinstance(payload, dict):
+        return {
+            key: proxied_erp_public_file_url(value) if key in image_keys and isinstance(value, str)
+            else proxy_public_file_urls_in_payload(value, image_keys)
+            for key, value in payload.items()
+        }
+    if isinstance(payload, list):
+        return [proxy_public_file_urls_in_payload(item, image_keys) for item in payload]
+    return payload
+
+def proxied_testimonial_image_url(image_url, testimonial_name=None):
+    if not image_url:
+        return ""
+
+    # Resolve named testimonials through the public image method. Direct ERP
+    # file URLs can use a retired hostname or a path blocked by the API proxy.
+    if isinstance(testimonial_name, str) and re.fullmatch(r"[A-Za-z0-9._-]{1,140}", testimonial_name):
+        return flask_url_for("proxy_testimonial_image", name=testimonial_name)
+
+    public_url = proxied_erp_public_file_url(image_url)
+    if public_url != image_url:
+        return public_url
+
+    parsed_image = urlparse(image_url)
+    parsed_api = urlparse(API_BASE_URL)
+    # Legacy testimonial links still name the retired public ERP host.
+    # Fetch their file paths through our configured ERP origin instead.
+    if (
+        parsed_image.scheme in ("http", "https")
+        and parsed_image.hostname == "qcmc.qcstyro.com"
+        and parsed_image.path.startswith("/files/")
+    ):
+        return flask_url_for(
+            "proxy_public_file",
+            filename=parsed_image.path[len("/files/"):],
+        )
+    is_erp_url = (
+        not parsed_image.netloc
+        or parsed_image.netloc == parsed_api.netloc
+    )
+
+    if is_erp_url and parsed_image.path.startswith("/private/files/"):
+        return flask_url_for(
+            "proxy_private_file",
+            filename=parsed_image.path[len("/private/files/"):],
+        )
+
+    testimonial_method = (
+        "/api/method/"
+        "qcmc_logic.api.public_testimonials.get_testimonial_image"
+    )
+    # The testimonials API may return this method URL using a legacy ERP
+    # hostname (for example qcmc.qcstyro.com). Match the known method path
+    # instead of requiring the response hostname to equal API_BASE_URL.
+    if parsed_image.path == testimonial_method:
+        testimonial_name = parse_qs(parsed_image.query).get("name", [""])[0].strip()
+        if testimonial_name:
+            return flask_url_for(
+                "proxy_testimonial_image",
+                name=testimonial_name,
+            )
+
+    return image_url
+
+def proxy_testimonial_image_urls_in_payload(payload):
+    if isinstance(payload, dict):
+        return {
+            key: proxied_testimonial_image_url(value, payload.get("name"))
+            if key == "testimonial_image" and isinstance(value, str)
+            else proxy_testimonial_image_urls_in_payload(value)
+            for key, value in payload.items()
+        }
+    if isinstance(payload, list):
+        return [proxy_testimonial_image_urls_in_payload(item) for item in payload]
+    return payload
+
+def load_event_posts():
+    remote_events = fetch_events_from_erpnext()
+    if remote_events:
+        cleaned = []
+        for item in remote_events:
+            title = (item.get("title") or "").strip()
+            url = (item.get("url") or "").strip()
+            thumbnail = (item.get("thumbnail") or "").strip()
+            if not (title and url):
+                continue
+            if ("facebook.com" in url) and (not thumbnail):
+                meta = fetch_og_meta(url)
+                if not thumbnail:
+                    thumbnail = meta.get("image", "")
+                if not title:
+                    title = meta.get("title", "").strip()
+            thumbnail = proxied_erp_public_file_url(thumbnail)
+            if not thumbnail:
+                continue
+            cleaned.append({
+                "title": title,
+                "url": url,
+                "thumbnail": thumbnail,
+                "alt": (item.get("alt") or title).strip()
+            })
+        if cleaned:
+            return cleaned
+    return []
+
+def cache_busted_url_for(endpoint, **values):
+    if endpoint == "static":
+        filename = values.get("filename", "")
+        version = ASSET_VERSION
+        if filename:
+            static_path = os.path.join(app.static_folder or "", filename.replace("/", os.sep))
+            try:
+                mtime = int(os.path.getmtime(static_path))
+                version = f"{ASSET_VERSION}.{mtime}" if ASSET_VERSION else str(mtime)
+            except OSError:
+                pass
+        values.setdefault("v", version)
+    return flask_url_for(endpoint, **values)
+
+app.jinja_env.globals["url_for"] = cache_busted_url_for
+
+# --------------------------------------------------
+# CACHE CONFIG (SAFE FOR RENDER)
+# --------------------------------------------------
+cache = Cache(app, config={
+    "CACHE_TYPE": "simple",
+    "CACHE_DEFAULT_TIMEOUT": 300
+})
+
+# Cache static files for 1 year
+app.config["SEND_FILE_MAX_AGE_DEFAULT"] = 31536000
+
+API_BASE_URL = os.getenv("API_BASE_URL")
+if not API_BASE_URL:
+    raise RuntimeError("API_BASE_URL is not set")
+
+# --------------------------------------------------
+# HTTP SESSION (REUSE CONNECTIONS)
+# --------------------------------------------------
+http_session = requests.Session()
+http_session.headers.update({
+    "Accept": "application/json"
+})
+
+def get_csrf_token():
+    token = flask_session.get("csrf_token")
+    if not token:
+        token = secrets.token_urlsafe(32)
+        flask_session["csrf_token"] = token
+    return token
+
+@app.context_processor
+def inject_globals():
+    return dict(
+        API_BASE_URL=API_BASE_URL,
+        csrf_token=get_csrf_token,
+        csp_nonce=getattr(g, "csp_nonce", ""),
+        canonical_base_url=CANONICAL_BASE_URL,
+        altcha_challenge_url=ALTCHA_CHALLENGE_URL,
+        chatbot_skip_altcha=CHATBOT_SKIP_ALTCHA
+    )
+
+def get_base_url():
+    return CANONICAL_BASE_URL or request.url_root.rstrip("/")
+
+def is_internal_url(url, base_url):
+    if not url:
+        return False
+    if url.startswith("/"):
+        return True
+    parsed = urlparse(url)
+    if not parsed.scheme or not parsed.netloc:
+        return False
+    base = urlparse(base_url)
+    return parsed.netloc == base.netloc
+
+def normalize_url(url, base_url):
+    if not url:
+        return ""
+    if url.startswith("/"):
+        return f"{base_url}{url}"
+    return url
+
+def serialize_altcha_challenge(challenge):
+    if isinstance(challenge, dict):
+        payload = dict(challenge)
+    elif hasattr(challenge, "__dict__"):
+        payload = dict(challenge.__dict__)
+    else:
+        payload = {}
+        for key in ("algorithm", "challenge", "salt", "signature", "max_number", "maxnumber", "maxNumber"):
+            if hasattr(challenge, key):
+                payload[key] = getattr(challenge, key)
+    if "max_number" in payload and "maxnumber" not in payload:
+        payload["maxnumber"] = payload["max_number"]
+    return payload
+
+def decode_altcha_payload(raw_value):
+    if not raw_value:
+        return None
+    if isinstance(raw_value, dict):
+        return raw_value
+    if isinstance(raw_value, str):
+        try:
+            decoded = base64.b64decode(raw_value + "==", validate=False)
+            return json.loads(decoded.decode("utf-8"))
+        except Exception:
+            return None
+    return None
+
+def get_erp_auth_headers():
+    api_key = os.getenv("ERP_API_KEY") or os.getenv("FRAPPE_API_KEY")
+    api_secret = os.getenv("ERP_API_SECRET") or os.getenv("FRAPPE_API_SECRET")
+    if api_key and api_secret:
+        return {"Authorization": f"token {api_key}:{api_secret}"}
+    return {}
+
+# --------------------------------------------------
+# SECURITY: RATE LIMITS + CSRF
+# --------------------------------------------------
+RATE_LIMITS = {
+    "/api/send-inquiry-mc": (20, 300),
+    "/api/send-inquiry-qc": (20, 300),
+    "/api/contact-us": (15, 300),
+    "/api/submit-job-applicant": (10, 600),
+    "/api/support-chat/create": (30, 300),
+    "/api/support-chat/send": (60, 300),
+    "/api/support-chat/status": (20, 300),
+    "/api/open-application": (5, 600),
+}
+RATE_STATE = {}
+
+
+def trusted_client_ip():
+    remote_address = request.remote_addr or "unknown"
+    proxy_hops = app.config.get("TRUSTED_PROXY_HOPS", 0)
+    if not proxy_hops:
+        return remote_address
+
+    forwarded_addresses = [
+        value.strip()
+        for value in request.headers.get("X-Forwarded-For", "").split(",")
+        if value.strip()
+    ]
+    if len(forwarded_addresses) < proxy_hops:
+        return remote_address
+
+    candidate = forwarded_addresses[-proxy_hops]
+    try:
+        return ipaddress.ip_address(candidate).compressed
+    except ValueError:
+        return remote_address
+
+
+def is_rate_limited(ip, key, limit, window_seconds):
+    now = time()
+    bucket = RATE_STATE.get((ip, key))
+    if bucket is None:
+        bucket = deque()
+        RATE_STATE[(ip, key)] = bucket
+    cutoff = now - window_seconds
+    while bucket and bucket[0] < cutoff:
+        bucket.popleft()
+    if len(bucket) >= limit:
+        return True
+    bucket.append(now)
+    return False
+
+@app.before_request
+def security_before_request():
+    g.csp_nonce = secrets.token_urlsafe(16)
+
+    forwarded_proto = request.headers.get("X-Forwarded-Proto", "").split(",", 1)[0].strip().lower()
+    request_hostname = (request.host.split(":", 1)[0] or "").lower()
+    is_local_request = request_hostname in {"localhost", "127.0.0.1", "::1"}
+    if (
+        app.config.get("FORCE_HTTPS")
+        and not is_local_request
+        and not request.is_secure
+        and forwarded_proto != "https"
+    ):
+        if CANONICAL_BASE_URL.startswith("https://"):
+            target = f"{CANONICAL_BASE_URL}{request.full_path.rstrip('?')}"
+        else:
+            target = request.url.replace("http://", "https://", 1)
+        return redirect(target, code=308)
+
+    if request.method in ("POST", "PUT", "PATCH", "DELETE") and request.path.startswith("/api/"):
+        if request.path == "/api/cache/events/refresh":
+            return None
+        limit_cfg = RATE_LIMITS.get(request.path)
+        if limit_cfg:
+            ip = trusted_client_ip()
+            limit, window_seconds = limit_cfg
+            if is_rate_limited(ip, request.path, limit, window_seconds):
+                return jsonify({"error": "rate_limited"}), 429
+
+        token = request.headers.get("X-CSRF-Token") or request.form.get("csrf_token")
+        if not token and request.is_json:
+            payload = request.get_json(silent=True) or {}
+            token = payload.get("csrf_token")
+        if not token or token != flask_session.get("csrf_token"):
+            return jsonify({"error": "csrf_failed"}), 403
+
+
+# --------------------------------------------------
+# INTERNAL WEBSITE ANALYTICS
+# --------------------------------------------------
+from analytics import init_analytics
+init_analytics(app)
+
+
+# --------------------------------------------------
+# ROUTES (PAGES)
+# --------------------------------------------------
+@app.route("/")
+def home():
+    return render_template("home.html", API_BASE_URL=API_BASE_URL, events=load_event_posts())
+
+@app.route("/products_plastic")
+def products_plastic():
+    return render_template("products_plastic.html")
+
+@app.route("/products")
+def products():
+    return render_template("products.html")
+
+@app.route("/products_styro")
+def products_styro():
+    return render_template("products_styro.html")
+
+@app.route("/view_jobs")
+def view_jobs():
+    return render_template("view_jobs.html")
+
+@app.route("/apply_now.html")
+def apply_now():
+    return render_template("apply_now.html")
+
+@app.route("/announcements")
+def announcements():
+    return render_template("announcements.html")
+
+@app.route("/sitemap.xml")
+def sitemap():
+    base_url = get_base_url()
+    today = date.today().isoformat()
+    pages = [
+        ("home", "weekly", "1.0"),
+        ("products", "weekly", "0.9"),
+        ("products_plastic", "weekly", "0.9"),
+        ("products_styro", "weekly", "0.9"),
+        ("view_jobs", "daily", "0.7"),
+    ]
+
+    lines = [
+        '<?xml version="1.0" encoding="UTF-8"?>',
+        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" '
+        'xmlns:xhtml="http://www.w3.org/1999/xhtml">'
+    ]
+    for endpoint, changefreq, priority in pages:
+        lines.append("  <url>")
+        loc = f"{base_url}{flask_url_for(endpoint)}"
+        lines.append(f"    <loc>{loc}</loc>")
+        if HREFLANGS:
+            for lang in HREFLANGS:
+                lines.append(
+                    f'    <xhtml:link rel="alternate" hreflang="{lang}" href="{loc}" />'
+                )
+            lines.append(f'    <xhtml:link rel="alternate" hreflang="x-default" href="{loc}" />')
+        lines.append(f"    <lastmod>{today}</lastmod>")
+        lines.append(f"    <changefreq>{changefreq}</changefreq>")
+        lines.append(f"    <priority>{priority}</priority>")
+        lines.append("  </url>")
+
+    # Optional category URLs (query-based, crawlable)
+    for endpoint, categories in PRODUCT_CATEGORY_URLS.items():
+        for category in categories:
+            loc = f"{base_url}{flask_url_for(endpoint)}?category={category}"
+            lines.append("  <url>")
+            lines.append(f"    <loc>{loc}</loc>")
+            if HREFLANGS:
+                for lang in HREFLANGS:
+                    lines.append(
+                        f'    <xhtml:link rel="alternate" hreflang="{lang}" href="{loc}" />'
+                    )
+                lines.append(f'    <xhtml:link rel="alternate" hreflang="x-default" href="{loc}" />')
+            lines.append(f"    <lastmod>{today}</lastmod>")
+            lines.append("    <changefreq>weekly</changefreq>")
+            lines.append("    <priority>0.6</priority>")
+            lines.append("  </url>")
+    lines.append("</urlset>")
+
+    return Response("\n".join(lines), mimetype="application/xml")
+
+@app.route("/sitemap-events.xml")
+def sitemap_events():
+    base_url = get_base_url()
+    today = date.today().isoformat()
+    events = load_event_posts()
+    lines = [
+        '<?xml version="1.0" encoding="UTF-8"?>',
+        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" '
+        'xmlns:xhtml="http://www.w3.org/1999/xhtml">'
+    ]
+    for event in events:
+        url = normalize_url((event or {}).get("url", "").strip(), base_url)
+        if not is_internal_url(url, base_url):
+            continue
+        lines.append("  <url>")
+        lines.append(f"    <loc>{url}</loc>")
+        if HREFLANGS:
+            for lang in HREFLANGS:
+                lines.append(
+                    f'    <xhtml:link rel="alternate" hreflang="{lang}" href="{url}" />'
+                )
+            lines.append(f'    <xhtml:link rel="alternate" hreflang="x-default" href="{url}" />')
+        lines.append(f"    <lastmod>{today}</lastmod>")
+        lines.append("    <changefreq>weekly</changefreq>")
+        lines.append("    <priority>0.6</priority>")
+        lines.append("  </url>")
+    lines.append("</urlset>")
+    return Response("\n".join(lines), mimetype="application/xml")
+
+@app.route("/robots.txt")
+def robots():
+    content = [
+        "User-agent: *",
+        "Allow: /",
+        f"Sitemap: {flask_url_for('sitemap', _external=True)}",
+        f"Sitemap: {flask_url_for('sitemap_events', _external=True)}",
+    ]
+    return Response("\n".join(content), mimetype="text/plain")
+
+# --------------------------------------------------
+# API ROUTES (PROXY TO ERPNEXT)
+# --------------------------------------------------
+@app.route("/api/send-inquiry-mc", methods=["POST"])
+def send_inquiry_mc():
+    try:
+        res = http_session.post(
+            f"{API_BASE_URL}/api/method/qcmc_logic.api.send_inquiry.send_inquiry_mc",
+            data=request.form,
+            timeout=10
+        )
+        return res.json()
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/send-inquiry-qc", methods=["POST"])
+def send_inquiry_qc():
+    try:
+        res = http_session.post(
+            f"{API_BASE_URL}/api/method/qcmc_logic.api.send_inquiry.send_inquiry_qc",
+            data=request.form,
+            timeout=10
+        )
+        return res.json()
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/contact-us", methods=["POST"])
+def contact_us():
+    try:
+        res = http_session.post(
+            f"{API_BASE_URL}/api/method/qcmc_logic.api.contact_us.send_contact_inquiry",
+            data=request.form,
+            timeout=10
+        )
+        return res.json()
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+# ------------------ CACHED GET APIs ----------------
+@app.route("/api/jobs", methods=["GET"])
+@cache.cached(timeout=120)
+def get_jobs():
+    try:
+        res = http_session.get(
+            f"{API_BASE_URL}/api/method/qcmc_logic.api.job_openings.get_job_openings",
+            timeout=8
+        )
+        res.raise_for_status()
+        return jsonify(res.json())
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/job-applicant-counts", methods=["GET"])
+@cache.cached(timeout=120)
+def get_job_applicant_counts():
+    try:
+        res = http_session.get(
+            f"{API_BASE_URL}/api/method/qcmc_logic.api.job_openings.get_job_applicant_counts",
+            timeout=8
+        )
+        res.raise_for_status()
+        return jsonify(res.json())
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+# ------------------ POST (NO CACHE) ----------------
+@app.route("/api/erp/whoami", methods=["GET"])
+def erp_whoami():
+    try:
+        headers = {}
+        cookie = request.headers.get("Cookie")
+        if cookie:
+            headers["Cookie"] = cookie
+        auth = request.headers.get("Authorization")
+        if auth:
+            headers["Authorization"] = auth
+        res = http_session.get(
+            f"{API_BASE_URL}/api/method/qcmc_logic.api.auth.check_log_user",
+            headers=headers,
+            timeout=8
+        )
+        return Response(res.content, status=res.status_code, mimetype=res.headers.get("Content-Type", "application/json"))
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+# ------------------ PUBLIC PEOPLE ------------------
+@app.route("/api/employee-celebrations", methods=["GET"])
+def employee_celebrations():
+    try:
+        headers = {}
+        cookie = request.headers.get("Cookie")
+        if cookie:
+            headers["Cookie"] = cookie
+        auth = request.headers.get("Authorization")
+        if auth:
+            headers["Authorization"] = auth
+
+        params = {}
+        month = request.args.get("month")
+        day = request.args.get("day")
+        if month:
+            params["month"] = month
+        if day:
+            params["day"] = day
+
+        res = http_session.get(
+            f"{API_BASE_URL}/api/method/qcmc_logic.api.public_people.employee_celebrations",
+            params=params,
+            headers=headers,
+            timeout=8
+        )
+        return Response(
+            res.content,
+            status=res.status_code,
+            mimetype=res.headers.get("Content-Type", "application/json")
+        )
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+# ------------------ PUBLIC ANNOUNCEMENTS ------------------
+@app.route("/api/announcements", methods=["GET"])
+def get_announcements():
+    try:
+        headers = {}
+        cookie = request.headers.get("Cookie")
+        if cookie:
+            headers["Cookie"] = cookie
+        auth = request.headers.get("Authorization")
+        if auth:
+            headers["Authorization"] = auth
+
+        params = {}
+        limit = request.args.get("limit")
+        start = request.args.get("start")
+        if limit:
+            params["limit"] = limit
+        if start:
+            params["start"] = start
+
+        res = http_session.get(
+            f"{API_BASE_URL}/api/method/qcmc_logic.api.public_announcements.list_active_announcements",
+            params=params,
+            headers=headers,
+            timeout=8
+        )
+        if not res.ok:
+            return Response(
+                res.content,
+                status=res.status_code,
+                mimetype=res.headers.get("Content-Type", "application/json")
+            )
+        payload = proxy_public_file_urls_in_payload(res.json(), {"image"})
+        return jsonify(payload), res.status_code
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+# ------------------ POST (NO CACHE) ----------------
+@app.route("/api/testimonials", methods=["GET"])
+def get_testimonials():
+    try:
+        headers = {}
+        cookie = request.headers.get("Cookie")
+        if cookie:
+            headers["Cookie"] = cookie
+        auth = request.headers.get("Authorization")
+        if auth:
+            headers["Authorization"] = auth
+
+        res = http_session.get(
+            f"{API_BASE_URL}/api/method/qcmc_logic.api.public_testimonials.list_active_testimonials",
+            headers=headers,
+            timeout=8
+        )
+        if not res.ok:
+            return Response(
+                res.content,
+                status=res.status_code,
+                mimetype=res.headers.get("Content-Type", "application/json")
+            )
+        payload = proxy_public_file_urls_in_payload(res.json(), {"testimonial_image", "image"})
+        payload = proxy_testimonial_image_urls_in_payload(payload)
+        return jsonify(payload), res.status_code
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+# ------------------ FILE PROXIES ------------------
+@app.route("/api/testimonial-image", methods=["GET"])
+def proxy_testimonial_image():
+    testimonial_name = (request.args.get("name") or "").strip()
+    if not re.fullmatch(r"[A-Za-z0-9._-]{1,140}", testimonial_name):
+        return Response("invalid testimonial", status=400)
+
+    try:
+        upstream_url = (
+            f"{API_BASE_URL.rstrip('/')}/api/method/"
+            "qcmc_logic.api.public_testimonials.get_testimonial_image"
+        )
+        res = http_session.get(
+            upstream_url,
+            params={"name": testimonial_name},
+            headers=get_erp_auth_headers(),
+            timeout=15,
+        )
+        if not res.ok:
+            return Response(
+                res.content,
+                status=res.status_code,
+                mimetype=res.headers.get("Content-Type", "text/plain"),
+            )
+
+        response = Response(
+            res.content,
+            status=res.status_code,
+            mimetype=res.headers.get("Content-Type", "application/octet-stream"),
+        )
+        response.headers["Cache-Control"] = "public, max-age=3600"
+        return response
+    except Exception as e:
+        return Response(str(e), status=500)
+
+
+@app.route("/files/<path:filename>", methods=["GET"])
+def proxy_public_file(filename):
+    if ".." in filename or filename.startswith("/"):
+        return Response("invalid path", status=400)
+
+    try:
+        upstream_url = f"{API_BASE_URL.rstrip('/')}/files/{filename}"
+        res = http_session.get(upstream_url, timeout=15)
+        if not res.ok:
+            return Response(res.content, status=res.status_code, mimetype=res.headers.get("Content-Type", "text/plain"))
+        resp = Response(res.content, status=res.status_code, mimetype=res.headers.get("Content-Type", "application/octet-stream"))
+        resp.headers["Cache-Control"] = "public, max-age=86400"
+        return resp
+    except Exception as e:
+        return Response(str(e), status=500)
+
+
+@app.route("/private/files/<path:filename>", methods=["GET"])
+def proxy_private_file(filename):
+    if ".." in filename or filename.startswith("/"):
+        return Response("invalid path", status=400)
+
+    headers = {}
+    cookie = request.headers.get("Cookie")
+    if cookie:
+        headers["Cookie"] = cookie
+    auth = request.headers.get("Authorization")
+    if auth:
+        headers["Authorization"] = auth
+    headers.update(get_erp_auth_headers())
+
+    if not headers:
+        return Response("missing ERP credentials", status=403)
+
+    try:
+        upstream_url = f"{API_BASE_URL.rstrip('/')}/private/files/{filename}"
+        res = http_session.get(upstream_url, headers=headers, timeout=15)
+        if not res.ok:
+            return Response(res.content, status=res.status_code, mimetype=res.headers.get("Content-Type", "text/plain"))
+        resp = Response(res.content, status=res.status_code, mimetype=res.headers.get("Content-Type", "application/octet-stream"))
+        resp.headers["Cache-Control"] = "private, max-age=600"
+        return resp
+    except Exception as e:
+        return Response(str(e), status=500)
+
+
+@app.route("/api/method/frappe.utils.file_manager.download_file", methods=["GET"])
+def proxy_download_file():
+    try:
+        headers = {}
+        cookie = request.headers.get("Cookie")
+        if cookie:
+            headers["Cookie"] = cookie
+        auth = request.headers.get("Authorization")
+        if auth:
+            headers["Authorization"] = auth
+        headers.update(get_erp_auth_headers())
+
+        upstream_url = f"{API_BASE_URL.rstrip('/')}/api/method/frappe.utils.file_manager.download_file"
+        res = http_session.get(upstream_url, headers=headers, params=request.args, timeout=15)
+        if not res.ok:
+            return Response(res.content, status=res.status_code, mimetype=res.headers.get("Content-Type", "text/plain"))
+        resp = Response(res.content, status=res.status_code, mimetype=res.headers.get("Content-Type", "application/octet-stream"))
+        resp.headers["Cache-Control"] = "private, max-age=600"
+        return resp
+    except Exception as e:
+        return Response(str(e), status=500)
+
+
+# ------------------ POST (NO CACHE) ----------------
+@app.route("/api/submit-job-applicant", methods=["POST"])
+def submit_job_applicant():
+    try:
+        form_data = request.form
+
+        erp_payload = {
+            "doctype": "Job Applicant",
+            "web_form_name": "job-application-form",
+            "job_title": form_data.get("job_opening"),
+            "applicant_name": form_data.get("applicant_name"),
+            "address": form_data.get("address"),
+            "email_id": form_data.get("email_address"),
+            "phone_number": form_data.get("phone_number"),
+            "custom_referrer": form_data.get("referrer"),
+            "cover_letter": form_data.get("cover_letter") or "",
+            "resume_link": form_data.get("resume_link") or "",
+            "currency": form_data.get("currency"),
+            "lower_range": float(form_data.get("lower_range") or 0),
+            "upper_range": float(form_data.get("upper_range") or 0),
+            "custom_i_agree_to_the_data_privacy_statement": int(
+                form_data.get("custom_i_agree_to_the_data_privacy_statement")
+                or form_data.get("privacy_check")
+                or 1
+            ),
+            "custom_current_job_position": form_data.get("custom_current_job_position") or "",
+        }
+
+        # Convert Flask FileStorage objects to the format requests expects:
+        # { field_name: (filename, file_stream, content_type) }
+        files_to_forward = {}
+        for key, file_storage in request.files.items():
+            if file_storage and file_storage.filename:
+                files_to_forward[key] = (
+                    file_storage.filename,
+                    file_storage.stream,
+                    file_storage.content_type or "application/octet-stream"
+                )
+
+        res = http_session.post(
+            f"{API_BASE_URL}/api/method/qcmc_logic.api.job_openings.submit_job_applicant_custom",
+            data=erp_payload,
+            files=files_to_forward if files_to_forward else None,
+            headers=get_erp_auth_headers(),
+            timeout=15
+        )
+
+        return res.json()
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/open-application", methods=["POST"])
+def open_application():
+    try:
+        form_data = request.form
+
+        files_to_forward = {}
+        for key, file_storage in request.files.items():
+            if file_storage and file_storage.filename:
+                files_to_forward[key] = (
+                    file_storage.filename,
+                    file_storage.stream,
+                    file_storage.content_type or "application/octet-stream"
+                )
+
+        erp_payload = {
+            "oa_name":    form_data.get("oa_name"),
+            "oa_email":   form_data.get("oa_email"),
+            "oa_address": form_data.get("oa_address"),
+            "oa_contact": form_data.get("oa_contact"),
+            "oa_pitch":   form_data.get("oa_pitch") or "",
+        }
+
+        res = http_session.post(
+            f"{API_BASE_URL}/api/method/qcmc_logic.api.job_openings.submit_open_application",
+            data=erp_payload,
+            files=files_to_forward if files_to_forward else None,
+            headers=get_erp_auth_headers(),
+            timeout=15
+        )
+
+        return res.json()
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+# ------------------ CUSTOMER SUPPORT CHAT PROXY ----------------
+@app.route("/api/support-chat/create", methods=["POST"])
+def support_chat_create():
+    try:
+        res = http_session.post(
+            f"{API_BASE_URL}/api/method/company_messenger.api.create_customer_concern",
+            json=request.json or {},
+            headers={"Content-Type": "application/json"},
+            timeout=15
+        )
+        return jsonify(res.json())
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/support-chat/send", methods=["POST"])
+def support_chat_send():
+    try:
+        res = http_session.post(
+            f"{API_BASE_URL}/api/method/company_messenger.api.customer_send_message",
+            json=request.json or {},
+            headers={"Content-Type": "application/json"},
+            timeout=15
+        )
+        return jsonify(res.json())
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/support-chat/messages", methods=["GET"])
+def support_chat_messages():
+    try:
+        room = request.args.get("room")
+        token = request.args.get("token")
+        if not room or not token:
+            return jsonify({"error": "room and token are required"}), 400
+        res = http_session.get(
+            f"{API_BASE_URL}/api/method/company_messenger.api.get_customer_messages",
+            params={"room": room, "token": token},
+            timeout=15
+        )
+        return jsonify(res.json())
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/support-chat/status", methods=["POST"])
+def support_chat_status():
+    try:
+        res = http_session.post(
+            f"{API_BASE_URL}/api/method/company_messenger.api.customer_update_concern",
+            json=request.json or {},
+            headers={"Content-Type": "application/json"},
+            timeout=15,
+        )
+        return jsonify(res.json()), res.status_code
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/support-chat/bot-topics", methods=["GET"])
+def support_chat_bot_topics():
+    try:
+        res = http_session.get(
+            f"{API_BASE_URL}/api/method/qcmc_logic.api.chatbot.get_bot_topics",
+            timeout=15
+        )
+        data = res.json()
+        message = data.get("message", {}) if isinstance(data, dict) else {}
+        payload = {
+            "greeting": message.get("greetings") or message.get("greeting") or "",
+            "topics": message.get("topics") or []
+        }
+        return jsonify(payload)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+# ------------------ ALTCHA ------------------
+@app.route("/api/altcha/challenge", methods=["GET"])
+def altcha_challenge():
+    if create_challenge is None or ChallengeOptions is None:
+        return jsonify({"error": "altcha_not_installed"}), 503
+    if not ALTCHA_HMAC_KEY:
+        return jsonify({"error": "altcha_not_configured"}), 503
+    try:
+        options = ChallengeOptions(
+            hmac_key=ALTCHA_HMAC_KEY,
+            expires=datetime.utcnow() + timedelta(minutes=10)
+        )
+        challenge = create_challenge(options)
+        payload = serialize_altcha_challenge(challenge)
+        if not payload:
+            return jsonify({"error": "altcha_challenge_failed"}), 500
+        return jsonify(payload)
+    except Exception as exc:
+        return jsonify({"error": "altcha_challenge_failed", "detail": str(exc)}), 500
+
+
+@app.route("/api/altcha/verify", methods=["POST"])
+def altcha_verify():
+    if verify_solution is None:
+        return jsonify({"error": "altcha_not_installed"}), 503
+    if not ALTCHA_HMAC_KEY:
+        return jsonify({"error": "altcha_not_configured"}), 503
+    payload = request.get_json(silent=True)
+    if not payload:
+        payload = request.form.to_dict()
+    raw_token = (payload or {}).get("altcha") or (payload or {}).get("token") or ""
+    decoded = decode_altcha_payload(raw_token)
+    if not decoded:
+        return jsonify({"verified": False, "error": "invalid_payload"}), 400
+    try:
+        verified = bool(verify_solution(decoded, ALTCHA_HMAC_KEY))
+        return jsonify({"verified": verified})
+    except Exception as exc:
+        return jsonify({"verified": False, "error": str(exc)}), 400
+
+
+# ------------------ CACHE BUST (WEBHOOK) ----------------
+@app.route("/api/cache/events/refresh", methods=["POST"])
+def refresh_events_cache():
+    token = request.headers.get("X-Cache-Token") or request.args.get("token")
+    if not CACHE_BUST_TOKEN or token != CACHE_BUST_TOKEN:
+        return jsonify({"error": "unauthorized"}), 403
+    clear_event_caches()
+    return jsonify({"status": "ok"})
+
+
+# --------------------------------------------------
+# SECURITY & CACHE HEADERS
+# --------------------------------------------------
+@app.after_request
+def add_headers(response):
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    response.headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=(), payment=(), usb=()"
+
+    forwarded_proto = request.headers.get("X-Forwarded-Proto", "").split(",", 1)[0].strip().lower()
+    request_hostname = (request.host.split(":", 1)[0] or "").lower()
+    is_trustworthy_origin = (
+        request.is_secure
+        or forwarded_proto == "https"
+        or request_hostname in {"localhost", "127.0.0.1", "::1"}
+    )
+    if is_trustworthy_origin:
+        response.headers["Cross-Origin-Opener-Policy"] = "same-origin"
+        hsts_max_age = app.config.get("HSTS_MAX_AGE", 0)
+        if hsts_max_age and request_hostname not in {"localhost", "127.0.0.1", "::1"}:
+            hsts = f"max-age={hsts_max_age}"
+            if app.config.get("HSTS_INCLUDE_SUBDOMAINS"):
+                hsts += "; includeSubDomains"
+            response.headers["Strict-Transport-Security"] = hsts
+    else:
+        response.headers.pop("Cross-Origin-Opener-Policy", None)
+        response.headers.pop("Strict-Transport-Security", None)
+    response.headers["X-Permitted-Cross-Domain-Policies"] = "none"
+    response.headers.pop("X-Powered-By", None)
+
+    nonce = getattr(g, "csp_nonce", "")
+    if response.mimetype == "text/html":
+        try:
+            body = response.get_data(as_text=True)
+            match = re.search(r'nonce="([^"]+)"', body)
+            if match:
+                nonce = match.group(1)
+        except Exception:
+            pass
+    api_origin = ""
+    try:
+        parsed_api = urlparse(API_BASE_URL)
+        if parsed_api.scheme and parsed_api.netloc:
+            api_origin = f"{parsed_api.scheme}://{parsed_api.netloc}"
+    except Exception:
+        api_origin = ""
+
+    altcha_origin = ""
+    try:
+        parsed_altcha = urlparse(ALTCHA_CHALLENGE_URL)
+        if parsed_altcha.scheme and parsed_altcha.netloc:
+            altcha_origin = f"{parsed_altcha.scheme}://{parsed_altcha.netloc}"
+    except Exception:
+        altcha_origin = ""
+
+    img_src = "img-src 'self' data: https:"
+    if api_origin and api_origin.startswith("http://"):
+        img_src += f" {api_origin}"
+    elif api_origin and api_origin.startswith("https://"):
+        img_src += f" {api_origin}"
+
+    connect_src = "connect-src 'self' https://psgc.gitlab.io https://open.er-api.com https://csp.secureserver.net https://cdn.jsdelivr.net"
+    if api_origin:
+        connect_src = f"{connect_src} {api_origin}"
+    if altcha_origin:
+        connect_src = f"{connect_src} {altcha_origin}"
+
+    csp = [
+        "default-src 'self'",
+        "base-uri 'self'",
+        "form-action 'self'",
+        "frame-ancestors 'none'",
+        "object-src 'none'",
+        f"script-src 'self' 'nonce-{nonce}' 'sha256-j9UDKlBdU2OvJLCxxVGF011MFoS+SFn/EamE8+cU4VQ=' https://cdnjs.cloudflare.com https://img1.wsimg.com https://cdn.jsdelivr.net",
+        "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com",
+        img_src,
+        "font-src 'self' https://fonts.gstatic.com",
+        connect_src,
+        "worker-src 'self' blob:",
+        "frame-src https://www.google.com https://maps.google.com",
+        "media-src 'self'",
+    ]
+    response.headers["Content-Security-Policy"] = "; ".join(csp)
+
+    if request.path.startswith("/api/"):
+        # Never cache API responses — auth state, announcements, whoami etc.
+        # must always be fetched fresh from the server.
+        response.headers["Cache-Control"] = "no-store, private"
+    elif request.path.startswith("/static/"):
+        response.headers["Cache-Control"] = "public, max-age=31536000, immutable"
+    elif response.mimetype == "text/html":
+        # Revalidate HTML so it always points to the latest versioned scripts.
+        response.headers["Cache-Control"] = "no-cache, max-age=0, must-revalidate"
+    else:
+        response.headers["Cache-Control"] = "public, max-age=300"
+
+    response.set_cookie(
+        "csrf_token",
+        get_csrf_token(),
+        secure=app.config.get("SESSION_COOKIE_SECURE", False),
+        httponly=False,
+        samesite="Lax"
+    )
+    return response
+
+
+# --------------------------------------------------
+# LOCAL RUN ONLY (PROD USES GUNICORN)
+# --------------------------------------------------
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port, debug=True)

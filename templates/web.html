@@ -95,6 +95,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/site_system.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/editorial_dark.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/clarity_optin.css') }}">
 </head>
 <body class="{% block body_class %}{% endblock %}" data-erp-base="{{ API_BASE_URL.rstrip('/') }}">
 
@@ -164,5 +165,6 @@
     <script defer src="{{ url_for('static', filename='js/critical_css.js') }}"></script>
     <script defer src="{{ url_for('static', filename='js/chatbot_loader.js') }}"></script>
     <script defer src="{{ url_for('static', filename='js/site_field.js') }}"></script>
+    <script defer src="{{ url_for('static', filename='js/clarity_optin.js') }}"></script>
 </body>
 </html>

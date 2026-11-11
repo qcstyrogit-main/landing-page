@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}QC & MC{% endblock %}</title>
+    <meta name="description" content="{% block meta_description %}QC and MC packaging products, careers, and contact information.{% endblock %}">
+    <meta name="robots" content="{% block meta_robots %}index, follow{% endblock %}">
+    <link rel="canonical" href="{{ (canonical_base_url or request.url_root.rstrip('/')) ~ request.path }}">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
+
+    <meta property="og:title" content="{% block og_title %}{{ self.title() }}{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}{{ self.meta_description() }}{% endblock %}">
+    <meta property="og:url" content="{{ (canonical_base_url or request.url_root.rstrip('/')) ~ request.path }}">
+    <meta property="og:type" content="{% block og_type %}website{% endblock %}">
+    <meta property="og:image" content="{% block og_image %}{{ (canonical_base_url or request.url_root.rstrip('/')) }}{{ url_for('static', filename='images/Intro.png') }}{% endblock %}">
+    <meta property="og:site_name" content="Q.C. Styropackaging & Multiplast Corporation">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{% block twitter_title %}{{ self.title() }}{% endblock %}">
+    <meta name="twitter:description" content="{% block twitter_description %}{{ self.meta_description() }}{% endblock %}">
+    <meta name="twitter:image" content="{% block twitter_image %}{{ (canonical_base_url or request.url_root.rstrip('/')) }}{{ url_for('static', filename='images/Intro.png') }}{% endblock %}">
+
+    {% block head %}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f0f4f8;
+            background-image: radial-gradient(#d1d9e6 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+    </style>
+    <link rel="preload" href="{{ url_for('static', filename='css/chatbot.css') }}" as="style">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/chatbot.css') }}" media="print" data-media="all">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/icons.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/footer.css') }}">
+    <link rel="preload" href="{{ url_for('static', filename='css/privacy_policy.css') }}" as="style">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/privacy_policy.css') }}" media="print" data-media="all">
+    <link rel="preload" href="{{ url_for('static', filename='css/term_of_use.css') }}" as="style">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/term_of_use.css') }}" media="print" data-media="all">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='images/favicon.ico') }}" type="image/x-icon">
+    <script defer type="module" src="https://cdn.jsdelivr.net/npm/altcha@2.3.0/dist/altcha.min.js"></script>
+
+    {% block structured_data %}
+    <script type="application/ld+json" nonce="{{ csp_nonce }}">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "Organization",
+          "name": "Q.C. Styropackaging & Multiplast Corporation",
+          "url": "{{ canonical_base_url or request.url_root.rstrip('/') }}",
+          "logo": "{{ (canonical_base_url or request.url_root.rstrip('/')) }}{{ url_for('static', filename='images/QC.png') }}"
+        },
+        {
+          "@type": "WebSite",
+          "name": "Q.C. Styropackaging & Multiplast Corporation",
+          "url": "{{ canonical_base_url or request.url_root.rstrip('/') }}"
+        },
+        {
+          "@type": "SiteNavigationElement",
+          "name": [
+            "Home",
+            "Products",
+            "Plastic Products",
+            "Styrofoam Products",
+            "Careers"
+          ],
+          "url": [
+            "{{ url_for('home', _external=True) }}",
+            "{{ url_for('products', _external=True) }}",
+            "{{ url_for('products_plastic', _external=True) }}",
+            "{{ url_for('products_styro', _external=True) }}",
+            "{{ url_for('view_jobs', _external=True) }}"
+          ]
+        },
+        {
+          "@type": "WebPage",
+          "name": "{{ self.title() }}",
+          "description": "{{ self.meta_description() }}",
+          "url": "{{ (canonical_base_url or request.url_root.rstrip('/')) ~ request.path }}",
+          "inLanguage": "en"
+        }
+      ]
+    }
+    </script>
+    {% endblock %}
+    {% endblock %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/site_system.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/editorial_dark.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
+</head>
+<body class="{% block body_class %}{% endblock %}" data-erp-base="{{ API_BASE_URL.rstrip('/') }}">
+
+    <canvas class="site-field" id="siteField" aria-hidden="true"></canvas>
+    <button type="button" class="site-theme-toggle site-theme-toggle--standalone" data-theme-toggle aria-label="Switch to light theme" title="Switch to light theme">
+        <span class="theme-toggle-icon" aria-hidden="true">☼</span>
+    </button>
+
+    {% include "partials/icons.svg" %}
+
+    <main id="main-content">
+        {% block page_content %}{% endblock %}
+    </main>
+
+    <button id="chat-bubble" class="chat-bubble" type="button" aria-label="Open chat" aria-expanded="false" data-chatbot-src="{{ url_for('static', filename='js/chatbot.js', rev='support-chat-v4') }}" style="display: none;">
+        <svg class="icon" aria-hidden="true"><use href="#icon-support-chat"></use></svg>
+        <span id="chat-unread-badge" class="chat-unread-badge" aria-hidden="true">0</span>
+    </button>
+
+    <section id="chatbot-panel" class="chatbot-panel" data-skip-altcha="{{ '1' if chatbot_skip_altcha else '0' }}" aria-hidden="true" inert role="dialog" aria-label="Chatbot" style="display: none;">
+        <header class="chatbot-header">
+            <div class="chatbot-heading">
+                <p class="chatbot-title">QC & MC Support</p>
+                <p class="chatbot-subtitle">Ask us anything about products or careers.</p>
+            </div>
+            <button class="chatbot-close" id="chatbot-close" type="button" aria-label="Close chat">
+                <svg class="icon" aria-hidden="true"><use href="#icon-x"></use></svg>
+            </button>
+        </header>
+        <div class="chatbot-body">
+            <div id="chatbot-messages" class="chatbot-messages" aria-live="polite"></div>
+            <div id="chat-typing" class="chatbot-typing" aria-hidden="true">
+                <span class="typing-dot"></span>
+                <span class="typing-dot"></span>
+                <span class="typing-dot"></span>
+                <span id="chat-typing-text" class="typing-text">Agent is typing...</span>
+            </div>
+        </div>
+        <div id="chatbot-verify" class="chatbot-verify" aria-live="polite">
+            <p class="chatbot-verify-title">Human verification</p>
+            <div class="chatbot-verify-row chatbot-verify-widget">
+                <altcha-widget
+                    id="chatbot-altcha"
+                    challengeurl="{{ altcha_challenge_url }}"
+                    floating="false"
+                ></altcha-widget>
+            </div>
+            <p id="chatbot-verify-status" class="chatbot-verify-status" aria-live="polite"></p>
+        </div>
+        <form id="chatbot-form" class="chatbot-form">
+            <div class="chatbot-identity">
+                <input id="chatbot-name" type="text" maxlength="140" autocomplete="name" placeholder="Your name" aria-label="Your name">
+                <input id="chatbot-email" type="email" maxlength="140" autocomplete="email" placeholder="Email address" aria-label="Email address">
+            </div>
+            <textarea id="chatbot-input" placeholder="Type your message..." rows="2" required aria-label="Chat message"></textarea>
+            <button type="submit">Send</button>
+        </form>
+        <p id="chatbot-status" class="chatbot-status" aria-live="polite"></p>
+    </section>
+
+    <script defer src="{{ url_for('static', filename='js/csrf.js') }}"></script>
+    <script defer src="{{ url_for('static', filename='js/analytics_events.js') }}"></script>
+    <script defer src="{{ url_for('static', filename='js/auth_ui.js') }}"></script>
+    {% block footer %}{% include "sections/footer.html" %}{% endblock %}
+
+    <script defer src="{{ url_for('static', filename='js/image_formats.js') }}"></script>
+    <script defer src="{{ url_for('static', filename='js/critical_css.js') }}"></script>
+    <script defer src="{{ url_for('static', filename='js/chatbot_loader.js') }}"></script>
+    <script defer src="{{ url_for('static', filename='js/site_field.js') }}"></script>
+</body>
+</html>
