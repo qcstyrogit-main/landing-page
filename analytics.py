@@ -133,7 +133,6 @@ def init_analytics(app):
         "ANALYTICS_DB_PATH",
         os.path.join(app.instance_path, "website_analytics.sqlite3"),
     )
-    os.makedirs(os.path.dirname(os.path.abspath(database_path)), exist_ok=True)
     try:
         analytics_timezone = ZoneInfo(os.getenv("ANALYTICS_TIMEZONE", "Asia/Manila"))
     except ZoneInfoNotFoundError:
@@ -172,217 +171,228 @@ def init_analytics(app):
         connection.execute("PRAGMA busy_timeout=5000")
         return connection
 
-    with connect() as database:
-        database.execute(
-            """
-            CREATE TABLE IF NOT EXISTS page_views (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                viewed_at TEXT NOT NULL,
-                path TEXT NOT NULL,
-                visitor_hash TEXT NOT NULL,
-                session_id TEXT NOT NULL,
-                referrer_domain TEXT NOT NULL DEFAULT '',
-                device TEXT NOT NULL,
-                browser TEXT NOT NULL,
-                is_valid INTEGER NOT NULL DEFAULT 1
-            )
-            """
-        )
-        page_view_columns = {
-            row["name"] for row in database.execute("PRAGMA table_info(page_views)").fetchall()
-        }
-        if "is_valid" not in page_view_columns:
+    # Schema migration, historical backfills and retention cleanup can be expensive
+    # on production datasets. Do not block Passenger application startup with them.
+    # Existing databases keep all analytics routes and tracking enabled.
+    # Run maintenance explicitly using ANALYTICS_RUN_STARTUP_MAINTENANCE=1
+    # during a controlled maintenance window, then unset it and restart.
+    def run_database_maintenance():
+        os.makedirs(os.path.dirname(os.path.abspath(database_path)), exist_ok=True)
+        with connect() as database:
             database.execute(
-                "ALTER TABLE page_views ADD COLUMN is_valid INTEGER NOT NULL DEFAULT 1"
+                """
+                CREATE TABLE IF NOT EXISTS page_views (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    viewed_at TEXT NOT NULL,
+                    path TEXT NOT NULL,
+                    visitor_hash TEXT NOT NULL,
+                    session_id TEXT NOT NULL,
+                    referrer_domain TEXT NOT NULL DEFAULT '',
+                    device TEXT NOT NULL,
+                    browser TEXT NOT NULL,
+                    is_valid INTEGER NOT NULL DEFAULT 1
+                )
+                """
             )
-        for alias, canonical in CANONICAL_PATH_ALIASES.items():
-            database.execute(
-                "UPDATE page_views SET path = ? WHERE path = ?",
-                (canonical, alias),
-            )
-        reportable_placeholders = ", ".join("?" for _ in REPORTABLE_PATHS)
-        database.execute(
-            f"""
-            UPDATE page_views
-            SET is_valid = CASE WHEN path IN ({reportable_placeholders}) THEN 1 ELSE 0 END
-            """,
-            REPORTABLE_PATHS,
-        )
-        database.execute("CREATE INDEX IF NOT EXISTS idx_page_views_date ON page_views(viewed_at)")
-        database.execute("CREATE INDEX IF NOT EXISTS idx_page_views_path ON page_views(path)")
-        database.execute("CREATE INDEX IF NOT EXISTS idx_page_views_visitor ON page_views(visitor_hash)")
-        database.execute(
-            """
-            CREATE TABLE IF NOT EXISTS visits (
-                session_id TEXT PRIMARY KEY,
-                visitor_hash TEXT NOT NULL,
-                started_at TEXT NOT NULL,
-                last_seen_at TEXT NOT NULL,
-                entry_path TEXT NOT NULL,
-                referrer_domain TEXT NOT NULL DEFAULT '',
-                device TEXT NOT NULL,
-                browser TEXT NOT NULL,
-                engaged_seconds INTEGER NOT NULL DEFAULT 0,
-                country_code TEXT NOT NULL DEFAULT '',
-                is_valid INTEGER NOT NULL DEFAULT 1
-            )
-            """
-        )
-        visit_columns = {
-            row["name"] for row in database.execute("PRAGMA table_info(visits)").fetchall()
-        }
-        if "engaged_seconds" not in visit_columns:
-            database.execute(
-                "ALTER TABLE visits ADD COLUMN engaged_seconds INTEGER NOT NULL DEFAULT 0"
-            )
-        if "country_code" not in visit_columns:
-            database.execute(
-                "ALTER TABLE visits ADD COLUMN country_code TEXT NOT NULL DEFAULT ''"
-            )
-        if "is_valid" not in visit_columns:
-            database.execute(
-                "ALTER TABLE visits ADD COLUMN is_valid INTEGER NOT NULL DEFAULT 1"
-            )
-        database.execute("CREATE INDEX IF NOT EXISTS idx_visits_started ON visits(started_at)")
-        database.execute("CREATE INDEX IF NOT EXISTS idx_visits_visitor ON visits(visitor_hash)")
-        database.execute(
-            """
-            CREATE TABLE IF NOT EXISTS analytics_events (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                occurred_at TEXT NOT NULL,
-                event_name TEXT NOT NULL,
-                path TEXT NOT NULL,
-                label TEXT NOT NULL DEFAULT '',
-                visitor_hash TEXT NOT NULL,
-                session_id TEXT NOT NULL
-            )
-            """
-        )
-        database.execute("CREATE INDEX IF NOT EXISTS idx_events_date ON analytics_events(occurred_at)")
-        database.execute("CREATE INDEX IF NOT EXISTS idx_events_name ON analytics_events(event_name)")
-        database.execute("CREATE INDEX IF NOT EXISTS idx_events_session ON analytics_events(session_id)")
-        database.execute(
-            """
-            CREATE TABLE IF NOT EXISTS security_requests (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                minute_bucket TEXT NOT NULL,
-                observed_at TEXT NOT NULL,
-                path TEXT NOT NULL,
-                method TEXT NOT NULL,
-                status_code INTEGER NOT NULL,
-                actor_hash TEXT NOT NULL,
-                country_code TEXT NOT NULL DEFAULT '',
-                actor_type TEXT NOT NULL DEFAULT '',
-                severity TEXT NOT NULL DEFAULT 'info',
-                reason TEXT NOT NULL DEFAULT '',
-                bot_requests INTEGER NOT NULL DEFAULT 0,
-                known_bot_requests INTEGER NOT NULL DEFAULT 0,
-                suspected_bot_requests INTEGER NOT NULL DEFAULT 0,
-                suspicious_requests INTEGER NOT NULL DEFAULT 0,
-                blocked_requests INTEGER NOT NULL DEFAULT 0,
-                rate_limited_requests INTEGER NOT NULL DEFAULT 0,
-                request_count INTEGER NOT NULL DEFAULT 1,
-                UNIQUE(minute_bucket, path, method, status_code, actor_hash)
-            )
-            """
-        )
-        security_columns = {
-            row["name"] for row in database.execute("PRAGMA table_info(security_requests)").fetchall()
-        }
-        security_column_migrations = {
-            "actor_type": "TEXT NOT NULL DEFAULT ''",
-            "severity": "TEXT NOT NULL DEFAULT 'info'",
-            "reason": "TEXT NOT NULL DEFAULT ''",
-            "known_bot_requests": "INTEGER NOT NULL DEFAULT 0",
-            "suspected_bot_requests": "INTEGER NOT NULL DEFAULT 0",
-        }
-        for column, declaration in security_column_migrations.items():
-            if column not in security_columns:
+            page_view_columns = {
+                row["name"] for row in database.execute("PRAGMA table_info(page_views)").fetchall()
+            }
+            if "is_valid" not in page_view_columns:
                 database.execute(
-                    f"ALTER TABLE security_requests ADD COLUMN {column} {declaration}"
+                    "ALTER TABLE page_views ADD COLUMN is_valid INTEGER NOT NULL DEFAULT 1"
                 )
-        database.execute(
-            """
-            UPDATE security_requests
-            SET known_bot_requests = bot_requests,
-                actor_type = CASE WHEN bot_requests > 0 THEN 'known_bot' ELSE actor_type END
-            WHERE bot_requests > 0
-              AND known_bot_requests = 0
-              AND suspected_bot_requests = 0
-            """
-        )
-        database.execute(
-            "CREATE INDEX IF NOT EXISTS idx_security_observed ON security_requests(observed_at)"
-        )
-        database.execute(
-            "CREATE INDEX IF NOT EXISTS idx_security_path ON security_requests(path)"
-        )
-        database.execute(
-            """
-            CREATE TABLE IF NOT EXISTS analytics_login_attempts (
-                actor_hash TEXT PRIMARY KEY,
-                window_started INTEGER NOT NULL,
-                failures INTEGER NOT NULL DEFAULT 0,
-                locked_until INTEGER NOT NULL DEFAULT 0
-            )
-            """
-        )
-        database.execute(
-            """
-            CREATE TABLE IF NOT EXISTS analytics_meta (
-                key TEXT PRIMARY KEY,
-                value TEXT NOT NULL
-            )
-            """
-        )
-        # Preserve the usefulness of page views recorded before visit tracking
-        # was introduced. New visits use the 30-minute inactivity rule below.
-        database.execute(
-            """
-            INSERT OR IGNORE INTO visits
-            (session_id, visitor_hash, started_at, last_seen_at, entry_path, referrer_domain, device, browser)
-            SELECT session_id, visitor_hash, MIN(viewed_at), MAX(viewed_at), MIN(path),
-                   MIN(referrer_domain), MIN(device), MIN(browser)
-            FROM page_views GROUP BY session_id
-            """
-        )
-        database.execute(
-            """
-            UPDATE visits
-            SET is_valid = CASE
-                WHEN EXISTS (
-                    SELECT 1 FROM page_views
-                    WHERE page_views.session_id = visits.session_id
-                      AND page_views.is_valid = 1
+            for alias, canonical in CANONICAL_PATH_ALIASES.items():
+                database.execute(
+                    "UPDATE page_views SET path = ? WHERE path = ?",
+                    (canonical, alias),
                 )
-                OR EXISTS (
-                    SELECT 1 FROM analytics_events
-                    WHERE analytics_events.session_id = visits.session_id
-                )
-                THEN 1 ELSE 0
-            END
-            """
-        )
-        retention_cutoff = (
-            datetime.now(analytics_timezone) - timedelta(days=retention_days)
-        ).isoformat(timespec="seconds")
-        for table, timestamp_column in (
-            ("page_views", "viewed_at"),
-            ("visits", "started_at"),
-            ("analytics_events", "occurred_at"),
-            ("security_requests", "observed_at"),
-        ):
+            reportable_placeholders = ", ".join("?" for _ in REPORTABLE_PATHS)
             database.execute(
-                f"DELETE FROM {table} WHERE {timestamp_column} < ?",
-                (retention_cutoff,),
+                f"""
+                UPDATE page_views
+                SET is_valid = CASE WHEN path IN ({reportable_placeholders}) THEN 1 ELSE 0 END
+                """,
+                REPORTABLE_PATHS,
             )
-        database.execute(
-            """
-            INSERT INTO analytics_meta (key, value) VALUES ('last_retention_cleanup', ?)
-            ON CONFLICT(key) DO UPDATE SET value = excluded.value
-            """,
-            (datetime.now(analytics_timezone).isoformat(timespec="seconds"),),
-        )
+            database.execute("CREATE INDEX IF NOT EXISTS idx_page_views_date ON page_views(viewed_at)")
+            database.execute("CREATE INDEX IF NOT EXISTS idx_page_views_path ON page_views(path)")
+            database.execute("CREATE INDEX IF NOT EXISTS idx_page_views_visitor ON page_views(visitor_hash)")
+            database.execute(
+                """
+                CREATE TABLE IF NOT EXISTS visits (
+                    session_id TEXT PRIMARY KEY,
+                    visitor_hash TEXT NOT NULL,
+                    started_at TEXT NOT NULL,
+                    last_seen_at TEXT NOT NULL,
+                    entry_path TEXT NOT NULL,
+                    referrer_domain TEXT NOT NULL DEFAULT '',
+                    device TEXT NOT NULL,
+                    browser TEXT NOT NULL,
+                    engaged_seconds INTEGER NOT NULL DEFAULT 0,
+                    country_code TEXT NOT NULL DEFAULT '',
+                    is_valid INTEGER NOT NULL DEFAULT 1
+                )
+                """
+            )
+            visit_columns = {
+                row["name"] for row in database.execute("PRAGMA table_info(visits)").fetchall()
+            }
+            if "engaged_seconds" not in visit_columns:
+                database.execute(
+                    "ALTER TABLE visits ADD COLUMN engaged_seconds INTEGER NOT NULL DEFAULT 0"
+                )
+            if "country_code" not in visit_columns:
+                database.execute(
+                    "ALTER TABLE visits ADD COLUMN country_code TEXT NOT NULL DEFAULT ''"
+                )
+            if "is_valid" not in visit_columns:
+                database.execute(
+                    "ALTER TABLE visits ADD COLUMN is_valid INTEGER NOT NULL DEFAULT 1"
+                )
+            database.execute("CREATE INDEX IF NOT EXISTS idx_visits_started ON visits(started_at)")
+            database.execute("CREATE INDEX IF NOT EXISTS idx_visits_visitor ON visits(visitor_hash)")
+            database.execute(
+                """
+                CREATE TABLE IF NOT EXISTS analytics_events (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    occurred_at TEXT NOT NULL,
+                    event_name TEXT NOT NULL,
+                    path TEXT NOT NULL,
+                    label TEXT NOT NULL DEFAULT '',
+                    visitor_hash TEXT NOT NULL,
+                    session_id TEXT NOT NULL
+                )
+                """
+            )
+            database.execute("CREATE INDEX IF NOT EXISTS idx_events_date ON analytics_events(occurred_at)")
+            database.execute("CREATE INDEX IF NOT EXISTS idx_events_name ON analytics_events(event_name)")
+            database.execute("CREATE INDEX IF NOT EXISTS idx_events_session ON analytics_events(session_id)")
+            database.execute(
+                """
+                CREATE TABLE IF NOT EXISTS security_requests (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    minute_bucket TEXT NOT NULL,
+                    observed_at TEXT NOT NULL,
+                    path TEXT NOT NULL,
+                    method TEXT NOT NULL,
+                    status_code INTEGER NOT NULL,
+                    actor_hash TEXT NOT NULL,
+                    country_code TEXT NOT NULL DEFAULT '',
+                    actor_type TEXT NOT NULL DEFAULT '',
+                    severity TEXT NOT NULL DEFAULT 'info',
+                    reason TEXT NOT NULL DEFAULT '',
+                    bot_requests INTEGER NOT NULL DEFAULT 0,
+                    known_bot_requests INTEGER NOT NULL DEFAULT 0,
+                    suspected_bot_requests INTEGER NOT NULL DEFAULT 0,
+                    suspicious_requests INTEGER NOT NULL DEFAULT 0,
+                    blocked_requests INTEGER NOT NULL DEFAULT 0,
+                    rate_limited_requests INTEGER NOT NULL DEFAULT 0,
+                    request_count INTEGER NOT NULL DEFAULT 1,
+                    UNIQUE(minute_bucket, path, method, status_code, actor_hash)
+                )
+                """
+            )
+            security_columns = {
+                row["name"] for row in database.execute("PRAGMA table_info(security_requests)").fetchall()
+            }
+            security_column_migrations = {
+                "actor_type": "TEXT NOT NULL DEFAULT ''",
+                "severity": "TEXT NOT NULL DEFAULT 'info'",
+                "reason": "TEXT NOT NULL DEFAULT ''",
+                "known_bot_requests": "INTEGER NOT NULL DEFAULT 0",
+                "suspected_bot_requests": "INTEGER NOT NULL DEFAULT 0",
+            }
+            for column, declaration in security_column_migrations.items():
+                if column not in security_columns:
+                    database.execute(
+                        f"ALTER TABLE security_requests ADD COLUMN {column} {declaration}"
+                    )
+            database.execute(
+                """
+                UPDATE security_requests
+                SET known_bot_requests = bot_requests,
+                    actor_type = CASE WHEN bot_requests > 0 THEN 'known_bot' ELSE actor_type END
+                WHERE bot_requests > 0
+                  AND known_bot_requests = 0
+                  AND suspected_bot_requests = 0
+                """
+            )
+            database.execute(
+                "CREATE INDEX IF NOT EXISTS idx_security_observed ON security_requests(observed_at)"
+            )
+            database.execute(
+                "CREATE INDEX IF NOT EXISTS idx_security_path ON security_requests(path)"
+            )
+            database.execute(
+                """
+                CREATE TABLE IF NOT EXISTS analytics_login_attempts (
+                    actor_hash TEXT PRIMARY KEY,
+                    window_started INTEGER NOT NULL,
+                    failures INTEGER NOT NULL DEFAULT 0,
+                    locked_until INTEGER NOT NULL DEFAULT 0
+                )
+                """
+            )
+            database.execute(
+                """
+                CREATE TABLE IF NOT EXISTS analytics_meta (
+                    key TEXT PRIMARY KEY,
+                    value TEXT NOT NULL
+                )
+                """
+            )
+            # Preserve the usefulness of page views recorded before visit tracking
+            # was introduced. New visits use the 30-minute inactivity rule below.
+            database.execute(
+                """
+                INSERT OR IGNORE INTO visits
+                (session_id, visitor_hash, started_at, last_seen_at, entry_path, referrer_domain, device, browser)
+                SELECT session_id, visitor_hash, MIN(viewed_at), MAX(viewed_at), MIN(path),
+                       MIN(referrer_domain), MIN(device), MIN(browser)
+                FROM page_views GROUP BY session_id
+                """
+            )
+            database.execute(
+                """
+                UPDATE visits
+                SET is_valid = CASE
+                    WHEN EXISTS (
+                        SELECT 1 FROM page_views
+                        WHERE page_views.session_id = visits.session_id
+                          AND page_views.is_valid = 1
+                    )
+                    OR EXISTS (
+                        SELECT 1 FROM analytics_events
+                        WHERE analytics_events.session_id = visits.session_id
+                    )
+                    THEN 1 ELSE 0
+                END
+                """
+            )
+            retention_cutoff = (
+                datetime.now(analytics_timezone) - timedelta(days=retention_days)
+            ).isoformat(timespec="seconds")
+            for table, timestamp_column in (
+                ("page_views", "viewed_at"),
+                ("visits", "started_at"),
+                ("analytics_events", "occurred_at"),
+                ("security_requests", "observed_at"),
+            ):
+                database.execute(
+                    f"DELETE FROM {table} WHERE {timestamp_column} < ?",
+                    (retention_cutoff,),
+                )
+            database.execute(
+                """
+                INSERT INTO analytics_meta (key, value) VALUES ('last_retention_cleanup', ?)
+                ON CONFLICT(key) DO UPDATE SET value = excluded.value
+                """,
+                (datetime.now(analytics_timezone).isoformat(timespec="seconds"),),
+            )
+
+
+    if os.getenv("ANALYTICS_RUN_STARTUP_MAINTENANCE", "").strip().lower() in ("1", "true", "yes"):
+        run_database_maintenance()
 
     def client_ip():
         remote_address = request.remote_addr or "unknown"
