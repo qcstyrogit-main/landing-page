@@ -37,6 +37,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const urlSearch = urlParams.get("search") || "";
     const urlCategory = urlParams.get("category") || "all";
 
+
     // Apply URL values into inputs
     searchInput.value = urlSearch;
     categoryFilter.value = urlCategory !== "" ? urlCategory : "all";
@@ -169,6 +170,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (searchInput.value.trim() !== "") params.set("search", searchInput.value.trim());
         if (categoryFilter.value !== "all") params.set("category", categoryFilter.value);
         params.set("page", currentPage);
+
         history.replaceState(null, "", `${window.location.pathname}?${params.toString()}`);
     }
 

@@ -70,7 +70,7 @@
                     <div class="events-slide">
                     {% for event in events %}
                     {% set is_external = event.url.startswith('http') %}
-                    {% set image_src = event.thumbnail %}
+                    {% set image_src = url_for('static', filename='images/events/event' ~ loop.index ~ '.webp') %}
                     {% if event.thumbnail and not event.thumbnail.startswith('http') and not event.thumbnail.startswith('/') %}
                         {% set image_src = url_for('static', filename=event.thumbnail) %}
                     {% endif %}

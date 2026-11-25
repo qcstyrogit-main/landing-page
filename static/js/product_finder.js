@@ -109,12 +109,21 @@ document.addEventListener("DOMContentLoaded", () => {
             : "";
     };
 
+    document.getElementById("finderReset")?.addEventListener("click", () => {
+        application.value = "";
+        material.value = "";
+        renderFormats();
+        application.focus();
+    });
+
     application.addEventListener("change", renderFormats);
     material.addEventListener("change", renderFormats);
     format.addEventListener("change", () => {
         submit.disabled = !format.value;
         formatChoices.refresh();
     });
+
+    renderFormats();
 
     form.addEventListener("submit", event => {
         event.preventDefault();

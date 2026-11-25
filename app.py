@@ -727,9 +727,10 @@ def contact_us():
             data=request.form,
             timeout=10
         )
-        return res.json()
+        return jsonify(res.json()), res.status_code
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        app.logger.exception("Contact inquiry proxy failed")
+        return jsonify({"error": "Unable to submit inquiry."}), 502
 
 
 # ------------------ CACHED GET APIs ----------------

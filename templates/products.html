@@ -17,7 +17,7 @@
     <header class="product-hub-hero">
         <div>
             <p class="site-eyebrow">Product directory</p>
-            <h1>Packaging built around<br><em>your operation.</em></h1>
+            <h1>Packaging built around <br><em>your operation.</em></h1>
             <p>Choose a product line to browse specifications, categories, and available packaging formats.</p>
         </div>
         <div class="product-hub-index" aria-hidden="true">
@@ -62,7 +62,7 @@
                 Show matching products <span aria-hidden="true">&rarr;</span>
             </button>
         </form>
-        <p id="packagingFinderStatus" class="packaging-finder-status" aria-live="polite"></p>
+        <div class="finder-feedback"><p id="packagingFinderStatus" class="packaging-finder-status" role="status" aria-live="polite"></p><button type="button" id="finderReset" class="finder-reset">Clear filters</button></div>
     </section>
 
     <div class="product-line-grid">
@@ -71,7 +71,7 @@
                 <picture>
                     <source type="image/avif" srcset="{{ url_for('static', filename='images/products/Plastic_Products.avif') }}">
                     <source type="image/webp" srcset="{{ url_for('static', filename='images/products/Plastic_Products.webp') }}">
-                    <img src="{{ url_for('static', filename='images/products/Plastic_Products.png') }}" alt="Plasticware packaging range">
+                    <img src="{{ url_for('static', filename='images/products/Plastic_Products.png') }}" alt="Plasticware packaging range" loading="lazy" decoding="async">
                 </picture>
             </div>
             <div class="product-line-copy">
@@ -87,7 +87,7 @@
                 <picture>
                     <source type="image/avif" srcset="{{ url_for('static', filename='images/products/Hotdog_Boxes.avif') }}">
                     <source type="image/webp" srcset="{{ url_for('static', filename='images/products/Hotdog_Boxes.webp') }}">
-                    <img src="{{ url_for('static', filename='images/products/Hotdog_Boxes.png') }}" alt="Styroware packaging range">
+                    <img src="{{ url_for('static', filename='images/products/Hotdog_Boxes.png') }}" alt="Styroware packaging range" loading="lazy" decoding="async">
                 </picture>
             </div>
             <div class="product-line-copy">

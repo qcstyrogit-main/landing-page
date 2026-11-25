@@ -468,19 +468,26 @@ document.addEventListener("DOMContentLoaded", () => {
     const successPopupMessage = document.getElementById("contactSuccessMessage");
     const successPopupClose = document.querySelector(".contact-success-close");
 
+    // Move the confirmation outside section stacking/overflow contexts.
+    document.body.appendChild(successPopup);
+
     function openSuccessPopup(message) {
+        document.getElementById("closeContactPopup")?.click();
         successPopupMessage.textContent = message;
         successPopup.classList.add("show");
         successPopup.setAttribute("aria-hidden", "false");
         successPopup.removeAttribute("inert");
+        successPopupClose?.focus();
     }
 
     function closeSuccessPopup() {
         successPopup.classList.remove("show");
         successPopup.setAttribute("aria-hidden", "true");
         successPopup.setAttribute("inert", "");
+        document.querySelector("[data-contact-modal-trigger]")?.focus();
     }
 
+    successPopup.querySelector(".contact-success-done")?.addEventListener("click", closeSuccessPopup);
     if (successPopupClose) {
         successPopupClose.addEventListener("click", closeSuccessPopup);
     }
@@ -493,6 +500,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     document.addEventListener("keydown", (event) => {
         if (event.key === "Escape" && successPopup.classList.contains("show")) {
+            event.preventDefault();
             closeSuccessPopup();
         }
     });
@@ -562,20 +570,26 @@ document.addEventListener("DOMContentLoaded", () => {
                 })
             });
         })
-        .then(res => res.json())
-        .then(data => {
-            const successMessage =
-                data?.message?.message ||
-                data?.message ||
-                "Your inquiry has been sent successfully!";
-            openSuccessPopup(successMessage);
+        .then(async res => {
+            const data = await res.json();
+            if (!res.ok || data?.error || data?.exc || data?.exception ||
+                typeof data?.message?.message !== "string" ||
+                !data.message.message.trim()) {
+                throw new Error("Inquiry was not accepted.");
+            }
+            return data;
+        })
+        .then(() => {
             contactFormEl.reset();
+            openSuccessPopup("Thank you for contacting us. Our team will get back to you shortly.");
         })
         .catch(err => {
             console.error("Contact inquiry error:", err);
-            alert("Failed to send inquiry. Please verify and try again.");
+            alert("We could not confirm your inquiry was received. Please try again or contact our team directly.");
         })
         .finally(() => {
+            const widget = contactFormEl.querySelector("altcha-widget");
+            try { widget?.reset?.(); } catch (error) { console.warn("ALTCHA reset failed", error); }
             submitBtn.disabled = false;
             submitBtn.textContent = "Send Message";
         });

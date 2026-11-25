@@ -64,6 +64,9 @@
     const revealSections = [];
 
     sections.forEach((section) => {
+        // The first-screen hero must be readable immediately, even before animations run.
+        // Keep scroll reveals for subsequent sections only.
+        if (section.classList.contains("intro-section")) return;
         const sectionTargets = Array.from(section.querySelectorAll(revealSelector));
 
         sectionTargets.forEach((target, index) => {

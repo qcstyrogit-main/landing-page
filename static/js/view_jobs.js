@@ -267,7 +267,12 @@ function renderList(list) {
   resultsCount.textContent = `Showing ${list.length} result${list.length !== 1 ? 's' : ''}`;
 
   if (list.length === 0) {
-    jobsList.innerHTML = `<div style="padding: 2rem; text-align: center; color: #666;"><p>No job openings found.</p></div>`;
+    jobsList.innerHTML = `<div class="jobs-empty-state" role="status"><h3>No matching vacancies right now</h3><p>Try clearing your search or filters. You're also welcome to send an open application for future opportunities.</p><button type="button" class="jobs-empty-reset">Clear job filters</button></div>`;
+    jobsList.querySelector(".jobs-empty-reset")?.addEventListener("click", () => {
+      if (searchInput) { searchInput.value = ""; searchInput.dispatchEvent(new Event("input", {bubbles: true})); }
+      document.querySelectorAll('#sidebar input[type="checkbox"], #drawer input[type="checkbox"]').forEach(box => { box.checked = false; });
+      if (typeof applyFrom === "function") applyFrom(getPrimaryFilterContainer());
+    });
     return;
   }
 

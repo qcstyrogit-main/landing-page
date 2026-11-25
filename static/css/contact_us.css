@@ -597,7 +597,7 @@
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.2s ease;
-    z-index: 1200;
+    z-index: 20010;
     padding: 20px;
 }
 

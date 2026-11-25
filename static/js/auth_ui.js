@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", async () => {
     const currentPath = window.location.pathname;
     const isAnnouncementPage = currentPath === "/announcements";
-    const isHomePage = currentPath === "/" || currentPath === "/index.html";
+    // Public pages remain available to authenticated ERP users.
     const erpBase = (document.body?.dataset.erpBase || "").replace(/\/$/, "");
     const userMenus = document.querySelectorAll("[data-erp-user-menu]");
     const loginButtons = document.querySelectorAll("[data-erp-login]");
@@ -26,17 +26,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     async function getErpAuthState() {
-        const directUrl = erpBase
-            ? `${erpBase}/api/method/qcmc_logic.api.auth.check_log_user`
-            : "";
-        if (directUrl) {
-            try {
-                const directPayload = await fetchJson(directUrl);
-                if (directPayload) return directPayload;
-            } catch (error) {
-                // Cross-origin ERP checks can fail if ERP CORS is not enabled.
-            }
-        }
+        // Same-origin backend endpoint avoids unnecessary cross-origin ERP calls.
         return fetchJson("/api/erp/whoami");
     }
 
@@ -102,9 +92,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 });
             });
 
-            if (isHomePage && !isAnnouncementPage) {
-                window.location.href = "/announcements";
-            }
+            // Do not redirect authenticated visitors away from the public homepage.
         } else {
             setAnnouncementVisibility(false);
             document.dispatchEvent(new CustomEvent("erp:unauthenticated"));

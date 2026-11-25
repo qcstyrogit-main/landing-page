@@ -12,6 +12,7 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='css/home.bundle.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/products_section.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/scroll_3d.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/homepage_polish.css', rev='mobile-media-3') }}">
 <link rel="preload" as="image" href="{{ url_for('static', filename='images/products/Tray.avif') }}" type="image/avif">
 {% endblock %}
 
@@ -92,7 +93,7 @@
 
 <!-- Keep fixed controls outside the clipped home-page scene so the footer
      cannot cover them at the bottom of the document. -->
-<button id="back-to-top" aria-label="Back to top">
+<button id="back-to-top" type="button" aria-label="Back to top">
     <svg class="icon icon-lg" aria-hidden="true"><use href="#icon-arrow-up"></use></svg>
 </button>
 
@@ -128,6 +129,6 @@
 
 {% block footer %}
 <script defer src="{{ url_for('static', filename='js/home.js') }}"></script>
-<script defer src="{{ url_for('static', filename='js/scroll_3d.js') }}"></script>
+<script defer src="{{ url_for('static', filename='js/scroll_3d.js', rev='carousel-layout-2') }}"></script>
 {% endblock %}
 

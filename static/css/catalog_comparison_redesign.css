@@ -1,0 +1,176 @@
+/* Existing QC & MC catalog comparison — compact, readable, scroll-safe. */
+.catalog-compare-modal{
+  padding:clamp(.5rem,2.2vw,1.5rem)!important;
+}
+.catalog-compare-modal .catalog-compare-dialog{
+  display:flex!important;
+  flex-direction:column;
+  width:min(1020px,100%)!important;
+  height:min(720px,calc(100dvh - 2rem))!important;
+  max-height:calc(100dvh - 1rem)!important;
+  min-height:0;
+  padding:0!important;
+  overflow:hidden!important;
+  border:1px solid var(--ed-rule,#d3d9e2)!important;
+  border-radius:12px!important;
+  background:var(--ed-bg,#fff)!important;
+  color:var(--ed-cream,#171b27)!important;
+  box-shadow:0 24px 80px #0003;
+}
+.catalog-compare-modal .catalog-compare-dialog > .compare-sheet-header{
+  position:relative!important;
+  top:auto!important;
+  flex:0 0 auto;
+  min-height:0;
+  padding:1.15rem clamp(1rem,2.5vw,1.6rem)!important;
+  display:flex;
+  flex-direction:row;
+  justify-content:space-between;
+  align-items:center!important;
+  gap:1.5rem;
+  border-bottom:1px solid var(--ed-rule,#d3d9e2)!important;
+  background:var(--ed-bg,#fff)!important;
+  color:var(--ed-cream,#171b27)!important;
+}
+.catalog-compare-modal .compare-sheet-heading{min-width:0;}
+.catalog-compare-modal .compare-sheet-heading .site-eyebrow{
+  display:block;font-size:.68rem;letter-spacing:.13em;font-weight:800;
+  color:var(--ed-red,#e52b35)!important;
+}
+.catalog-compare-modal .compare-sheet-heading h2{
+  margin:.4rem 0 .15rem!important;
+  font-size:clamp(1.55rem,2.7vw,2.35rem)!important;
+  line-height:1.1!important;
+  font-weight:650!important;
+  letter-spacing:-.045em;
+  color:var(--ed-cream,#171b27)!important;
+}
+.catalog-compare-modal .compare-sheet-summary{
+  margin:0;color:var(--ed-cream-dim,#687284);
+  font-size:.78rem;line-height:1.4;
+}
+.catalog-compare-modal .catalog-compare-close{
+  position:static!important;
+  flex:0 0 42px!important;
+  display:grid!important;place-items:center!important;
+  width:42px!important;height:42px!important;min-height:42px!important;
+  padding:0!important;margin:0!important;
+  border-radius:10px!important;
+  border:1px solid var(--ed-rule,#d3d9e2)!important;
+  color:var(--ed-cream,#171b27)!important;
+  background:rgba(125,140,160,.08)!important;
+  cursor:pointer;
+}
+.catalog-compare-modal .catalog-compare-close:hover{
+  color:var(--ed-red,#e52b35)!important;
+  border-color:var(--ed-red,#e52b35)!important;
+}
+.catalog-compare-modal .catalog-compare-grid{
+  flex:1 1 auto;
+  min-height:0;
+  overflow:auto!important;
+  overscroll-behavior:contain;
+  scrollbar-gutter:stable;
+  display:grid!important;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:1rem!important;
+  align-content:start;
+  padding:1.25rem clamp(1rem,2.5vw,1.6rem) 1.5rem!important;
+}
+.catalog-compare-modal .catalog-compare-grid[data-count="1"]{
+  grid-template-columns:minmax(0,400px);
+}
+.catalog-compare-modal .catalog-compare-grid[data-count="2"]{
+  grid-template-columns:repeat(2,minmax(0,1fr));
+}
+.catalog-compare-modal .catalog-compare-grid article{
+  display:flex;
+  flex-direction:column;
+  min-width:0;
+  padding:1rem!important;
+  border:1px solid var(--ed-rule,#d3d9e2)!important;
+  border-radius:9px;
+  background:rgba(130,145,165,.035);
+}
+.catalog-compare-modal .catalog-compare-grid article img{
+  display:block;
+  width:100%;
+  height:auto;
+  max-height:225px;
+  aspect-ratio:1.4;
+  object-fit:contain;
+  padding:.35rem;
+  border:1px solid var(--ed-rule,#d3d9e2);
+  background:rgba(120,130,155,.055);
+}
+.catalog-compare-modal .catalog-compare-grid article h3{
+  min-height:0!important;
+  padding:0!important;
+  margin:.8rem 0 1rem!important;
+  font-size:clamp(1.02rem,1.75vw,1.35rem)!important;
+  line-height:1.25!important;
+  font-weight:750;
+  overflow-wrap:anywhere;
+  color:var(--ed-cream,#171b27)!important;
+}
+.catalog-compare-modal .catalog-compare-grid article dl{
+  display:grid;
+  grid-template-columns:minmax(0,1fr);
+  align-content:start;
+  gap:0;
+  margin:auto 0 0!important;
+}
+.catalog-compare-modal .catalog-compare-grid article dt{
+  border-top:1px solid var(--ed-rule,#d3d9e2);
+  border-bottom:0!important;
+  padding:.55rem 0 .13rem!important;
+  color:var(--ed-cream-dim,#687284)!important;
+  font-size:.64rem!important;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+  font-weight:750;
+}
+.catalog-compare-modal .catalog-compare-grid article dd{
+  padding:0 0 .65rem!important;
+  margin:0!important;
+  border-bottom:0!important;
+  color:var(--ed-cream,#171b27)!important;
+  font-size:.9rem;
+  line-height:1.35;
+  overflow-wrap:anywhere;
+}
+.catalog-compare-modal .catalog-compare-grid article dd:last-child{padding-bottom:0!important}
+.catalog-compare-modal .catalog-compare-close:focus-visible{
+  outline:3px solid var(--ed-red,#e52b35);outline-offset:2px;
+}
+@media(max-width:700px){
+  .catalog-compare-modal{padding:0!important}
+  .catalog-compare-modal .catalog-compare-dialog{
+    width:100%!important;
+    height:100dvh!important;
+    max-height:100dvh!important;
+    border:0!important;
+    border-radius:0!important;
+  }
+  .catalog-compare-modal .catalog-compare-dialog > .compare-sheet-header{
+    padding:.9rem 1rem!important;
+  }
+  .catalog-compare-modal .catalog-compare-grid{
+    grid-auto-flow:column;
+    grid-auto-columns:minmax(225px,78vw);
+    grid-template-columns:none!important;
+    overflow-x:auto!important;
+    overflow-y:auto!important;
+    scroll-snap-type:x proximity;
+    padding:1rem!important;
+    gap:.75rem!important;
+  }
+  .catalog-compare-modal .catalog-compare-grid article{
+    scroll-snap-align:start;
+    padding:.8rem!important;
+  }
+  .catalog-compare-modal .catalog-compare-grid article img{max-height:200px}
+}
+@media(prefers-reduced-motion:reduce){
+  .catalog-compare-modal{transition:none!important}
+}

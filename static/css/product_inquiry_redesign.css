@@ -1,0 +1,206 @@
+/* Product inquiry sheet — use the existing form, validation and ALTCHA flow. */
+.product-catalog-page #inquiryModal.product-inquiry-modal {
+  padding:clamp(.65rem,2.5vw,1.5rem)!important;
+  align-items:center;
+  justify-items:center;
+}
+.product-catalog-page #inquiryModal .product-inquiry-dialog {
+  display:flex!important;
+  flex-direction:column!important;
+  width:min(690px,100%)!important;
+  height:min(660px,calc(100dvh - 2rem))!important;
+  max-height:calc(100dvh - 1.3rem)!important;
+  min-height:0!important;
+  overflow:hidden!important;
+  padding:0!important;
+  border:1px solid var(--ed-rule,#d5dae3);
+  border-radius:12px!important;
+  background:var(--ed-bg,#fff);
+  color:var(--ed-cream,#151923);
+  box-shadow:0 24px 70px rgba(4,10,24,.23);
+}
+.product-catalog-page #inquiryModal .inquiry-sheet-header{
+  display:flex;
+  flex:0 0 auto;
+  align-items:center;
+  justify-content:space-between;
+  gap:1rem;
+  padding:1.1rem 1.5rem 1rem;
+  border-bottom:1px solid var(--ed-rule,#d5dae3);
+}
+.product-catalog-page #inquiryModal .inquiry-sheet-heading{min-width:0}
+.product-catalog-page #inquiryModal .inquiry-sheet-eyebrow{
+  display:block;
+  margin:0 0 .35rem;
+  color:var(--ed-red,#e52b35);
+  font-size:.65rem;
+  font-weight:800;
+  text-transform:uppercase;
+  letter-spacing:.13em;
+}
+.product-catalog-page #inquiryModal #inquiryModalTitle{
+  padding:0!important;
+  margin:0!important;
+  border:0!important;
+  color:inherit!important;
+  font-size:clamp(1.6rem,2.6vw,2.1rem)!important;
+  font-weight:550!important;
+  line-height:1.12!important;
+  letter-spacing:-.04em;
+}
+.product-catalog-page #inquiryModal #inquiryModalClose{
+  position:static!important;
+  float:none!important;
+  flex:0 0 42px!important;
+  display:grid!important;
+  place-items:center!important;
+  width:42px!important;
+  height:42px!important;
+  margin:0!important;
+  padding:0!important;
+  border:1px solid var(--ed-rule,#d5dae3)!important;
+  border-radius:10px!important;
+  background:rgba(125,138,155,.08)!important;
+  color:inherit!important;
+  box-shadow:none!important;
+  cursor:pointer;
+}
+.product-catalog-page #inquiryModal #inquiryModalClose:hover{
+  border-color:var(--ed-red,#e52b35)!important;
+  color:var(--ed-red,#e52b35)!important;
+}
+.product-catalog-page #inquiryModal #inquiryForm{
+  flex:1 1 auto!important;
+  min-height:0!important;
+  display:flex!important;
+  flex-direction:column!important;
+  margin:0!important;
+  padding:0!important;
+}
+.product-catalog-page #inquiryModal #productInquiryForm{
+  flex:1 1 auto!important;
+  min-height:0!important;
+  display:flex!important;
+  flex-direction:column!important;
+  gap:0!important;
+  margin:0!important;
+}
+.product-catalog-page #inquiryModal .inquiry-sheet-fields{
+  flex:1 1 auto;
+  min-height:0;
+  overflow-y:auto;
+  overscroll-behavior:contain;
+  scrollbar-gutter:stable;
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  align-content:start;
+  gap:.8rem 1rem;
+  padding:1.3rem 1.5rem;
+}
+.product-catalog-page #inquiryModal .inquiry-field{
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  gap:.4rem;
+  color:inherit;
+  font-size:.76rem;
+  font-weight:750;
+  line-height:1.25;
+}
+.product-catalog-page #inquiryModal .inquiry-field-product,
+.product-catalog-page #inquiryModal .inquiry-field-wide{
+  grid-column:1/-1;
+}
+.product-catalog-page #inquiryModal .inquiry-field :is(input,textarea){
+  width:100%!important;
+  min-width:0;
+  margin:0!important;
+  padding:.68rem .8rem!important;
+  min-height:44px;
+  border:1px solid var(--ed-rule,#d5dae3)!important;
+  border-radius:7px!important;
+  background:rgba(120,135,155,.035)!important;
+  color:inherit!important;
+  font:500 .9rem/1.4 inherit;
+  box-shadow:none!important;
+}
+.product-catalog-page #inquiryModal .inquiry-field :is(input,textarea):focus{
+  border-color:var(--ed-red,#e52b35)!important;
+  outline:2px solid rgba(229,43,53,.22);
+  outline-offset:1px;
+}
+.product-catalog-page #inquiryModal .inquiry-field #inqProduct{
+  font-weight:750!important;
+  background:rgba(120,135,155,.11)!important;
+}
+.product-catalog-page #inquiryModal .inquiry-field textarea{
+  resize:vertical;
+  min-height:84px!important;
+  max-height:160px;
+}
+.product-catalog-page #inquiryModal .inquiry-altcha{
+  grid-column:1/-1;
+  min-width:0;
+  margin:0;
+  border-radius:7px;
+}
+.product-catalog-page #inquiryModal .inquiry-sheet-footer{
+  flex:0 0 auto;
+  padding:.85rem 1.5rem calc(.85rem + env(safe-area-inset-bottom));
+  border-top:1px solid var(--ed-rule,#d5dae3);
+  background:var(--ed-bg,#fff);
+}
+.product-catalog-page #inquiryModal #inquiryForm .submit-btn{
+  width:100%!important;
+  min-height:48px!important;
+  margin:0!important;
+  padding:.8rem 1rem!important;
+  grid-column:auto;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  border-radius:7px!important;
+  border:1px solid var(--ed-red,#e52b35)!important;
+  background:var(--ed-red,#e52b35)!important;
+  color:#fff!important;
+  font-weight:800;
+  font-size:.93rem;
+  box-shadow:none!important;
+  cursor:pointer;
+}
+.product-catalog-page #inquiryModal #inquiryForm .submit-btn:disabled{opacity:.6;cursor:wait}
+.product-catalog-page #inquiryModal #inquiryModalClose:focus-visible,
+.product-catalog-page #inquiryModal .submit-btn:focus-visible{
+  outline:3px solid var(--ed-red,#e52b35);
+  outline-offset:2px;
+}
+@media(max-width:650px){
+  .product-catalog-page #inquiryModal.product-inquiry-modal{padding:0!important}
+  .product-catalog-page #inquiryModal .product-inquiry-dialog{
+    width:100%!important;
+    height:100dvh!important;
+    max-height:100dvh!important;
+    border-radius:0!important;
+    border:0!important;
+  }
+  .product-catalog-page #inquiryModal .inquiry-sheet-header{padding:.8rem 1rem}
+  .product-catalog-page #inquiryModal .inquiry-sheet-fields{
+    grid-template-columns:minmax(0,1fr);
+    gap:.7rem;
+    padding:1rem;
+    scrollbar-gutter:auto;
+  }
+  .product-catalog-page #inquiryModal .inquiry-field{grid-column:1/-1}
+  .product-catalog-page #inquiryModal .inquiry-sheet-footer{
+    padding:.7rem 1rem calc(.7rem + env(safe-area-inset-bottom));
+  }
+  .product-catalog-page #inquiryModal .inquiry-field textarea{min-height:75px!important}
+}
+@media(max-height:680px) and (min-width:651px){
+  .product-catalog-page #inquiryModal .inquiry-sheet-header{padding:.7rem 1.25rem}
+  .product-catalog-page #inquiryModal .inquiry-sheet-fields{padding:.85rem 1.25rem;gap:.55rem .8rem}
+  .product-catalog-page #inquiryModal .inquiry-sheet-footer{padding:.65rem 1.25rem}
+}
+@media(prefers-reduced-motion:reduce){
+  .product-catalog-page #inquiryModal.product-inquiry-modal{transition:none!important}
+}

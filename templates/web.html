@@ -45,7 +45,7 @@
     <link rel="preload" href="{{ url_for('static', filename='css/term_of_use.css') }}" as="style">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/term_of_use.css') }}" media="print" data-media="all">
     <link rel="shortcut icon" href="{{ url_for('static', filename='images/favicon.ico') }}" type="image/x-icon">
-    <script defer type="module" src="https://cdn.jsdelivr.net/npm/altcha@2.3.0/dist/altcha.min.js"></script>
+    <script defer type="module" src="{{ url_for('static', filename='js/vendor_altcha.js', rev='altcha-2.3.0') }}"></script>
 
     {% block structured_data %}
     <script type="application/ld+json" nonce="{{ csp_nonce }}">
@@ -96,6 +96,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/editorial_dark.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/clarity_optin.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/audit_improvements.css') }}">
 </head>
 <body class="{% block body_class %}{% endblock %}" data-erp-base="{{ API_BASE_URL.rstrip('/') }}">
 
@@ -106,7 +107,9 @@
 
     {% include "partials/icons.svg" %}
 
-    <main id="main-content">
+    <a class="skip-to-content" href="#main-content">Skip to main content</a>
+
+    <main id="main-content" tabindex="-1">
         {% block page_content %}{% endblock %}
     </main>
 
@@ -158,7 +161,7 @@
 
     <script defer src="{{ url_for('static', filename='js/csrf.js') }}"></script>
     <script defer src="{{ url_for('static', filename='js/analytics_events.js') }}"></script>
-    <script defer src="{{ url_for('static', filename='js/auth_ui.js') }}"></script>
+    <script defer src="{{ url_for('static', filename='js/auth_ui.js', rev='auth-same-origin-v2') }}"></script>
     {% block footer %}{% include "sections/footer.html" %}{% endblock %}
 
     <script defer src="{{ url_for('static', filename='js/image_formats.js') }}"></script>

@@ -71,12 +71,15 @@ document.addEventListener("DOMContentLoaded", () => {
     compareModal.setAttribute("inert", "");
     compareModal.innerHTML = `
         <section class="catalog-compare-dialog" role="dialog" aria-modal="true" aria-labelledby="catalogCompareTitle">
-            <header>
-                <div>
+            <header class="compare-sheet-header">
+                <div class="compare-sheet-heading">
                     <span class="site-eyebrow">Product comparison</span>
-                    <h2 id="catalogCompareTitle">Compare selected products</h2>
+                    <h2 id="catalogCompareTitle">Compare products</h2>
+                    <p id="catalogCompareSummary" class="compare-sheet-summary" aria-live="polite"></p>
                 </div>
-                <button type="button" class="catalog-compare-close" aria-label="Close comparison">&times;</button>
+                <button type="button" class="catalog-compare-close" aria-label="Close comparison" title="Close comparison">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19"/></svg>
+                </button>
             </header>
             <div id="catalogCompareGrid" class="catalog-compare-grid"></div>
         </section>
@@ -221,6 +224,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const openComparison = () => {
         compareGrid.replaceChildren();
+        compareGrid.dataset.count = String(state.compare.length);
+        compareModal.querySelector("#catalogCompareSummary").textContent =
+            state.compare.length + " selected product" + (state.compare.length === 1 ? "" : "s") + " · Compare specifications side by side";
         state.compare.forEach(product => {
             const article = document.createElement("article");
             const image = document.createElement("img");

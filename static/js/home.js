@@ -169,7 +169,7 @@ document.addEventListener("DOMContentLoaded", function() {
                     const targetElement = document.getElementById(targetId);
                     if (targetElement) {
                         e.preventDefault();
-                        const headerOffset = 60;
+                        const headerOffset = document.querySelector(".home-header")?.getBoundingClientRect().height || 78;
                         const elementPosition = targetElement.getBoundingClientRect().top;
                         const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
                         window.scrollTo({ top: offsetPosition, behavior: "smooth" });

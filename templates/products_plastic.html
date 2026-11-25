@@ -9,6 +9,11 @@
   {{ super() }}
   <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/products_plastic.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/catalog_experience.css', rev='2') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/catalog_discovery.css', rev='1') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/product_details_redesign.css', rev='3') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/product_inquiry_redesign.css', rev='1') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/catalog_comparison_redesign.css', rev='1') }}">
 {% endblock %}
 
 {% block body_class %}product-catalog-page plastic-catalog-page{% endblock %}
@@ -32,7 +37,7 @@
                 <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
               </svg>
             </span>
-            <input id="searchInput" type="search" placeholder="Search product or code">
+            <input id="searchInput" type="search" placeholder="Search product or code" aria-label="Search products by name or code" autocomplete="off">
           </div>
 
           <div class="filter-select">
@@ -57,7 +62,7 @@
 
       <div class="toolbar product-toolbar">
         <div id="activeFilters" class="active-filters">Filters: All</div>
-        <div id="resultsCount" class="results-count">Showing 0 products</div>
+        <div id="resultsCount" class="results-count" role="status" aria-live="polite" aria-atomic="true">Showing 0 products</div>
       </div>
 
       <div class="products-main">
@@ -584,18 +589,32 @@
   <!-- PRODUCT SIDEBAR -->
   <div id="productSidebar" class="product-sidebar">
     <div class="sidebar-content">
-      <button type="button" id="sidebarClose" class="close-btn" aria-label="Close product details">&times;</button>
-
-      <!-- PRODUCT VIEW -->
-      <div id="productView">
-        <img loading="lazy" decoding="async" id="sidebarImage" src="" alt="Product Image">
-        <h2 id="sidebarName"></h2>
-        <p id="sidebarCode"></p>
-
-        <button id="sidebarInquireBtn" class="inquire-btn">
-          Inquire
+      <div class="detail-view-header">
+        <div class="detail-view-topline">
+          <span class="detail-view-eyebrow">Product details</span>
+          <span id="detailViewProgress" class="detail-view-progress" aria-live="polite"></span>
+        </div>
+        <button type="button" id="sidebarClose" class="close-btn" aria-label="Close product details" title="Close product details">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19"/></svg>
         </button>
       </div>
+      <div id="productView">
+        <div class="detail-view-layout">
+          <div class="detail-view-visual">
+            <img loading="lazy" decoding="async" id="sidebarImage" src="" alt="Product Image">
+            <span class="detail-view-image-caption">Product photograph</span>
+          </div>
+          <div class="detail-view-info">
+            <h2 id="sidebarName"></h2>
+            <p id="sidebarCode"></p>
+            <button id="sidebarInquireBtn" class="inquire-btn" type="button">Inquire about this product <span aria-hidden="true">→</span></button>
+          </div>
+        </div>
+      </div>
+      <nav class="detail-view-navigation" aria-label="Browse products">
+        <button type="button" id="detailPrev" aria-label="Previous product">← <span>Previous</span></button>
+        <button type="button" id="detailNext" aria-label="Next product"><span>Next</span> →</button>
+      </nav>
     </div>
   </div>
 
@@ -605,31 +624,42 @@
   <!-- PRODUCT INQUIRY MODAL -->
   <div id="inquiryModal" class="product-inquiry-modal" aria-hidden="true" inert>
     <div class="product-inquiry-dialog" role="dialog" aria-modal="true" aria-labelledby="inquiryModalTitle">
-      <button type="button" id="inquiryModalClose" class="inquiry-modal-close" aria-label="Close product inquiry">&times;</button>
+      <header class="inquiry-sheet-header">
+        <div class="inquiry-sheet-heading">
+          <span class="inquiry-sheet-eyebrow">QC &amp; MC · Product request</span>
+          <h3 id="inquiryModalTitle">Product Inquiry</h3>
+        </div>
+        <button type="button" id="inquiryModalClose" class="inquiry-modal-close" aria-label="Close product inquiry" title="Close product inquiry">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19"/></svg>
+        </button>
+      </header>
       <div id="inquiryForm">
-        <h3 id="inquiryModalTitle">Product Inquiry</h3>
         <form id="productInquiryForm">
-          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-          <input type="text" name="hp" id="inqHp" style="display:none">
-
-          <input type="text" id="inqProduct" placeholder="Product Name" required readonly>
-
-          <input type="text" id="inqName" placeholder="Your Name" required>
-
-          <input type="text" id="inqContact" placeholder="Contact Number" required>
-
-          <input type="email" id="inqEmail" placeholder="Email Address" required>
-
-          <textarea id="inqMessage" placeholder="Message" required></textarea>
-
-          <div class="inquiry-altcha">
-            <altcha-widget
-              challengeurl="{{ altcha_challenge_url }}"
-              floating="false"
-            ></altcha-widget>
+          <div class="inquiry-sheet-fields">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="text" name="hp" id="inqHp" style="display:none">
+            <label class="inquiry-field inquiry-field-product" for="inqProduct">Selected product
+              <input type="text" id="inqProduct" placeholder="Product Name" required readonly>
+            </label>
+            <label class="inquiry-field" for="inqName">Your name
+              <input type="text" id="inqName" placeholder="Your Name" autocomplete="name" required>
+            </label>
+            <label class="inquiry-field" for="inqContact">Contact number
+              <input type="text" id="inqContact" placeholder="Contact Number" autocomplete="tel" required>
+            </label>
+            <label class="inquiry-field inquiry-field-wide" for="inqEmail">Email address
+              <input type="email" id="inqEmail" placeholder="Email Address" autocomplete="email" required>
+            </label>
+            <label class="inquiry-field inquiry-field-wide" for="inqMessage">How can we help?
+              <textarea id="inqMessage" placeholder="Message" required></textarea>
+            </label>
+            <div class="inquiry-altcha">
+              <altcha-widget challengeurl="{{ altcha_challenge_url }}" floating="false"></altcha-widget>
+            </div>
           </div>
-
-          <button type="submit" class="submit-btn">Send Inquiry</button>
+          <footer class="inquiry-sheet-footer">
+            <button type="submit" class="submit-btn">Send Inquiry</button>
+          </footer>
         </form>
       </div>
     </div>
@@ -650,7 +680,9 @@
   {{ super() }}
   <script defer src="{{ url_for('static', filename='js/home.js') }}"></script>
   <script defer src="{{ url_for('static', filename='js/products_plastic.js') }}"></script>
-  <script defer src="{{ url_for('static', filename='js/catalog_upgrade.js') }}"></script>
+  <script defer src="{{ url_for('static', filename='js/catalog_upgrade.js', rev='compare-2') }}"></script>
+  <script defer src="{{ url_for('static', filename='js/catalog_discovery.js', rev='1') }}"></script>
+  <script defer src="{{ url_for('static', filename='js/product_details_navigation.js', rev='3') }}"></script>
 {% endblock %}
 
 

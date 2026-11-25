@@ -1,0 +1,325 @@
+/* Homepage finishing layer: intentionally loaded after home.bundle.css. */
+.home-page .intro-content{gap:clamp(1.75rem,4.5vw,5.5rem)}
+.home-page .intro-text{min-width:0}
+.home-page .intro-text h1{text-wrap:balance}
+.home-page .intro-description,.home-page .standard-text>p{text-wrap:pretty}
+.home-page .intro-actions{display:flex;flex-wrap:wrap;align-items:center;column-gap:clamp(1.25rem,3vw,2.5rem);row-gap:.75rem}
+.home-page .intro-actions a{min-height:48px;display:inline-flex;align-items:center;justify-content:center;touch-action:manipulation}
+.home-page .intro-images{min-width:0;isolation:isolate}
+/* Carousel pictures overlap in one frame; they must not stack vertically. */
+.home-page .intro-images picture{
+  position:absolute;
+  inset:0;
+  display:block;
+  width:100%;
+  height:100%;
+}
+.home-page .intro-images picture img{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:contain;
+}
+.home-page .standard-media video{display:block;max-width:100%;height:auto}
+@media(min-width:993px) and (max-width:1279px){
+ .home-page .intro-content{grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);padding-top:calc(var(--nav-height) + 3.5rem)}
+ .home-page .intro-text h1{font-size:clamp(3.75rem,6.8vw,6.4rem);line-height:.96}
+}
+@media(max-width:992px){
+ .home-page .intro-content{width:min(var(--ed-content,1240px),calc(100% - 2rem));grid-template-columns:minmax(0,1fr);gap:clamp(1.5rem,4vw,3rem);padding-top:calc(var(--nav-height) + clamp(2.25rem,6vw,4rem));padding-bottom:clamp(3rem,7vw,5rem)}
+ .home-page .intro-text{align-items:flex-start;text-align:left}
+ .home-page .intro-text h1{font-size:clamp(3rem,8vw,6.6rem);line-height:.98;letter-spacing:-.065em}
+ .home-page .intro-description{max-width:62ch}
+ .home-page .intro-images{width:min(100%,560px);margin-inline:auto;aspect-ratio:1.15}
+}
+@media(max-width:600px){
+ .home-page .intro-content{width:calc(100% - 2rem);gap:1.75rem;padding-top:calc(var(--nav-height) + 2.5rem)}
+ .home-page .intro-text{gap:1.1rem}
+ .home-page .intro-text h1{font-size:clamp(2.65rem,10.5vw,4.3rem);line-height:1.03;letter-spacing:-.055em;overflow-wrap:break-word}
+ .home-page .intro-text h1 br{display:none}
+ .home-page .intro-description{font-size:1rem;line-height:1.65}
+ .home-page .intro-actions{width:100%;align-items:stretch}
+ .home-page .intro-actions a{flex:1 1 145px;padding:.8rem .4rem}
+ .home-page .intro-images{width:100%;aspect-ratio:1.2}
+ .home-page .intro-capabilities{max-width:100%}
+ .home-page .standard-content{padding-inline:1rem}
+ .home-page .products-section-content{width:calc(100% - 2rem)}
+ .home-page .products-section .about-us-header h2{font-size:clamp(2.7rem,10vw,4.2rem);line-height:1}
+}
+@media(prefers-reduced-motion:reduce){
+ .home-page .intro-text,.home-page .intro-images,.home-page .intro-images img,.home-page .products-slide-media{animation:none!important;transition:none!important}
+}
+/* Keep essential above-the-fold content visible even if scroll reveal initialization fails. */
+.home-page .intro-section .text-scroll-reveal,
+.home-page .intro-section .text-scroll-reveal.text-scroll-heading {
+  opacity: 1 !important;
+  clip-path: none !important;
+  visibility: visible !important;
+}
+.home-page .intro-section .intro-content {
+  position: relative;
+  z-index: 3;
+}
+@media (max-width: 360px) {
+  .home-page .intro-text h1 { font-size: clamp(2.15rem, 11.5vw, 2.6rem); line-height: 1.05; letter-spacing: -0.045em; }
+  .home-page .intro-content { padding-top: calc(var(--nav-height) + 1.5rem); }
+  .home-page .intro-description { font-size: 0.94rem; line-height: 1.55; }
+}
+/* Desktop hero repair: no full-screen empty spacer or hidden first-fold content. */
+@media (min-width: 993px) {
+  .home-page .intro-section {
+    min-height: 0;
+    height: auto;
+  }
+  .home-page .intro-content {
+    width: min(1320px, calc(100% - 5rem));
+    max-width: 1320px;
+    min-height: min(760px, calc(100svh - var(--nav-height, 78px)));
+    height: auto;
+    align-items: center;
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr);
+    padding: clamp(2rem, 4vw, 4rem) 0;
+    margin-inline: auto;
+  }
+  .home-page .intro-text {
+    animation: none !important;
+    transform: none !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+  }
+  .home-page .intro-text h1 {
+    font-size: clamp(3.1rem, 5.4vw, 5.6rem);
+    line-height: 1;
+    letter-spacing: -.055em;
+  }
+  .home-page .intro-images {
+    width: 100%;
+    max-width: 540px;
+    aspect-ratio: 1 / 1;
+    transform: none;
+    opacity: 1;
+    visibility: visible;
+  }
+}
+.home-page .intro-section .intro-content,
+.home-page .intro-section .intro-text,
+.home-page .intro-section .intro-images {
+  visibility: visible;
+}
+@media (min-width: 993px) and (max-height: 740px) {
+  .home-page .intro-content {
+    min-height: 0;
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+  }
+  .home-page .intro-text { gap: 1rem; }
+  .home-page .intro-images { max-width: 430px; }
+}
+/* Final desktop override: cancel legacy full-screen + double header offsets. */
+@media (min-width: 993px) {
+  body.home-page section.intro-section {
+    display: block !important;
+    min-height: 0 !important;
+    height: auto !important;
+    padding: calc(var(--nav-height, 78px) + 1.75rem) 0 3rem !important;
+  }
+  body.home-page section.intro-section > .intro-content {
+    display: grid !important;
+    position: relative !important;
+    top: auto !important;
+    min-height: 0 !important;
+    height: auto !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
+    align-content: center;
+    align-items: center;
+    opacity: 1 !important;
+    transform: none !important;
+    animation: none !important;
+  }
+  body.home-page .intro-section .intro-text,
+  body.home-page .intro-section .intro-images {
+    display: flex;
+    opacity: 1 !important;
+    transform: none !important;
+    animation: none !important;
+  }
+  body.home-page .intro-section .intro-images { display: block; }
+}
+/* Position the desktop hero explicitly under the fixed header.
+   Prevent legacy nested min-height or padding from inserting blank screenfuls. */
+@media (min-width: 993px) {
+  body.home-page .custom-home-page > section.intro-section {
+    position: relative !important;
+    min-height: 670px !important;
+    height: max(670px, min(850px, 95svh)) !important;
+    padding: 0 !important;
+    overflow: hidden;
+  }
+  body.home-page .custom-home-page > section.intro-section > .intro-content {
+    position: absolute !important;
+    top: calc(var(--nav-height, 78px) + 2.25rem) !important;
+    right: auto !important;
+    bottom: auto !important;
+    left: 50% !important;
+    width: min(1280px, calc(100% - 5rem)) !important;
+    min-height: 0 !important;
+    height: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    transform: translateX(-50%) !important;
+    grid-template-columns: minmax(0, 1.12fr) minmax(0, .88fr) !important;
+    gap: clamp(1.5rem, 3vw, 3rem) !important;
+  }
+  body.home-page .intro-section .intro-text h1 {
+    font-size: clamp(3.25rem, 5.2vw, 5.3rem) !important;
+  }
+  body.home-page .intro-section .intro-images {
+    max-height: 570px;
+  }
+}
+/* Mobile layout: eliminate inherited editorial-size section gutters. */
+@media (max-width: 900px) {
+  body.home-page .custom-home-page > section.intro-section {
+    min-height: 0 !important;
+    height: auto !important;
+    padding: var(--nav-height, 62px) 0 2rem !important;
+  }
+  body.home-page .intro-section > .intro-content {
+    min-height: 0 !important;
+    height: auto !important;
+    padding: 1.5rem 0 1rem !important;
+    align-content: start !important;
+  }
+  body.home-page .intro-images { margin-top: 0 !important; }
+  body.home-page :is(
+    .standard-section, .products-section, #sustainability,
+    .testimonial-section, .jobs-section, .about-us-section, #iso-certified
+  ) {
+    min-height: 0 !important;
+    height: auto !important;
+    padding-top: clamp(2.5rem, 7vw, 4rem) !important;
+    padding-bottom: clamp(2.5rem, 7vw, 4rem) !important;
+  }
+  body.home-page #contact-us {
+    min-height: 0 !important;
+    padding-top: clamp(2.5rem, 7vw, 4rem) !important;
+    padding-bottom: 2.5rem !important;
+  }
+  body.home-page .products-section-content,
+  body.home-page #sustainability > :is(.about-us-header, .sustainability-hero),
+  body.home-page .standard-content,
+  body.home-page .testimonial-content,
+  body.home-page .about-us-content,
+  body.home-page .jobs-section > :is(.about-us-header, .jobs-hero),
+  body.home-page #iso-certified > .iso-card {
+    width: calc(100% - 2rem);
+  }
+  body.home-page :is(
+    .products-section .about-us-header, #sustainability > .about-us-header,
+    .testimonial-section .about-us-header, .jobs-section > .about-us-header,
+    .about-us-section > .about-us-content > .about-us-header
+  ) { margin-bottom: 1.5rem !important; }
+  body.home-page :is(.products-gradient-box, .products-slider, .products-slides,
+    .sustainability-gradient-box, .sustainability-slider, .sustainability-slides,
+    .jobs-gradient-box, .jobs-hero-content) {
+    min-height: 0 !important;
+  }
+  /* A transitioning slide must never paint over the active one on phones. */
+  body.home-page .products-slide:not(.active),
+  body.home-page .sustainability-slide:not(.active) {
+    display: none !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+  }
+  body.home-page .products-slide.active,
+  body.home-page .sustainability-slide.active {
+    display: grid !important;
+    position: relative !important;
+    inset: auto !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    gap: 1rem !important;
+  }
+  body.home-page .products-slider,
+  body.home-page .sustainability-slider { padding-top: 0 !important; display: block; }
+  body.home-page .products-slide-content,
+  body.home-page .sustainability-slide-content { min-width: 0; gap: .85rem; }
+  body.home-page .products-slide-media,
+  body.home-page .sustainability-slide-media {
+    height: clamp(180px, 52vw, 330px) !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    background-position: center;
+    background-size: contain;
+  }
+  body.home-page .products-pagination,
+  body.home-page .sustainability-pagination {
+    position: relative !important;
+    inset: auto !important;
+    margin-top: 1.25rem !important;
+  }
+  /* Manufacturing media and timeline should follow the copy without a tall spacer. */
+  body.home-page .standard-content {
+    display: grid;
+    grid-template-columns: minmax(0,1fr) !important;
+    align-items: start;
+    gap: 1.25rem !important;
+  }
+  body.home-page .standard-media {
+    width: 100%;
+    height: auto !important;
+    min-height: 0 !important;
+    aspect-ratio: 16 / 10;
+    margin: 0 !important;
+  }
+  body.home-page .standard-media video {
+    display: block;
+    width: 100%;
+    height: 100% !important;
+    aspect-ratio: 16 / 10;
+    object-fit: cover;
+  }
+  body.home-page .manufacturing-process {
+    width: calc(100% - 2rem);
+    margin: 1.5rem auto 0 !important;
+  }
+  body.home-page .manufacturing-process li {
+    gap: .5rem;
+    padding-top: 1rem;
+    padding-bottom: .75rem;
+  }
+  /* Avoid desktop-size media placeholders in the Careers section. */
+  body.home-page .jobs-hero-content { gap: 1.5rem !important; }
+  body.home-page .jobs-hero-media {
+    min-height: 0 !important;
+    height: auto !important;
+    aspect-ratio: 4 / 3;
+  }
+  body.home-page .jobs-hero-media img { display:block; width:100%; height:100%; object-fit:cover; }
+  body.home-page .iso-images { min-height: 180px !important; }
+}
+@media (max-width: 600px) {
+  body.home-page .intro-section > .intro-content { padding-top: 1.25rem !important; }
+  body.home-page .intro-text h1 {
+    font-size: clamp(2.25rem, 10.5vw, 3.5rem) !important;
+    line-height: 1.04 !important;
+  }
+  body.home-page .intro-images { aspect-ratio: 1.3 !important; }
+  body.home-page .products-section .about-us-header h2,
+  body.home-page #sustainability > .about-us-header h2,
+  body.home-page :is(.standard-title,.testimonial-section .about-us-header h2,
+    .jobs-title,.about-us-section > .about-us-content > .about-us-header h2,.iso-title) {
+    font-size: clamp(2.35rem, 10vw, 3.5rem) !important;
+    line-height: 1.03 !important;
+  }
+  body.home-page .products-slide-headline p,
+  body.home-page .sustainability-slide-headline p {
+    font-size: clamp(2.15rem, 10vw, 3rem) !important;
+    line-height: 1.04 !important;
+  }
+  body.home-page .intro-capabilities span { padding-top: .5rem; }
+}
